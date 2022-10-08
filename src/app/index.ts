@@ -1,6 +1,8 @@
-import Model     from "./Model";
-import Presenter from "./Presenter";
-import View      from "./View";
+import "../styles";
+
+import Model     from "./Model/Model";
+import Presenter from "./Presenter/Presenter";
+import View      from "./View/View";
 
 (function($) {
   $.fn.extend({

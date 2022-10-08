@@ -5,8 +5,11 @@ body {
 }
 
 .#{$className} {
-  &__demo {
+
+
+  &__slider {
+    margin: 6.25rem;
     min-width: 12.5rem;
-    max-width: 31.25rem;
+    max-width: 41.25rem;
   }
 }

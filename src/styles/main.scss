@@ -1,5 +1,38 @@
 $className: 'just-slider';
 
 .#{$className} {
-  min-height: 10px;
+  border: $sliderBorder;
+  border-radius: .3125rem;
+  width: 100%;
+  box-sizing: border-box;
+
+  &__main {
+    min-height: $sliderSize;
+    max-height: $sliderSize;
+    position: relative;
+  }
+
+  &__point {
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 0;
+    display: none;
+
+    &_active {
+      display: initial;
+    }
+  }
+
+  &__handle {
+    box-sizing: border-box;
+    position: absolute;
+    height: $handleHeight;
+    width: $handleWidth;
+    right: - calc($handleWidth / 2);
+    top: - calc(($handleHeight / 2) - ($sliderSize / 2));
+    background-color: rgb(49, 90, 153);
+    border: .125rem solid white;
+    border-radius: 50%;
+  }
 }

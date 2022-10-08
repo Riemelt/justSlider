@@ -1,5 +1,5 @@
-import Model from "./Model";
-import View  from "./View";
+import Model from "../Model/Model";
+import View  from "../View/View";
 
 class Presenter {
   private view: View;
@@ -17,6 +17,9 @@ class Presenter {
 
     const data = this.model.init(options);
     this.view.init(data);
+    this.view.initHtml();
+    this.view.initComponents();
+    this.view.startComponents();
   }
 
 }
