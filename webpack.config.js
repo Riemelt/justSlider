@@ -9,7 +9,7 @@ const srcPath = path.resolve(__dirname, "./src");
 
 const entryPoints = {
   index: "./app/index.ts",
-  demo: "./demo/index.ts",
+  demo: "./demo/demo.ts",
 };
 
 const mode = process.env.NODE_ENV === "production" ? "production" : "development";
@@ -30,7 +30,7 @@ module.exports = {
     }),
     require('autoprefixer'),
     new HtmlWebpackPlugin({
-      template: "./demo/index.pug", // relative path to the HTML files
+      template: "./demo/demo.pug", // relative path to the HTML files
       filename: "./index.html", // output HTML files
       chunks: ["demo"],
     }),
@@ -64,7 +64,7 @@ module.exports = {
         }
       },
       {
-        test: /\.tsx?$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
@@ -95,9 +95,6 @@ module.exports = {
             }
           },
           "sass-loader",
-          {
-            loader: 'sass-resources-loader',
-          }
         ]
       },
     ]

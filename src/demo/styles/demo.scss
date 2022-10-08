@@ -1,0 +1,12 @@
+$className: 'demo';
+
+body {
+
+}
+
+.#{$className} {
+  &__demo {
+    min-width: 12.5rem;
+    max-width: 31.25rem;
+  }
+}

@@ -1,0 +1,9 @@
+include ./components/head/head
+
+- const className = "demo"
+
+doctype html
+html
+  +head({ title })
+  body
+    div(class=`${className}__slider js-${className}__slider`)
