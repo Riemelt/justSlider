@@ -5,3 +5,8 @@ interface Options {
   min: number;
   max: number;
 }
+
+interface Test {
+  test1: string,
+  test2: string,
+}
