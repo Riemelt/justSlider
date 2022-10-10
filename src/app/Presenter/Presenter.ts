@@ -15,6 +15,7 @@ class Presenter {
     console.log("Presenter created");
 
     this.eventManager = new EventManager();
+
     this.view = view;
     this.model = model;
 
@@ -25,6 +26,24 @@ class Presenter {
     this.view.initHtml();
     this.view.initComponents();
     this.view.startComponents();
+    
+    this.view.addCreateHandleHandler((value: number, handle: HandleType) => {
+      this.model.setHandle(value, handle);
+    })
+
+    this.registerEvents();
+    this.addEventListeners();
+  }
+
+  registerEvents() {
+    this.eventManager.registerEvent("HandleMove");
+  }
+
+  addEventListeners() {
+    this.eventManager.addEventListener("HandleMove", () => {
+      const options = this.model.getOptions();
+      this.view.updateHandle(options);
+    });
   }
 
 }

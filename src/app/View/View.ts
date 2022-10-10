@@ -4,6 +4,7 @@ class View {
   private options: Options;
   private $html: JQuery<HTMLElement>;
   private $justSlider: JQuery<HTMLElement>;
+  private handleHandleMousemove: (position: number, type: HandleType) => void;
 
   private handle: Handle;
 
@@ -30,22 +31,40 @@ class View {
         </div>
       </div>
     `);
-    this.$justSlider = this.$html.find(".just-slider");
+
+    this.$justSlider = this.$html.find(".just-slider__main");
   }
 
   initComponents() {
     const $handleElement = this.$html.find(".just-slider__point");
-    this.handle = new Handle($handleElement, {
-      handleHandleMousemove: this.handleHandleMousemove.bind(this),
-    });
+    this.handle = new Handle($handleElement, "to");
   }
 
   startComponents() {
     this.handle.start();
   }
 
-  handleHandleMousemove(event: Event) {
-    //to do
+  addCreateHandleHandler(handler: (value: number, type: HandleType) => void) {
+    this.handleHandleMousemove = (position, type) => {
+      const { min, max } = this.options;
+      const converted = this.convertViewHandleToModel(position, max - min);
+
+      handler(converted, type);
+    }
+    
+    this.handle.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
+  }
+
+  convertViewHandleToModel(position: number, range: number): number {
+    const ratio = range / this.$justSlider.width();
+    const realPosition = position - this.$justSlider.position().left;
+    const converted = realPosition * ratio;
+
+    return converted;
+  }
+
+  updateHandle(options: Options) {
+    this.handle.update(options);
   }
 
 }
