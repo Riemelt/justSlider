@@ -17,11 +17,6 @@ $className: 'just-slider';
     width: 100%;
     right: 0;
     top: 0;
-    display: none;
-
-    &_active {
-      display: initial;
-    }
   }
 
   &__handle {

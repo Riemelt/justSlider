@@ -7,7 +7,7 @@ class Presenter {
   private model: Model;
   private eventManager: EventManager;
 
-  getView(): View {
+  public getView(): View {
     return this.view;
   }
 
@@ -25,7 +25,6 @@ class Presenter {
     this.view.init(data);
     this.view.initHtml();
     this.view.initComponents();
-    this.view.startComponents();
     
     this.view.addCreateHandleHandler((value: number, handle: HandleType) => {
       this.model.setHandle(value, handle);
@@ -35,17 +34,16 @@ class Presenter {
     this.addEventListeners();
   }
 
-  registerEvents() {
+  private registerEvents() {
     this.eventManager.registerEvent("HandleMove");
   }
 
-  addEventListeners() {
+  private addEventListeners() {
     this.eventManager.addEventListener("HandleMove", () => {
       const options = this.model.getOptions();
       this.view.updateHandle(options);
     });
   }
-
 }
 
 export default Presenter;

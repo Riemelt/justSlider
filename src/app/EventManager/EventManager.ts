@@ -8,16 +8,16 @@ class EventManager {
     this.eventsSubjects = {};
   }
 
-  registerEvent(eventName: SliderEvent) {
+  public registerEvent(eventName: SliderEvent) {
     const eventSubject = new Subject(eventName);
     this.eventsSubjects[eventName] = eventSubject;
   }
 
-  dispatchEvent(eventName: SliderEvent) {
+  public dispatchEvent(eventName: SliderEvent) {
     this.eventsSubjects[eventName].observers.forEach(observer => observer());
   }
 
-  addEventListener(eventName: SliderEvent, observer: () => void) {
+  public addEventListener(eventName: SliderEvent, observer: () => void) {
     this.eventsSubjects[eventName].subscribe(observer);
   }
 }

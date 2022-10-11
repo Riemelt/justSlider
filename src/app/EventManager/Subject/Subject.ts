@@ -8,11 +8,11 @@ class Subject {
     this.name = event;
   }
 
-  subscribe(observer: () => void) {
+  public subscribe(observer: () => void) {
     this.observers.push(observer);
   }
 
-  unsubscribe(observer: () => void) {
+  public unsubscribe(observer: () => void) {
     this.observers.filter(obs => obs !== observer);
   }
 }

@@ -12,22 +12,18 @@ class View {
     console.log("View created");
   }
 
-  getHtml() {
+  public getHtml() {
     return this.$html;
   }
 
-  init(options: Options) {
+  public init(options: Options) {
     this.options = options;
   }
 
-  initHtml() {
+  public initHtml() {
     this.$html = $(`
       <div class="just-slider">
         <div class="just-slider__main">
-          <div class="just-slider__point">
-            <div class="just-slider__handle">
-            </div>
-          </div>
         </div>
       </div>
     `);
@@ -35,16 +31,24 @@ class View {
     this.$justSlider = this.$html.find(".just-slider__main");
   }
 
-  initComponents() {
-    const $handleElement = this.$html.find(".just-slider__point");
-    this.handle = new Handle($handleElement, "to");
+  public initComponents() {
+    this.initHandle();
   }
 
-  startComponents() {
-    this.handle.start();
+  public initHandle() {
+    this.handle = new Handle(this.$justSlider, "to");
   }
 
-  addCreateHandleHandler(handler: (value: number, type: HandleType) => void) {
+  public updateHandle(options: Options) {
+    this.handle?.update(options);
+  }
+
+  public deleteHandle() {
+    this.handle?.delete();
+    delete this.handle;
+  }
+
+  public addCreateHandleHandler(handler: (value: number, type: HandleType) => void) {
     this.handleHandleMousemove = (position, type) => {
       const { min, max } = this.options;
       const converted = this.convertViewHandleToModel(position, max - min);
@@ -55,18 +59,13 @@ class View {
     this.handle.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
   }
 
-  convertViewHandleToModel(position: number, range: number): number {
+  private convertViewHandleToModel(position: number, range: number): number {
     const ratio = range / this.$justSlider.width();
     const realPosition = position - this.$justSlider.position().left;
     const converted = realPosition * ratio;
 
     return converted;
   }
-
-  updateHandle(options: Options) {
-    this.handle.update(options);
-  }
-
 }
 
 export default View;

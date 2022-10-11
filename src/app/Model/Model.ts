@@ -8,20 +8,20 @@ class Model {
     console.log("Model created");
   }
 
-  init(options: Options) {
+  public init(options: Options) {
     this.options = options;
     return options;
   }
 
-  setEventManager(eventManager: EventManager) {
+  public setEventManager(eventManager: EventManager) {
     this.eventManager = eventManager;
   }
 
-  getOptions(): Options {
+  public getOptions(): Options {
     return this.options;
   }
 
-  setHandle(value: number, handle: HandleType) {
+  public setHandle(value: number, handle: HandleType) {
     const { step } = this.options;
     const previousValue = this.options[handle];
 
@@ -37,13 +37,13 @@ class Model {
     this.eventManager.dispatchEvent("HandleMove");
   }
 
-  adjustHandle(value: number): number {
+  private adjustHandle(value: number): number {
     const { step } = this.options;
     const adjustedValue = Math.floor(value / step);
     return adjustedValue;
   }
 
-  validateHandle(value: number, handle: HandleType): number {
+  private validateHandle(value: number, handle: HandleType): number {
     const { to, max, min, from } = this.options;
 
     if (value > max) {
@@ -62,7 +62,6 @@ class Model {
 
     return value;
   }
-
 }
 
 export default Model;
