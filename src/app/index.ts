@@ -11,8 +11,8 @@ import View      from "./View/View";
       const view = new View();
       const presenter = new Presenter(view, model, options);
 
-      const $html = presenter.getView().getHtml();
-      this.append($html);
+      const $slider = presenter.$getSlider();
+      this.append($slider);
     }
   });
 }(jQuery));

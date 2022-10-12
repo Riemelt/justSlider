@@ -7,8 +7,8 @@ class Presenter {
   private model: Model;
   private eventManager: EventManager;
 
-  public getView(): View {
-    return this.view;
+  public $getSlider(): JQuery<HTMLElement> {
+    return this.view.getHtml();
   }
 
   constructor(view: View, model: Model, options: Options) {
