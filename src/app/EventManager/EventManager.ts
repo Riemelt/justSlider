@@ -14,7 +14,7 @@ class EventManager {
   }
 
   public dispatchEvent(eventName: SliderEvent) {
-    this.eventsSubjects[eventName].observers.forEach(observer => observer());
+    this.eventsSubjects[eventName]?.observers.forEach(observer => observer());
   }
 
   public addEventListener(eventName: SliderEvent, observer: () => void) {

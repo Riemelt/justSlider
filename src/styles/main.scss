@@ -20,6 +20,7 @@ $className: 'just-slider';
   }
 
   &__handle {
+    cursor: pointer;
     box-sizing: border-box;
     position: absolute;
     height: $handleHeight;

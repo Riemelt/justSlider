@@ -22,11 +22,8 @@ class Model {
 
     [this.options.min, this.options.max] = this.validateMinMax(min, max);
     this.options.step                    = this.validateStep(step, this.options.max - this.options.min);
-
-    this.options.from                    = this.validateHandle(from, "from");
-    this.options.from                    = this.adjustHandle(this.options.from, step);
-    this.options.to                      = this.validateHandle(to, "to");
-    this.options.to                      = this.adjustHandle(this.options.to, step);
+    this.setHandle(from, "from");
+    this.setHandle(to, "to");
   }
 
   public setEventManager(eventManager: EventManager) {
@@ -44,7 +41,8 @@ class Model {
     const validatedValue = this.validateHandle(value, type);
     this.options[type] = value !== validatedValue ? validatedValue : newValue;
 
-    this.eventManager.dispatchEvent("HandleMove");
+    const event = type === "from" ? "HandleFromMove" : "HandleToMove";
+    this.eventManager.dispatchEvent(event);
   }
 
   private adjustHandle(value: number, step: number): number {
@@ -54,6 +52,13 @@ class Model {
   private validateHandle(value: number, type: HandleType): number {
     const { to, max, min, from, isRange } = this.options;
 
+    value = this.validateHandleOnMinMax(value, min, max);
+    value = this.validateHandleOnCollision(value, type, from, to, isRange);
+
+    return value;
+  }
+
+  private validateHandleOnMinMax(value: number, min: number, max: number): number {
     if (value > max) {
       value = max;
     }
@@ -62,6 +67,10 @@ class Model {
       value = min;
     }
 
+    return value;
+  }
+
+  private validateHandleOnCollision(value: number, type: HandleType, from: number, to: number, isRange: boolean): number {
     if (!isRange) {
       return value;
     }

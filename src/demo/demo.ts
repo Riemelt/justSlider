@@ -3,10 +3,10 @@ import "./styles/demo.scss";
 
 $(".js-demo__slider").justSlider({
   from: 20,
-  to: 40,
+  to: 45,
   min: 0,
   max: 104,
-  step: 10, 
-  isRange: false,
+  step: 1, 
+  isRange: true,
   orientation: "horizontal",
 });

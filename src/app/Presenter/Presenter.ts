@@ -28,7 +28,7 @@ class Presenter {
     this.view.initHtml();
     this.view.initComponents();
     
-    this.view.addCreateHandleHandler((value: number, handle: HandleType) => {
+    this.view.addCreateHandleHandlers((value: number, handle: HandleType) => {
       this.model.setHandle(value, handle);
     })
 
@@ -37,13 +37,19 @@ class Presenter {
   }
 
   private registerEvents() {
-    this.eventManager.registerEvent("HandleMove");
+    this.eventManager.registerEvent("HandleFromMove");
+    this.eventManager.registerEvent("HandleToMove");
   }
 
   private addEventListeners() {
-    this.eventManager.addEventListener("HandleMove", () => {
+    this.eventManager.addEventListener("HandleFromMove", () => {
       const options = this.model.getOptions();
-      this.view.updateHandle(options);
+      this.view.updateHandle(options, "from");
+    });
+
+    this.eventManager.addEventListener("HandleToMove", () => {
+      const options = this.model.getOptions();
+      this.view.updateHandle(options, "to");
     });
   }
 }

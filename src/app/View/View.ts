@@ -6,7 +6,10 @@ class View {
   private $justSlider: JQuery<HTMLElement>;
   private handleHandleMousemove: (position: number, type: HandleType) => void;
 
-  private handle: Handle;
+  private handles: {
+    from: Handle,
+    to: Handle,
+  };
 
   constructor() {
     console.log("View created");
@@ -18,6 +21,7 @@ class View {
 
   public init(options: Options) {
     this.options = options;
+    this.handles = { from: undefined, to: undefined };
   }
 
   public initHtml() {
@@ -32,24 +36,34 @@ class View {
   }
 
   public initComponents() {
-    this.initHandle();
+    this.initHandleFrom();
+    this.initHandleTo();
   }
 
-  public initHandle() {
-    this.handle = new Handle(this.$justSlider, "to");
-    this.handle.update(this.options);
+  public initHandleFrom() {
+    this.handles.from = new Handle(this.$justSlider, "from");
+    this.handles.from.update(this.options);
   }
 
-  public updateHandle(options: Options) {
-    this.handle?.update(options);
+  public initHandleTo() {
+    const { isRange } = this.options;
+
+    if (isRange) {
+      this.handles.to = new Handle(this.$justSlider, "to");
+      this.handles.to.update(this.options);
+    }
   }
 
-  public deleteHandle() {
-    this.handle?.delete();
-    delete this.handle;
+  public updateHandle(options: Options, type: HandleType) {
+    this.handles[type].update(options);
   }
 
-  public addCreateHandleHandler(handler: (value: number, type: HandleType) => void) {
+  public deleteHandle(type: HandleType) {
+    this.handles[type]?.delete();
+    delete this.handles[type];
+  }
+
+  public addCreateHandleHandlers(handler: (value: number, type: HandleType) => void) {
     this.handleHandleMousemove = (position, type) => {
       const { min, max } = this.options;
       const converted = this.convertViewHandleToModel(position, max - min);
@@ -57,7 +71,8 @@ class View {
       handler(converted, type);
     }
     
-    this.handle.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
+    this.handles.from?.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
+    this.handles.to?.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
   }
 
   private convertViewHandleToModel(position: number, range: number): number {

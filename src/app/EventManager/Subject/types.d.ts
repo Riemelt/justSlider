@@ -1,1 +1,1 @@
-type SliderEvent = "HandleMove";
+type SliderEvent = "HandleFromMove" | "HandleToMove";
