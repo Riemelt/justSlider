@@ -2,8 +2,11 @@ import "../app";
 import "./styles/demo.scss";
 
 $(".js-demo__slider").justSlider({
-  to: 50,
+  from: 20,
+  to: 40,
   min: 0,
-  max: 100,
+  max: 104,
   step: 10, 
+  isRange: false,
+  orientation: "horizontal",
 });

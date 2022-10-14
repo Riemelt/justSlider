@@ -21,7 +21,9 @@ class Presenter {
 
     this.model.setEventManager(this.eventManager);
 
-    const data = this.model.init(options);
+    this.model.init(options);
+    const data = this.model.getOptions();
+
     this.view.init(data);
     this.view.initHtml();
     this.view.initComponents();

@@ -8,9 +8,25 @@ class Model {
     console.log("Model created");
   }
 
-  public init(options: Options) {
-    this.options = options;
-    return options;
+  public init({
+    from        = 0,
+    to          = 100,
+    isRange     = false,
+    min         = 0,
+    max         = 100,
+    step        = 10,
+    orientation = "horizontal",
+  }: Options) {
+
+    this.options = { from, to, isRange, min, max, step, orientation };
+
+    [this.options.min, this.options.max] = this.validateMinMax(min, max);
+    this.options.step                    = this.validateStep(step, this.options.max - this.options.min);
+
+    this.options.from                    = this.validateHandle(from, "from");
+    this.options.from                    = this.adjustHandle(this.options.from, step);
+    this.options.to                      = this.validateHandle(to, "to");
+    this.options.to                      = this.adjustHandle(this.options.to, step);
   }
 
   public setEventManager(eventManager: EventManager) {
@@ -21,30 +37,22 @@ class Model {
     return this.options;
   }
 
-  public setHandle(value: number, handle: HandleType) {
+  public setHandle(value: number, type: HandleType) {
     const { step } = this.options;
-    const previousValue = this.options[handle];
 
-    const validatedValue = this.validateHandle(value, handle);
-
-    const sign = validatedValue > previousValue ? 1 : -1;
-    const difference = Math.abs(validatedValue - previousValue);
-    const stepsMade = this.adjustHandle(difference);
-
-    const move = stepsMade * step * sign;
-    this.options[handle] += move;
+    const newValue = this.adjustHandle(value, step);
+    const validatedValue = this.validateHandle(value, type);
+    this.options[type] = value !== validatedValue ? validatedValue : newValue;
 
     this.eventManager.dispatchEvent("HandleMove");
   }
 
-  private adjustHandle(value: number): number {
-    const { step } = this.options;
-    const adjustedValue = Math.floor(value / step);
-    return adjustedValue;
+  private adjustHandle(value: number, step: number): number {
+    return Math.round(value / step) * step;
   }
 
-  private validateHandle(value: number, handle: HandleType): number {
-    const { to, max, min, from } = this.options;
+  private validateHandle(value: number, type: HandleType): number {
+    const { to, max, min, from, isRange } = this.options;
 
     if (value > max) {
       value = max;
@@ -54,13 +62,25 @@ class Model {
       value = min;
     }
 
-    if (handle === "from") {
+    if (!isRange) {
+      return value;
+    }
+
+    if (type === "from") {
       value = value > to ? to : value;
     } else {
       value = value < from ? from : value;
     }
 
     return value;
+  }
+
+  private validateMinMax(min: number, max: number): [number, number] {
+    return [min, max] = min > max ? [max, min] : [min, max];
+  }
+
+  private validateStep(step: number, length: number) {
+    return step > length ? length : step;
   }
 }
 

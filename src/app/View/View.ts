@@ -37,6 +37,7 @@ class View {
 
   public initHandle() {
     this.handle = new Handle(this.$justSlider, "to");
+    this.handle.update(this.options);
   }
 
   public updateHandle(options: Options) {
