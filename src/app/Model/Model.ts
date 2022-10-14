@@ -16,9 +16,10 @@ class Model {
     max         = 100,
     step        = 10,
     orientation = "horizontal",
+    direction   = "forward",
   }: Options) {
 
-    this.options = { from, to, isRange, min, max, step, orientation };
+    this.options = { from, to, isRange, min, max, step, orientation, direction };
 
     [this.options.min, this.options.max] = this.validateMinMax(min, max);
     this.options.step                    = this.validateStep(step, this.options.max - this.options.min);

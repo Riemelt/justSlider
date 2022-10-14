@@ -50,8 +50,8 @@ class View {
 
   public addCreateHandleHandlers(handler: (value: number, type: HandleType) => void) {
     this.handleHandleMousemove = (position, type) => {
-      const { min, max, orientation } = this.options;
-      const converted = this.convertViewHandleToModel(position, min, max, orientation);
+      const { min, max, orientation, direction } = this.options;
+      const converted = this.convertViewHandleToModel(position, min, max, orientation, direction);
 
       handler(converted, type);
     }
@@ -85,7 +85,7 @@ class View {
     }
   }
 
-  private convertViewHandleToModel(position: number, min: number, max: number, orientation: Orientation): number {
+  private convertViewHandleToModel(position: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
     const sliderLength = orientation === "horizontal" ? this.$justSlider.width() : this.$justSlider.height();
     const shift = orientation === "horizontal" ? this.$justSlider.position().left : this.$justSlider.position().top;
 
@@ -93,7 +93,11 @@ class View {
     const realPosition = position - shift;
     const converted = realPosition * ratio;
 
-    return orientation === "horizontal" ? converted : max - converted;
+    if ((direction === "forward" && orientation === "horizontal") || (direction === "backward" && orientation === "vertical")) {
+      return converted;
+    }
+
+    return min + max - converted;
   }
 }
 

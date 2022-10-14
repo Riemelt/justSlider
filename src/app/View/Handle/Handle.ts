@@ -5,16 +5,21 @@ class Handle {
   private type: HandleType;
   private options: Options;
 
-  static translate(value: number, range: number, orientation: Orientation): string {
+  static translate(value: number, range: number, orientation: Orientation, direction: Direction): string {
     const axis = orientation === "horizontal" ? "X" : "Y";
-    const valueToTranslate = Handle.getTranslateValue(value, range, orientation);
+    const valueToTranslate = Handle.getTranslateValue(value, range, orientation, direction);
 
     return `translate${axis}(${valueToTranslate}%)`;
   }
 
-  static getTranslateValue(value: number, range: number, orientation: Orientation): number {
+  static getTranslateValue(value: number, range: number, orientation: Orientation, direction: Direction): number {
     const sign = orientation === "horizontal" ? (-1) : 1;
-    return (100 - ((value * 100) / range)) * sign;
+
+    if (direction === "forward") {
+      return (100 - ((value * 100) / range)) * sign;
+    }
+
+    return ((value * 100) / range) * sign;
   }
 
   constructor($parent: JQuery<HTMLElement>, type: HandleType) {
@@ -32,8 +37,8 @@ class Handle {
   public update(options: Options) {
     this.options = options;
     const value = options[this.type];
-    const { min, max, orientation } = options;
-    const translate = Handle.translate(value, max - min, orientation);
+    const { min, max, orientation, direction } = options;
+    const translate = Handle.translate(value, max - min, orientation, direction);
     this.$point.css("transform", translate);
   }
 

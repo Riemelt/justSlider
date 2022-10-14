@@ -1,4 +1,5 @@
 type Orientation = "vertical" | "horizontal";
+type Direction   = "forward" | "backward";
 
 interface Options {
   from?:        number;
@@ -8,4 +9,5 @@ interface Options {
   max?:         number;
   isRange?:     boolean;
   orientation?: Orientation;
+  direction?:   Direction;
 }
