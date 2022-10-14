@@ -3,9 +3,18 @@ class Handle {
   private $handle: JQuery<HTMLElement>;
   private handleHandleMousemove: (position: number, type: HandleType) => void;
   private type: HandleType;
+  private options: Options;
 
-  static translate(value: number, range: number): number {
-    return (100 - ((value * 100) / range)) * (-1);
+  static translate(value: number, range: number, orientation: Orientation): string {
+    const axis = orientation === "horizontal" ? "X" : "Y";
+    const valueToTranslate = Handle.getTranslateValue(value, range, orientation);
+
+    return `translate${axis}(${valueToTranslate}%)`;
+  }
+
+  static getTranslateValue(value: number, range: number, orientation: Orientation): number {
+    const sign = orientation === "horizontal" ? (-1) : 1;
+    return (100 - ((value * 100) / range)) * sign;
   }
 
   constructor($parent: JQuery<HTMLElement>, type: HandleType) {
@@ -21,10 +30,11 @@ class Handle {
   }
 
   public update(options: Options) {
+    this.options = options;
     const value = options[this.type];
-    const { min, max } = options;
-    const translate = Handle.translate(value, max - min);
-    this.$point.css("transform", `translate(${translate}%)`);
+    const { min, max, orientation } = options;
+    const translate = Handle.translate(value, max - min, orientation);
+    this.$point.css("transform", translate);
   }
 
   private init($parent: JQuery<HTMLElement>, type: HandleType) {
@@ -58,7 +68,8 @@ class Handle {
   }
 
   private handleDocumentMousemove(event: MouseEvent) {
-    this.handleHandleMousemove?.(event.clientX, this.type);
+    const position = this.options.orientation === "horizontal" ? event.pageX : event.pageY;
+    this.handleHandleMousemove?.(position, this.type);
   }
 
   private handleDocumentMouseup() {
