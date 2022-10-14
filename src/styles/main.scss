@@ -31,4 +31,35 @@ $className: 'just-slider';
     border: .125rem solid white;
     border-radius: 50%;
   }
+
+  &_vertical {
+    height: inherit;
+    max-height: inherit;
+    min-height: inherit;
+    min-width: $sliderSize;
+    max-width: $sliderSize;
+    box-sizing: initial;
+    margin: 0 auto;
+
+    .#{$className} {
+      &__main {
+        min-height: inherit;
+        max-height: inherit;
+        height: inherit;
+      }
+
+      &__point {
+        width: initial;
+        height: 100%;
+        right: initial;
+        left: 0;
+      }
+
+      &__handle {
+        right: initial;
+        left: - calc(($handleHeight / 2) - ($sliderSize / 2));
+        top: - calc($handleHeight / 2);
+      }
+    }
+  }
 }

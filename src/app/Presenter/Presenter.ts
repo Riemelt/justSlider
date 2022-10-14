@@ -25,7 +25,6 @@ class Presenter {
     const data = this.model.getOptions();
 
     this.view.init(data);
-    this.view.initHtml();
     this.view.initComponents();
     
     this.view.addCreateHandleHandlers((value: number, handle: HandleType) => {
