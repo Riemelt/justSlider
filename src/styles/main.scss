@@ -17,6 +17,15 @@ $className: 'just-slider';
     width: 100%;
     right: 0;
     top: 0;
+    z-index: 4;
+
+    &_focused {
+      z-index: 5;
+    }
+
+    &_unfocused {
+      z-index: 3;
+    }
   }
 
   &__handle {

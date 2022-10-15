@@ -38,7 +38,29 @@ class Handle {
     this.options = options;
     const value = options[this.type];
     const { min, max, orientation, direction } = options;
-    const translate = Handle.translate(value, max - min, orientation, direction);
+
+    this.updatePosition(value, max - min, orientation, direction);
+    this.updateFocus(value, min, max, this.type);
+  }
+
+  private updateFocus(value: number, min: number, max: number, type: HandleType): void {
+    if (type !== "to") {
+      return;
+    }
+
+    const medium = ((max - min) / 2) + min;
+
+    if (value < medium) {
+      this.$point.addClass("just-slider__point_focused");
+      this.$point.removeClass("just-slider__point_unfocused");
+    } else {
+      this.$point.removeClass("just-slider__point_focused");
+      this.$point.addClass("just-slider__point_unfocused");
+    }
+  }
+
+  private updatePosition(value: number, range: number, orientation: Orientation, direction: Direction) {
+    const translate = Handle.translate(value, range, orientation, direction);
     this.$point.css("transform", translate);
   }
 
