@@ -2,11 +2,12 @@ $className: 'just-slider';
 
 .#{$className} {
   border: $sliderBorder;
-  border-radius: .3125rem;
+  border-radius: $sliderBorderRadius;
   width: 100%;
   box-sizing: border-box;
 
   &__main {
+    border-radius: inherit;
     min-height: $sliderSize;
     max-height: $sliderSize;
     position: relative;
@@ -39,6 +40,17 @@ $className: 'just-slider';
     background-color: rgb(49, 90, 153);
     border: .125rem solid white;
     border-radius: 50%;
+  }
+
+  &__progress-bar {
+    position: absolute;
+    border-radius: inherit;
+    right: -$sliderBorderSize;
+    top: -$sliderBorderSize;
+    width: calc(100% + ($sliderBorderSize * 2));
+    height: calc(100% + ($sliderBorderSize * 2));
+    background-color: rgb(147, 255, 147);
+    z-index: -1;
   }
 
   &_vertical {

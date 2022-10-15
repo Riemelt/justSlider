@@ -1,3 +1,5 @@
+import { getPercentage } from "../../utilities";
+
 class Handle {
   private $point: JQuery<HTMLElement>;
   private $handle: JQuery<HTMLElement>;
@@ -14,17 +16,13 @@ class Handle {
 
   static getTranslateValue(value: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
     const sign = orientation === "horizontal" ? (-1) : 1;
-    const percentage = Handle.getPercentage(value, min, max);
+    const percentage = getPercentage(value, min, max);
 
     if (direction === "forward") {
       return (100 - percentage) * sign;
     }
 
     return percentage * sign;
-  }
-
-  static getPercentage(value: number, min: number, max: number): number {
-    return Math.abs((((value - min) / (max - min)) * 100))
   }
 
   constructor($parent: JQuery<HTMLElement>, type: HandleType) {

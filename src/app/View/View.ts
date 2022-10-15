@@ -1,4 +1,5 @@
 import Handle from "./Handle/Handle";
+import ProgressBar from "./ProgressBar/ProgressBar";
 
 class View {
   private options: Options;
@@ -8,8 +9,10 @@ class View {
 
   private handles: {
     from: Handle,
-    to: Handle,
+    to:   Handle,
   };
+
+  private progressBar: ProgressBar;
 
   constructor() {
     console.log("View created");
@@ -37,6 +40,7 @@ class View {
   public initComponents() {
     this.initHandleFrom();
     this.initHandleTo();
+    this.initProgressBar();
   }
 
   public updateHandle(options: Options, type: HandleType) {
@@ -69,6 +73,11 @@ class View {
     `);
 
     this.$justSlider = this.$html.find(".just-slider__main");
+  }
+
+  private initProgressBar() {
+    this.progressBar = new ProgressBar(this.$justSlider);
+    this.progressBar.update(this.options);
   }
 
   private initHandleFrom() {
