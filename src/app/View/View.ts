@@ -91,7 +91,7 @@ class View {
 
     const ratio = (max - min) / sliderLength;
     const realPosition = position - shift;
-    const converted = realPosition * ratio;
+    const converted = realPosition * ratio + min;
 
     if ((direction === "forward" && orientation === "horizontal") || (direction === "backward" && orientation === "vertical")) {
       return converted;

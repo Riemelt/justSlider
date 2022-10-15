@@ -5,21 +5,26 @@ class Handle {
   private type: HandleType;
   private options: Options;
 
-  static translate(value: number, range: number, orientation: Orientation, direction: Direction): string {
+  static translate(value: number, min: number, max: number, orientation: Orientation, direction: Direction): string {
     const axis = orientation === "horizontal" ? "X" : "Y";
-    const valueToTranslate = Handle.getTranslateValue(value, range, orientation, direction);
+    const valueToTranslate = Handle.getTranslateValue(value, min, max, orientation, direction);
 
     return `translate${axis}(${valueToTranslate}%)`;
   }
 
-  static getTranslateValue(value: number, range: number, orientation: Orientation, direction: Direction): number {
+  static getTranslateValue(value: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
     const sign = orientation === "horizontal" ? (-1) : 1;
+    const percentage = Handle.getPercentage(value, min, max);
 
     if (direction === "forward") {
-      return (100 - ((value * 100) / range)) * sign;
+      return (100 - percentage) * sign;
     }
 
-    return ((value * 100) / range) * sign;
+    return percentage * sign;
+  }
+
+  static getPercentage(value: number, min: number, max: number): number {
+    return Math.abs((((value - min) / (max - min)) * 100))
   }
 
   constructor($parent: JQuery<HTMLElement>, type: HandleType) {
@@ -39,7 +44,7 @@ class Handle {
     const value = options[this.type];
     const { min, max, orientation, direction } = options;
 
-    this.updatePosition(value, max - min, orientation, direction);
+    this.updatePosition(value, min, max, orientation, direction);
     this.updateFocus(value, min, max, this.type);
   }
 
@@ -59,8 +64,8 @@ class Handle {
     }
   }
 
-  private updatePosition(value: number, range: number, orientation: Orientation, direction: Direction) {
-    const translate = Handle.translate(value, range, orientation, direction);
+  private updatePosition(value: number, min: number, max: number, orientation: Orientation, direction: Direction) {
+    const translate = Handle.translate(value, min, max, orientation, direction);
     this.$point.css("transform", translate);
   }
 
