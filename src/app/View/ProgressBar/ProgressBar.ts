@@ -1,8 +1,7 @@
-import { translate } from "../../utilities";
+import { transform } from "../../utilities";
 
 class ProgressBar {
-  private $bar: JQuery<HTMLElement>;
-  private $point: JQuery<HTMLElement>;
+  private $component: JQuery<HTMLElement>;
   private options: Options;
 
   constructor($parent: JQuery<HTMLElement>) {
@@ -15,46 +14,42 @@ class ProgressBar {
 
     const start = isRange ? from : min;
     const end   = isRange ? to : from;
+    const shift = direction === "forward" ? end : start;
 
     const sliderLength = max - min;
     const barLength    = end - start;
     const scale        = barLength / sliderLength;
-    
-    this.updateScale(scale, orientation);
 
-    const shift = direction === "forward" ? end : start;
-    this.updatePosition(shift, min, max, orientation, direction);
+    this.updatePosition({
+      min,
+      max,
+      orientation,
+      direction,
+      shift,
+      scale,
+    });
   }
 
   public delete() {
-    this.$point.remove();
+    this.$component.remove();
   }
 
-  private updatePosition(shift: number, min: number, max: number, orientation: Orientation, direction: Direction) {
-    const translateStyle = translate(shift, min, max, orientation, direction);
-    this.$point.css("transform", `${translateStyle}`);
-  }
-
-  private updateScale(scale: number, orientation: Orientation) {
-    const axis = orientation === "horizontal" ? "X" : "Y";
-    this.$bar.css("transform", `scale${axis}(${scale})`);
+  private updatePosition(transformOptions: TransformOptions) {
+    const transformStyle = transform(transformOptions)
+    this.$component.css("transform", transformStyle);
   }
 
   private init($parent: JQuery<HTMLElement>) {
     this.initHtml();
 
-    $parent.append(this.$point);
+    $parent.append(this.$component);
   }
 
   private initHtml() {
-    this.$point = $(`
-      <div class="just-slider__point just-slider__point_type-bar">
-        <div class="just-slider__progress-bar">
-        </div>
+    this.$component = $(`
+      <div class="just-slider__progress-bar">
       </div>
     `);
-
-    this.$bar = this.$point.find(".just-slider__progress-bar");
   }
 }
 

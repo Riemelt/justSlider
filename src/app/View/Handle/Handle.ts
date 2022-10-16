@@ -1,8 +1,9 @@
-import { translate } from "../../utilities";
+import { transform } from "../../utilities";
 
 class Handle {
   private $point: JQuery<HTMLElement>;
   private $handle: JQuery<HTMLElement>;
+  private $parent: JQuery<HTMLElement>;
   private handleHandleMousemove: (position: number, type: HandleType) => void;
   private type: HandleType;
   private options: Options;
@@ -24,7 +25,14 @@ class Handle {
     const value = options[this.type];
     const { min, max, orientation, direction } = options;
 
-    this.updatePosition(value, min, max, orientation, direction);
+    this.updatePosition({
+      min,
+      max,
+      orientation,
+      direction,
+      shift: value,
+    });
+
     this.updateFocus(value, min, max, this.type);
   }
 
@@ -44,13 +52,14 @@ class Handle {
     }
   }
 
-  private updatePosition(shift: number, min: number, max: number, orientation: Orientation, direction: Direction) {
-    const translateStyle = translate(shift, min, max, orientation, direction);
-    this.$point.css("transform", translateStyle);
+  private updatePosition(transformOptions: TransformOptions) {
+    const transformStyle = transform(transformOptions);
+    this.$point.css("transform", transformStyle);
   }
 
   private init($parent: JQuery<HTMLElement>, type: HandleType) {
     this.type = type;
+    this.$parent = $parent;
 
     this.initHtml();
     this.$handle = this.$point.find(".just-slider__handle");
@@ -81,12 +90,29 @@ class Handle {
 
   private handleDocumentMousemove(event: MouseEvent) {
     const position = this.options.orientation === "horizontal" ? event.pageX : event.pageY;
-    this.handleHandleMousemove?.(position, this.type);
+    const { min, max, orientation, direction } = this.options;
+    const convertedPosition = this.convertViewHandleToModel(position, min, max, orientation, direction);
+    this.handleHandleMousemove?.(convertedPosition, this.type);
   }
 
   private handleDocumentMouseup() {
     $(document).off("mouseup.handle");
     $(document).off("mousemove.handle");
+  }
+
+  private convertViewHandleToModel(position: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
+    const sliderLength = orientation === "horizontal" ? this.$parent.width() : this.$parent.height();
+    const shift        = orientation === "horizontal" ? this.$parent.position().left : this.$parent.position().top;
+
+    const ratio        = (max - min) / sliderLength;
+    const realPosition = position - shift;
+    const converted    = realPosition * ratio + min;
+
+    if ((direction === "forward" && orientation === "horizontal") || (direction === "backward" && orientation === "vertical")) {
+      return converted;
+    }
+
+    return min + max - converted;
   }
 }
 

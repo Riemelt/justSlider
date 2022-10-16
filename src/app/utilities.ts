@@ -1,12 +1,28 @@
-function translate(shift: number, min: number, max: number, orientation: Orientation, direction: Direction): string {
-  const axis = orientation === "horizontal" ? "X" : "Y";
-  const valueToTranslate = getTranslateValue(shift, min, max, orientation, direction);
+function transform({shift, min, max, orientation, direction, scale}: TransformOptions): string {
+  const axis = getAxis(orientation);
 
-  return `translate${axis}(${valueToTranslate}%)`;
+  const translateValue = getTranslateValue(shift, min, max, orientation, direction);
+  const translateStyle = getTranslateStyle(translateValue, axis);
+
+  const scaleStyle = scale !== undefined ? getScaleStyle(scale, axis) : "";
+
+  return `${translateStyle} ${scaleStyle}`;
+}
+
+function getAxis(orientation: Orientation): string {
+  return orientation === "horizontal" ? "X" : "Y";
 }
 
 function getPercentage(value: number, min: number, max: number): number {
   return Math.abs((((value - min) / (max - min)) * 100))
+}
+
+function getScaleStyle(scale: number, axis: string) {
+  return `scale${axis}(${scale})`;
+}
+
+function getTranslateStyle(translateValue: number, axis: string): string {
+  return `translate${axis}(${translateValue}%)`;
 }
 
 function getTranslateValue(shift: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
@@ -21,6 +37,5 @@ function getTranslateValue(shift: number, min: number, max: number, orientation:
 }
 
 export {
-  translate,
-  getPercentage,
+  transform,
 };

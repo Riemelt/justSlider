@@ -7,7 +7,7 @@ $(".js-demo__slider").justSlider({
   min: -100,
   max: 100,
   step: 1, 
-  isRange: false,
+  isRange: true,
   orientation: "horizontal",
   direction: "forward",
 });
