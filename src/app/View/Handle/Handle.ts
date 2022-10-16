@@ -1,15 +1,19 @@
-import { transform } from "../../utilities";
+import {
+  transform,
+  convertViewPositionToModel,
+} from "../utilities";
 
 class Handle {
-  private $point: JQuery<HTMLElement>;
+  private $point:  JQuery<HTMLElement>;
   private $handle: JQuery<HTMLElement>;
   private $parent: JQuery<HTMLElement>;
+  private $slider: JQuery<HTMLElement>;
   private handleHandleMousemove: (position: number, type: HandleType) => void;
   private type: HandleType;
   private options: Options;
 
-  constructor($parent: JQuery<HTMLElement>, type: HandleType) {
-    this.init($parent, type);
+  constructor(handleOptions: HandleOptions) {
+    this.init(handleOptions);
   }
 
   public setHandleMousemoveHandler(handler: (position: number, type: HandleType) => void) {
@@ -57,9 +61,10 @@ class Handle {
     this.$point.css("transform", transformStyle);
   }
 
-  private init($parent: JQuery<HTMLElement>, type: HandleType) {
-    this.type = type;
+  private init({$parent, $slider, type}: HandleOptions) {
+    this.type    = type;
     this.$parent = $parent;
+    this.$slider = $slider;
 
     this.initHtml();
     this.$handle = this.$point.find(".just-slider__handle");
@@ -83,6 +88,7 @@ class Handle {
 
   private handleMousedown(event: Event) {
     event.preventDefault();
+    this.$slider.removeClass("just-slider_animated");
 
     $(document).on("mousemove.handle", this.handleDocumentMousemove.bind(this));
     $(document).on("mouseup.handle", this.handleDocumentMouseup.bind(this));
@@ -91,28 +97,23 @@ class Handle {
   private handleDocumentMousemove(event: MouseEvent) {
     const position = this.options.orientation === "horizontal" ? event.pageX : event.pageY;
     const { min, max, orientation, direction } = this.options;
-    const convertedPosition = this.convertViewHandleToModel(position, min, max, orientation, direction);
+    const convertedPosition = convertViewPositionToModel({
+      position,
+      min,
+      max,
+      orientation,
+      direction,
+      $context: this.$parent,
+    });
+
     this.handleHandleMousemove?.(convertedPosition, this.type);
   }
 
   private handleDocumentMouseup() {
     $(document).off("mouseup.handle");
     $(document).off("mousemove.handle");
-  }
 
-  private convertViewHandleToModel(position: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
-    const sliderLength = orientation === "horizontal" ? this.$parent.width() : this.$parent.height();
-    const shift        = orientation === "horizontal" ? this.$parent.position().left : this.$parent.position().top;
-
-    const ratio        = (max - min) / sliderLength;
-    const realPosition = position - shift;
-    const converted    = realPosition * ratio + min;
-
-    if ((direction === "forward" && orientation === "horizontal") || (direction === "backward" && orientation === "vertical")) {
-      return converted;
-    }
-
-    return min + max - converted;
+    this.$slider.addClass("just-slider_animated");
   }
 }
 

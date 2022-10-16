@@ -11,12 +11,3 @@ interface Options {
   orientation?: Orientation;
   direction?:   Direction;
 }
-
-interface TransformOptions {
-  shift:       number;
-  min:         number;
-  max:         number;
-  orientation: Orientation;
-  direction:   Direction;
-  scale?:      number;
-}

@@ -29,7 +29,11 @@ class Presenter {
     
     this.view.addCreateHandleHandlers((value: number, handle: HandleType) => {
       this.model.setHandle(value, handle);
-    })
+    });
+
+    this.view.addCreateSliderClickHandler((value: number, handle: HandleType) => {
+      this.model.setHandle(value, handle);
+    });
 
     this.registerEvents();
     this.addEventListeners();

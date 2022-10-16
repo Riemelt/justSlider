@@ -1,7 +1,8 @@
-import { transform } from "../../utilities";
+import { transform } from "../utilities";
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;
+  private $bar: JQuery<HTMLElement>;
   private options: Options;
 
   constructor($parent: JQuery<HTMLElement>) {
@@ -36,7 +37,7 @@ class ProgressBar {
 
   private updatePosition(transformOptions: TransformOptions) {
     const transformStyle = transform(transformOptions)
-    this.$component.css("transform", transformStyle);
+    this.$bar.css("transform", transformStyle);
   }
 
   private init($parent: JQuery<HTMLElement>) {
@@ -47,9 +48,13 @@ class ProgressBar {
 
   private initHtml() {
     this.$component = $(`
-      <div class="just-slider__progress-bar">
+      <div class="just-slider__progress-bar-wrapper">
+        <div class="just-slider__progress-bar">
+        </div>
       </div>
     `);
+
+    this.$bar = this.$component.find(".just-slider__progress-bar");
   }
 }
 
