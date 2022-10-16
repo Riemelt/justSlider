@@ -27,6 +27,10 @@ $className: 'just-slider';
     &_unfocused {
       z-index: 3;
     }
+
+    &_type-bar {
+      z-index: -1;
+    }
   }
 
   &__handle {
@@ -40,15 +44,17 @@ $className: 'just-slider';
     background-color: rgb(49, 90, 153);
     border: .125rem solid white;
     border-radius: 50%;
+    opacity: 0.1;
   }
 
   &__progress-bar {
     position: absolute;
-    border-radius: inherit;
-    right: -$sliderBorderSize;
+    transform-origin: 100% 0;
+    border-radius: $sliderBorderRadius;
+    right: 0;
     top: -$sliderBorderSize;
-    width: calc(100% + ($sliderBorderSize * 2));
-    height: calc(100% + ($sliderBorderSize * 2));
+    width: 100%;
+    height: calc($sliderSize + ($sliderBorderSize * 2));
     background-color: rgb(147, 255, 147);
     z-index: -1;
   }
@@ -80,6 +86,14 @@ $className: 'just-slider';
         right: initial;
         left: - calc(($handleHeight / 2) - ($sliderSize / 2));
         top: - calc($handleHeight / 2);
+      }
+
+      &__progress-bar {
+        right: initial;
+        top: 0;  
+        left: -$sliderBorderSize;
+        height: 100%;
+        width: calc($sliderSize + ($sliderBorderSize * 2))
       }
     }
   }

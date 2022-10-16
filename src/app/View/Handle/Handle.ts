@@ -1,4 +1,4 @@
-import { getPercentage } from "../../utilities";
+import { translate } from "../../utilities";
 
 class Handle {
   private $point: JQuery<HTMLElement>;
@@ -6,24 +6,6 @@ class Handle {
   private handleHandleMousemove: (position: number, type: HandleType) => void;
   private type: HandleType;
   private options: Options;
-
-  static translate(value: number, min: number, max: number, orientation: Orientation, direction: Direction): string {
-    const axis = orientation === "horizontal" ? "X" : "Y";
-    const valueToTranslate = Handle.getTranslateValue(value, min, max, orientation, direction);
-
-    return `translate${axis}(${valueToTranslate}%)`;
-  }
-
-  static getTranslateValue(value: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
-    const sign = orientation === "horizontal" ? (-1) : 1;
-    const percentage = getPercentage(value, min, max);
-
-    if (direction === "forward") {
-      return (100 - percentage) * sign;
-    }
-
-    return percentage * sign;
-  }
 
   constructor($parent: JQuery<HTMLElement>, type: HandleType) {
     this.init($parent, type);
@@ -62,9 +44,9 @@ class Handle {
     }
   }
 
-  private updatePosition(value: number, min: number, max: number, orientation: Orientation, direction: Direction) {
-    const translate = Handle.translate(value, min, max, orientation, direction);
-    this.$point.css("transform", translate);
+  private updatePosition(shift: number, min: number, max: number, orientation: Orientation, direction: Direction) {
+    const translateStyle = translate(shift, min, max, orientation, direction);
+    this.$point.css("transform", translateStyle);
   }
 
   private init($parent: JQuery<HTMLElement>, type: HandleType) {

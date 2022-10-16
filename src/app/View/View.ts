@@ -47,6 +47,15 @@ class View {
     this.handles[type].update(options);
   }
 
+  public updateProgressBar(options: Options) {
+    this.progressBar.update(options);
+  }
+
+  public deleteProgressBar() {
+    this.progressBar?.delete();
+    delete this.progressBar;
+  }
+
   public deleteHandle(type: HandleType) {
     this.handles[type]?.delete();
     delete this.handles[type];

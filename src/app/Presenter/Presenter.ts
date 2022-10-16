@@ -44,11 +44,13 @@ class Presenter {
     this.eventManager.addEventListener("HandleFromMove", () => {
       const options = this.model.getOptions();
       this.view.updateHandle(options, "from");
+      this.view.updateProgressBar(options);
     });
 
     this.eventManager.addEventListener("HandleToMove", () => {
       const options = this.model.getOptions();
       this.view.updateHandle(options, "to");
+      this.view.updateProgressBar(options);
     });
   }
 }
