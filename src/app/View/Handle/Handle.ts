@@ -3,14 +3,20 @@ import {
   convertViewPositionToModel,
 } from "../utilities";
 
+import Tooltip from "./Tooltip/Tooltip";
+
 class Handle {
   private $point:  JQuery<HTMLElement>;
   private $handle: JQuery<HTMLElement>;
   private $parent: JQuery<HTMLElement>;
   private $slider: JQuery<HTMLElement>;
+
   private handleHandleMousemove: (position: number, type: HandleType) => void;
+
   private type: HandleType;
   private options: Options;
+
+  private tooltip: Tooltip;
 
   constructor(handleOptions: HandleOptions) {
     this.init(handleOptions);
@@ -38,6 +44,7 @@ class Handle {
     });
 
     this.updateFocus(value, min, max, this.type);
+    this.tooltip.update(value);
   }
 
   private updateFocus(value: number, min: number, max: number, type: HandleType): void {
@@ -68,6 +75,8 @@ class Handle {
 
     this.initHtml();
     this.$handle = this.$point.find(".just-slider__handle");
+
+    this.tooltip = new Tooltip(this.$handle);
 
     this.setHandlers();
     $parent.append(this.$point);

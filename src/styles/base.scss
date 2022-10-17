@@ -39,8 +39,22 @@ $className: 'just-slider';
     right: - calc($handleWidth / 2);
     top: - calc(($handleHeight / 2) - ($sliderSize / 2));
     background-color: $blue;
-    border: .25rem solid white;
+    border: 4px solid white;
     border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__tooltip {
+    position: absolute;
+    background-color: $dark;
+    color: white;
+    border-radius: .1875rem;
+    transform: translate(0, -140%);
+    padding: .3125rem .625rem;
+    font-size: 1rem;
+    font-family: Arial, 'sans-serif';
   }
 
   &__progress-bar-wrapper {
@@ -98,6 +112,12 @@ $className: 'just-slider';
         right: initial;
         left: - calc(($handleHeight / 2) - ($sliderSize / 2));
         top: - calc($handleHeight / 2);
+      }
+
+      &__tooltip {
+        transform: initial;
+        left: 150%;
+        padding: .625rem .625rem;
       }
 
       &__progress-bar {
