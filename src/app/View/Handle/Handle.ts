@@ -44,7 +44,29 @@ class Handle {
     });
 
     this.updateFocus(value, min, max, this.type);
-    this.tooltip.update(value);
+    this.updateTooltip(value);
+  }
+
+  private updateTooltip(value: number) {
+    const { tooltips } = this.options;
+
+    if (tooltips) {
+      if (!this.tooltip) {
+        this.tooltip = new Tooltip(this.$handle);
+      }
+
+      this.tooltip.update(value);
+      return;
+    }
+
+    if (!this.tooltip) return;
+
+    this.deleteTooltip();
+  }
+
+  private deleteTooltip() {
+    this.tooltip?.delete();
+    delete this.tooltip;
   }
 
   private updateFocus(value: number, min: number, max: number, type: HandleType): void {
@@ -75,8 +97,6 @@ class Handle {
 
     this.initHtml();
     this.$handle = this.$point.find(".just-slider__handle");
-
-    this.tooltip = new Tooltip(this.$handle);
 
     this.setHandlers();
     $parent.append(this.$point);

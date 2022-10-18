@@ -7,7 +7,9 @@ interface Options {
   step?:        number;
   min?:         number;
   max?:         number;
-  isRange?:     boolean;
   orientation?: Orientation;
   direction?:   Direction;
+  range?:       boolean;
+  tooltips?:    boolean;
+  progressBar?: boolean;
 }

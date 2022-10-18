@@ -20,7 +20,7 @@ class View {
   private progressBar: ProgressBar;
 
   constructor() {
-    console.log("View created");
+    //
   }
 
   public getHtml() {
@@ -34,27 +34,64 @@ class View {
     this.initAnimation();
 
     const { orientation } = options;
-    if (orientation === "vertical") {
-      this.toggleOrientation();
-    }
+    this.setOrientation(orientation);
   }
 
-  public toggleOrientation() {
-    this.$html.toggleClass("just-slider_vertical");
+  public setOrientation(orientation: Orientation) {
+    if (orientation === "vertical") {
+      this.$html.addClass("just-slider_vertical");
+      return;
+    }
+
+    this.$html.removeClass("just-slider_vertical");
   }
 
   public initComponents() {
     this.initHandleFrom();
-    this.initHandleTo();
-    this.initProgressBar();
+    this.updateHandleTo(this.options);
+    this.updateProgressBar(this.options);
   }
 
-  public updateHandle(options: Options, type: HandleType) {
-    this.handles[type].update(options);
+  public updateHandleFrom(options: Options) {
+    this.handles.from.update(options);
+  }
+
+  public updateHandleTo(options: Options) {
+    const { range } = options;
+
+    if (range) {
+      if (!this.handles.to) {
+        this.handles.to = new Handle({
+          $parent: this.$justSlider,
+          $slider: this.$html,
+          type:    "to"
+        });
+      }
+
+      this.handles.to.update(options);
+      return;
+    }
+
+    if (!this.handles.to) return;
+    
+    this.deleteHandle("to");
   }
 
   public updateProgressBar(options: Options) {
-    this.progressBar.update(options);
+    const { progressBar } = options;
+
+    if (progressBar) {
+      if (!this.progressBar) {
+        this.progressBar = new ProgressBar(this.$justSlider);
+      }
+
+      this.progressBar.update(options);
+      return;
+    }
+
+    if (!this.progressBar) return;
+
+    this.deleteProgressBar();
   }
 
   public deleteProgressBar() {
@@ -116,11 +153,6 @@ class View {
     this.$html.addClass("just-slider_animated");
   }
 
-  private initProgressBar() {
-    this.progressBar = new ProgressBar(this.$justSlider);
-    this.progressBar.update(this.options);
-  }
-
   private initHandleFrom() {
     this.handles.from = new Handle({
       $parent: this.$justSlider,
@@ -129,20 +161,6 @@ class View {
     });
 
     this.handles.from.update(this.options);
-  }
-
-  private initHandleTo() {
-    const { isRange } = this.options;
-
-    if (isRange) {
-      this.handles.to = new Handle({
-        $parent: this.$justSlider,
-        $slider: this.$html,
-        type:    "to"
-      });
-
-      this.handles.to.update(this.options);
-    }
   }
 }
 

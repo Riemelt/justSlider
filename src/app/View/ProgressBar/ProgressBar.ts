@@ -11,10 +11,10 @@ class ProgressBar {
 
   public update(options: Options) {
     this.options = options;
-    const { min, max, from, to, isRange, orientation, direction } = options;
+    const { min, max, from, to, range, orientation, direction } = options;
 
-    const start = isRange ? from : min;
-    const end   = isRange ? to : from;
+    const start = range ? from : min;
+    const end   = range ? to : from;
     const shift = direction === "forward" ? end : start;
 
     const sliderLength = max - min;

@@ -7,26 +7,31 @@ class Presenter {
   private model: Model;
   private eventManager: EventManager;
 
-  public $getSlider(): JQuery<HTMLElement> {
-    return this.view.getHtml();
-  }
-
   constructor(view: View, model: Model, options: Options) {
-    console.log("Presenter created");
-
     this.eventManager = new EventManager();
 
     this.view = view;
     this.model = model;
 
     this.model.setEventManager(this.eventManager);
-
     this.model.init(options);
+    
     const data = this.model.getOptions();
 
     this.view.init(data);
     this.view.initComponents();
     
+    this.createHandlers();
+
+    this.registerEvents();
+    this.addEventListeners();
+  }
+
+  public $getSlider(): JQuery<HTMLElement> {
+    return this.view.getHtml();
+  }
+
+  private createHandlers() {
     this.view.addCreateHandleHandlers((value: number, handle: HandleType) => {
       this.model.setHandle(value, handle);
     });
@@ -34,26 +39,32 @@ class Presenter {
     this.view.addCreateSliderClickHandler((value: number, handle: HandleType) => {
       this.model.setHandle(value, handle);
     });
-
-    this.registerEvents();
-    this.addEventListeners();
   }
 
   private registerEvents() {
     this.eventManager.registerEvent("HandleFromMove");
     this.eventManager.registerEvent("HandleToMove");
+    this.eventManager.registerEvent("SliderUpdate");
   }
 
   private addEventListeners() {
     this.eventManager.addEventListener("HandleFromMove", () => {
       const options = this.model.getOptions();
-      this.view.updateHandle(options, "from");
+      this.view.updateHandleFrom(options);
       this.view.updateProgressBar(options);
     });
 
     this.eventManager.addEventListener("HandleToMove", () => {
       const options = this.model.getOptions();
-      this.view.updateHandle(options, "to");
+      this.view.updateHandleTo(options);
+      this.view.updateProgressBar(options);
+    });
+
+    this.eventManager.addEventListener("SliderUpdate", () => {
+      const options = this.model.getOptions();
+      this.view.setOrientation(options.orientation);
+      this.view.updateHandleFrom(options);
+      this.view.updateHandleTo(options);
       this.view.updateProgressBar(options);
     });
   }
