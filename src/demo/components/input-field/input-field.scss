@@ -1,0 +1,36 @@
+$className: 'input-field';
+
+.#{$className} {
+  max-width: 12.5rem;
+
+  &__label {
+    display: flex;
+    justify-content: space-between;
+    height: 2.5rem;
+    border: .25rem solid $dark-58;
+    border-radius: 1.25rem;
+    overflow: hidden;
+  }
+
+  &__title {
+    flex: 3 3 auto;
+    background-color: $dark-shade-25;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 0 .9375rem;
+  }
+
+  &__input {
+    flex: 2 2 auto;
+    width: 100%;
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 0 .625rem;
+    border: none;
+    outline: none;
+  }
+}

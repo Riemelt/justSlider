@@ -1,0 +1,20 @@
+mixin input-field(vars)
+  -
+    const {
+      title = "",
+      value = "",
+      name = "",
+      type = "",
+    } = vars
+
+    const className = "input-field"
+    let classNames = className + ` js-${className}`
+
+  div(class=classNames)
+    label(class=`${className}__label`)
+      div(class=`${className}__title`)= title
+      input(class=`${className}__input js-${className}__input`
+            type=type
+            name=name
+            value=value
+            )

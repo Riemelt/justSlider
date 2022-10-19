@@ -1,0 +1,54 @@
+$className: 'toggle';
+
+.#{$className} {
+  &__label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-right: .625rem;
+  }
+
+  &__switch-input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  &__switch-input:checked
+  + &__switch {
+
+    &::after {
+      right: -60%;
+    }
+  }
+
+  &__switch {
+    position: relative;
+    height: 1.875rem;
+    width: 5rem;
+    border: .25rem solid $dark-58;
+    border-radius: 1.25rem;
+
+    &::after {
+      position: absolute;
+      content: '';
+      height: 1.5625rem;
+      width: 1.5625rem;
+      background-color: $dark-58;
+      border-radius: 50%;
+      transition: right 0.4s;
+      margin: auto;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 60%;
+    }
+  }
+}

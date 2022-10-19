@@ -1,6 +1,9 @@
 import "../app";
 import "./styles/demo.scss";
 
+import "./components/toggle";
+import "./components/input-field";
+
 $(".js-demo__slider").justSlider({
   from: -45,
   to: 90,

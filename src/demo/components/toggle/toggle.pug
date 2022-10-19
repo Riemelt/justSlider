@@ -1,0 +1,20 @@
+mixin toggle(vars)
+  -
+    const {
+      title = "",
+      checked = false,
+      name = "",
+    } = vars
+    const className = "toggle"
+    let classNames = className + ` js-${className}`
+
+  div(class=classNames)
+    label(class=`${className}__label`)
+      div(class=`${className}__title`)= title
+      input(
+        class=`${className}__switch-input js-${className}__switch-input`
+        type="checkbox"
+        checked=checked
+        name=name
+      )
+      div(class=`${className}__switch`)
