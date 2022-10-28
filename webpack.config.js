@@ -9,7 +9,7 @@ const srcPath = path.resolve(__dirname, "./src");
 
 const entryPoints = {
   index: "./app/index.ts",
-  demo: "./demo/demo.ts",
+  demo: "./demo/index.ts",
 };
 
 const mode = process.env.NODE_ENV === "production" ? "production" : "development";
@@ -30,7 +30,7 @@ module.exports = {
     }),
     require('autoprefixer'),
     new HtmlWebpackPlugin({
-      template: "./demo/demo.pug", // relative path to the HTML files
+      template: "./demo/index.pug", // relative path to the HTML files
       filename: "./index.html", // output HTML files
       chunks: ["demo"],
     }),

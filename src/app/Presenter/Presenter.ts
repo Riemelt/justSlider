@@ -1,6 +1,7 @@
 import Model        from "../Model/Model";
 import View         from "../View/View";
 import EventManager from "../EventManager/EventManager";
+import { Options }  from "../types";
 
 class Presenter {
   private view: View;

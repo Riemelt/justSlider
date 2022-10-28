@@ -1,0 +1,48 @@
+include ../input-field/input-field
+include ../toggle/toggle
+
+mixin configuration-panel(vars)
+  -
+    const {
+      inputMin       = {},
+      inputMax       = {},
+      inputStep      = {},
+      inputFrom      = {},
+      inputTo        = {},
+      toggleVertical = {},
+      toggleRange    = {},
+      toggleBar      = {},
+      toggleTooltip  = {},
+    } = vars
+
+    const className = "configuration-panel"
+    let classNames = className + ` js-${className}`
+
+  ul(class=classNames)
+    li(class=`${className}__item`)
+      div(class=`${className}__input-min js-${className}__input-min`)
+        +input-field(inputMin)
+    li(class=`${className}__item`)
+      div(class=`${className}__input-max js-${className}__input-max`)
+        +input-field(inputMax)
+    li(class=`${className}__item`)
+      div(class=`${className}__input-step js-${className}__input-step`)
+        +input-field(inputStep)
+    li(class=`${className}__item`)
+      div(class=`${className}__input-from js-${className}__input-from`)
+        +input-field(inputFrom)
+    li(class=`${className}__item`)
+      div(class=`${className}__input-to js-${className}__input-to`)
+        +input-field(inputTo)
+    li(class=`${className}__item`)
+      div(class=`${className}__toggle-vertical js-${className}__toggle-vertical`)
+        +toggle(toggleVertical)
+    li(class=`${className}__item`)
+      div(class=`${className}__toggle-range js-${className}__toggle-range`)
+        +toggle(toggleRange)
+    li(class=`${className}__item`)
+      div(class=`${className}__toggle-bar js-${className}__toggle-bar`)
+        +toggle(toggleBar)
+    li(class=`${className}__item`)
+      div(class=`${className}__toggle-tooltip js-${className}__toggle-tooltip`)
+        +toggle(toggleTooltip)

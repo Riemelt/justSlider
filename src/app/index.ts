@@ -1,18 +1,20 @@
 import "../styles";
 
-import Model     from "./Model/Model";
-import Presenter from "./Presenter/Presenter";
-import View      from "./View/View";
+import Model       from "./Model/Model";
+import Presenter   from "./Presenter/Presenter";
+import View        from "./View/View";
+import JustSlider  from "./JustSlider";
+import { Options } from "./types";
 
 (function($) {
   $.fn.extend({
     justSlider(options: Options) {
-      const model = new Model();
-      const view = new View();
+      const model     = new Model();
+      const view      = new View();
       const presenter = new Presenter(view, model, options);
+      const slider    = new JustSlider(this, presenter);
 
-      const $slider = presenter.$getSlider();
-      this.append($slider);
+      return slider;
     }
   });
 }(jQuery));

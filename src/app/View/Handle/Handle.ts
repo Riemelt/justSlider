@@ -1,3 +1,6 @@
+import { Options }          from "../../types";
+import { TransformOptions } from "../types";
+
 import {
   transform,
   convertViewPositionToModel,

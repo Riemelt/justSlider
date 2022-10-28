@@ -2,8 +2,7 @@ mixin input-field(vars)
   -
     const {
       title = "",
-      value = "",
-      name = "",
+      value = 0,
       type = "",
     } = vars
 
@@ -15,6 +14,5 @@ mixin input-field(vars)
       div(class=`${className}__title`)= title
       input(class=`${className}__input js-${className}__input`
             type=type
-            name=name
             value=value
             )

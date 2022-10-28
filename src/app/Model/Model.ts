@@ -1,4 +1,5 @@
 import EventManager from "../EventManager/EventManager";
+import { Options } from "../types";
 
 class Model {
   private options: Options;

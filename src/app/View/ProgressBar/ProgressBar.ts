@@ -1,4 +1,6 @@
-import { transform } from "../utilities";
+import { Options }          from "../../types";
+import { TransformOptions } from "../types";
+import { transform }        from "../utilities";
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;

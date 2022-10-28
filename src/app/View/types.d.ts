@@ -1,3 +1,5 @@
+import { Direction, Orientation } from "../types";
+
 interface TransformOptions {
   shift:       number;
   min:         number;
@@ -14,4 +16,9 @@ interface ConvertPositionOptions {
   max:         number;
   orientation: Orientation;
   direction:   Direction;
+}
+
+export {
+  TransformOptions,
+  ConvertPositionOptions,
 }

@@ -1,5 +1,6 @@
-import Handle      from "./Handle/Handle";
-import ProgressBar from "./ProgressBar/ProgressBar";
+import { Options, Orientation } from "../types";
+import Handle                   from "./Handle/Handle";
+import ProgressBar              from "./ProgressBar/ProgressBar";
 
 import { convertViewPositionToModel } from "./utilities";
 

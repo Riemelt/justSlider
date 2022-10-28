@@ -1,3 +1,6 @@
+import { Direction, Orientation } from "../types";
+import { ConvertPositionOptions, TransformOptions } from "./types";
+
 function convertViewPositionToModel({position, $context, min, max, orientation, direction}: ConvertPositionOptions): number {
   const sliderLength = orientation === "horizontal" ? $context.width() : $context.height();
   const shift        = orientation === "horizontal" ? $context.position().left : $context.position().top;

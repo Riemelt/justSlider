@@ -1,18 +1,30 @@
-import "../app";
 import "./styles/demo.scss";
 
-import "./components/toggle";
-import "./components/input-field  ";
+import SliderDemo from "./components/slider-demo";
+import { DemoOptions } from "./types";
 
-$(".js-demo__slider").justSlider({
-  from: -45,
-  to: 90,
-  min: -100,
-  max: 100,
-  step: 1, 
-  range: true,
-  orientation: "horizontal",
-  direction: "forward",
-  progressBar: true,
-  tooltips: true,
-});
+class Demo {
+  private className: string;
+  private options: DemoOptions;
+  private $component: JQuery<HTMLElement>;
+  private $sliderDemos: JQuery<HTMLElement>;
+
+  constructor($element: JQuery<HTMLElement>, options: DemoOptions) {
+    this.className = "demo";
+    this.init($element, options);
+  }
+
+  private init($element: JQuery<HTMLElement>, options: DemoOptions) {
+    this.$component = $element;
+    this.options = options;
+    this.$sliderDemos = this.$component.find(`.js-${this.className}__slider-demo`);
+    this.$sliderDemos.each(this.initSliderDemo.bind(this));
+  }
+
+  private initSliderDemo(element: HTMLElement, index: number) {
+    const $element = $(element);
+    new SliderDemo($element, this.options.demos[index]);
+  }
+}
+
+export default Demo;

@@ -1,0 +1,52 @@
+{
+  "demos": [
+    {
+      "configurationPanel": {
+        "inputMin": {
+          "title": "min",
+          "type": "number"
+        },
+        "inputMax": {
+          "title": "max",
+          "type": "number"
+        },
+        "inputStep": {
+          "title": "step",
+          "type": "number"
+        },
+        "inputFrom": {
+          "title": "from",
+          "type": "number"
+        },
+        "inputTo": {
+          "title": "to",
+          "type": "number"
+        },
+        "toggleVertical": {
+          "title": "vertical"
+        },
+        "toggleRange": {
+          "title": "range"
+        },
+        "toggleBar": {
+          "title": "bar"
+        },
+        "toggleTooltip": {
+          "title": "tooltip"
+        }
+      },
+      "slider": {
+        "from": -45,
+        "to": 90,
+        "min": -100,
+        "max": 100,
+        "step": 1, 
+        "range": true,
+        "orientation": "horizontal",
+        "direction": "forward",
+        "progressBar": true,
+        "tooltips": true
+      }
+    }
+  ]
+}

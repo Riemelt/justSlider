@@ -1,0 +1,16 @@
+include ./components/head/head
+
+include ./components/slider-demo/slider-demo
+
+-
+  const className = "demo"
+  const data = require("./data.json")
+
+doctype html
+html
+  +head({ title })
+  body
+    div(class=`${className} js-${className}`)
+      each demo in data.demos
+        div(class=`${className}__slider-demo js-${className}__slider-demo`)
+          +slider-demo(demo)
