@@ -21,7 +21,7 @@ class Demo {
     this.$sliderDemos.each(this.initSliderDemo.bind(this));
   }
 
-  private initSliderDemo(element: HTMLElement, index: number) {
+  private initSliderDemo(index: number, element: HTMLElement) {
     const $element = $(element);
     new SliderDemo($element, this.options.demos[index]);
   }

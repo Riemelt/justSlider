@@ -14,8 +14,8 @@ interface SliderOptions {
 }
 
 interface SliderDemoOptions {
-  slider?:             SliderOptions;
-  configurationPanel?: ConfigurationPanelOptions;
+  slider:             SliderOptions;
+  configurationPanel: ConfigurationPanelOptions;
 }
 
 export {

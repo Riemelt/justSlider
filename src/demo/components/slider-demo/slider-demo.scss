@@ -1,4 +1,41 @@
 $className: 'slider-demo';
 
 .#{$className} {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 5%;
+
+  @media (max-width: 430px) {
+    flex-wrap: wrap-reverse;
+    gap: 2.5rem;
+  }
+
+  &__configuration-panel {
+    width: 100%;
+    max-width: 20rem;
+
+    @media (max-width: 430px) {
+      max-width: initial;
+    }
+  }
+
+  &__slider {
+    box-sizing: content-box;
+    height: 25rem;
+    max-width: 25rem;
+    width: 100%;
+    min-width: 6.25rem;
+    align-items: center;
+  }
+
+  &__configuration-panel,
+  &__slider {
+    background-color: white;
+    border-radius: 1.25rem;
+    padding: 1.5625rem;
+    display: flex;
+    justify-content: center;
+  }
 }

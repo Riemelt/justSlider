@@ -10,7 +10,7 @@ doctype html
 html
   +head({ title })
   body
-    div(class=`${className} js-${className}`)
+    ul(class=`${className} js-${className}`)
       each demo in data.demos
-        div(class=`${className}__slider-demo js-${className}__slider-demo`)
+        li(class=`${className}__slider-demo js-${className}__slider-demo`)
           +slider-demo(demo)

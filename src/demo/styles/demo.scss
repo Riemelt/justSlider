@@ -1,17 +1,33 @@
 $className: 'demo';
 
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
 body {
   font-family: Tahoma, Arial, 'sans-serif';
 }
 
+html,
+body {
+  min-width: 320px;
+  max-width: 1920px;
+}
+
 .#{$className} {
+  min-height: 100vh;
+  background-color: $dark-58;
+  list-style-type: none;
+  padding: 4.375rem 1.25rem;
 
+  &__slider-demo {
+    max-width: 1000px;
+    margin: 6.25rem auto 0;
 
-  //&__slider {
-  //  margin: 6.25rem;
-  //  min-width: 12.5rem;
-  //  max-width: 41.25rem;
-  //  max-height: 41.25rem;
-  //  min-height: 25.25rem;
-  //}
+    &:first-child {
+      margin-top: initial;
+    }
+  }
 }
