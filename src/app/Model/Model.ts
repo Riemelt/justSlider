@@ -1,5 +1,5 @@
 import EventManager from "../EventManager/EventManager";
-import { Options } from "../types";
+import { Direction, Options, Orientation } from "../types";
 
 class Model {
   private options: Options;
@@ -26,8 +26,8 @@ class Model {
 
     this.setMinMax(min, max);
     this.setStep(step);
-    this.updateHandle(from, "from");
-    this.updateHandle(to, "to");
+    this.setHandle(from, "from");
+    this.setHandle(to, "to");
   }
 
   public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar }: Options) {
@@ -80,7 +80,7 @@ class Model {
         value = to !== undefined ? to : this.options.to;
       }
 
-      this.updateHandle(value, type);
+      this.setHandle(value, type);
     });
 
     this.eventManager.dispatchEvent("SliderUpdate");
@@ -98,14 +98,57 @@ class Model {
     return this.options;
   }
 
-  public setHandle(value: number, type: HandleType) {
-    this.updateHandle(value, type);
+  public updateTooltips(value: boolean) {
+    this.options.tooltips = value;
+    this.eventManager.dispatchEvent("TooltipsChange");
+  }
+
+  public updateProgressBar(value: boolean) {
+    this.options.progressBar = value;
+    this.eventManager.dispatchEvent("ProgressBarChange");
+  }
+
+  public updateRange(value: boolean) {
+    this.options.range = value;
+    this.setHandle(this.options.to, "to");
+    this.eventManager.dispatchEvent("RangeChange");
+  }
+
+  public updateDirection(value: Direction) {
+    this.options.direction = value;
+    this.eventManager.dispatchEvent("DirectionChange");
+  }
+
+  public updateOrientation(value: Orientation) {
+    this.options.orientation = value;
+    this.eventManager.dispatchEvent("OrientationChange");
+  }
+
+  public updateStep(value: number) {
+    this.setStep(value);
+    this.setHandle(this.options.from, "from");
+    this.setHandle(this.options.to, "to");
+    this.eventManager.dispatchEvent("StepChange");
+  }
+
+  public updateMin(value: number) {
+    this.setMinMax(value, this.options.max);
+    this.eventManager.dispatchEvent("MinChange");
+  }
+
+  public updateMax(value: number) {
+    this.setMinMax(this.options.min, value);
+    this.eventManager.dispatchEvent("MaxChange");
+  }
+
+  public updateHandle(value: number, type: HandleType) {
+    this.setHandle(value, type);
 
     const event = type === "from" ? "HandleFromMove" : "HandleToMove";
     this.eventManager.dispatchEvent(event);
   }
 
-  private updateHandle(value: number, type: HandleType) {
+  private setHandle(value: number, type: HandleType) {
     const { step } = this.options;
 
     const newValue = this.adjustHandle(value, step);
@@ -164,6 +207,10 @@ class Model {
   }
 
   private validateStep(step: number, length: number) {
+    if (step <= 0) {
+      return 1;
+    }
+    
     return step > length ? length : step;
   }
 

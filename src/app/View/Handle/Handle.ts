@@ -47,11 +47,12 @@ class Handle {
     });
 
     this.updateFocus(value, min, max, this.type);
-    this.updateTooltip(value);
+    this.updateTooltip(options);
   }
 
-  private updateTooltip(value: number) {
-    const { tooltips } = this.options;
+  public updateTooltip(options: Options) {
+    const { tooltips } = options;
+    const value = options[this.type];
 
     if (tooltips) {
       if (!this.tooltip) {

@@ -1,4 +1,12 @@
 type SliderEvent =
   "HandleFromMove"    |
   "HandleToMove"      |
-  "SliderUpdate";
+  "SliderUpdate"      |
+  "MinChange"         |
+  "MaxChange"         |
+  "StepChange"        |
+  "OrientationChange" |
+  "DirectionChange"   |
+  "RangeChange"       |
+  "ProgressBarChange" |
+  "TooltipsChange";

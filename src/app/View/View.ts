@@ -78,6 +78,11 @@ class View {
     this.deleteHandle("to");
   }
 
+  public updateTooltips(options: Options) {
+    this.handles["from"]?.updateTooltip(options);
+    this.handles["to"]?.updateTooltip(options);
+  }
+
   public updateProgressBar(options: Options) {
     const { progressBar } = options;
 
