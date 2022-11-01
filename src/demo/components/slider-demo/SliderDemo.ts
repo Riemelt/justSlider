@@ -1,4 +1,4 @@
-import { JustSlider }        from "../../../app/types";
+import { Direction, JustSlider, Orientation }        from "../../../app/types";
 import { SliderDemoOptions } from "./types";
 import ConfigurationPanel    from "../configuration-panel";
 
@@ -44,7 +44,27 @@ class SliderDemo {
       inputStep: {
         ...options.configurationPanel.inputStep,
         handleInputChange: this.handleInputStepChange.bind(this),
-      }
+      },
+      toggleVertical: {
+        ...options.configurationPanel.toggleVertical,
+        handleToggleChange: this.handleToggleOrientationChange.bind(this),
+      },
+      toggleRange: {
+        ...options.configurationPanel.toggleRange,
+        handleToggleChange: this.handleToggleRangeChange.bind(this),
+      },
+      toggleBar: {
+        ...options.configurationPanel.toggleBar,
+        handleToggleChange: this.handleToggleProgressBarChange.bind(this),
+      },
+      toggleTooltip: {
+        ...options.configurationPanel.toggleTooltip,
+        handleToggleChange: this.handleToggleTooltipsChange.bind(this),
+      },
+      toggleForward: {
+        ...options.configurationPanel.toggleForward,
+        handleToggleChange: this.handleToggleDirectionChange.bind(this),
+      },
     });
   }
 
@@ -57,15 +77,37 @@ class SliderDemo {
   }
 
   private handleInputMinChange(value: number) {
-    this.slider.updateMin(value);
+    this.slider.updateOptions({ min: value });
   }
 
   private handleInputMaxChange(value: number) {
-    this.slider.updateMax(value);
+    this.slider.updateOptions({ max: value });
   }
 
   private handleInputStepChange(value: number) {
-    this.slider.updateStep(value);
+    this.slider.updateOptions({ step: value });
+  }
+
+  private handleToggleOrientationChange(value: boolean) {
+    const orientation = value ? "vertical" : "horizontal";
+    this.slider.updateOptions({ orientation });
+  }
+
+  private handleToggleDirectionChange(value: boolean) {
+    const direction = value ? "forward" : "backward";
+    this.slider.updateOptions({ direction });
+  }
+
+  private handleToggleProgressBarChange(value: boolean) {
+    this.slider.updateOptions({ progressBar: value });
+  }
+
+  private handleToggleRangeChange(value: boolean) {
+    this.slider.updateOptions({ range: value });
+  }
+
+  private handleToggleTooltipsChange(value: boolean) {
+    this.slider.updateOptions({ tooltips: value });
   }
 }
 

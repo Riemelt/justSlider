@@ -34,14 +34,6 @@ declare class JustSlider {
   constructor($parent: JQuery<HTMLElement>, presenter: Presenter);
   public updateOptions:     (options: Options) => void;
   public updateHandle:      (type: HandleType, value: number) => void;
-  public updateMin:         (value: number) => void;
-  public updateMax:         (value: number) => void;
-  public updateStep:        (value: number) => void;
-  public updateOrientation: (value: Orientation) => void;
-  public updateDirection:   (value: Direction) => void;
-  public updateRange:       (value: boolean) => void;
-  public updateProgressBar: (value: boolean) => void;
-  public updateTooltips:    (value: boolean) => void;
 }
 
 export {

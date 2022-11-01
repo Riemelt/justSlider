@@ -35,6 +35,7 @@ class Model {
 
     if (min !== undefined || max !== undefined) {
       this.setMinMax(min, max);
+      this.setStep(this.options.step);
       addHandlesToUpdate(["from", "to"]);
     }
 
@@ -98,49 +99,6 @@ class Model {
     return this.options;
   }
 
-  public updateTooltips(value: boolean) {
-    this.options.tooltips = value;
-    this.eventManager.dispatchEvent("TooltipsChange");
-  }
-
-  public updateProgressBar(value: boolean) {
-    this.options.progressBar = value;
-    this.eventManager.dispatchEvent("ProgressBarChange");
-  }
-
-  public updateRange(value: boolean) {
-    this.options.range = value;
-    this.setHandle(this.options.to, "to");
-    this.eventManager.dispatchEvent("RangeChange");
-  }
-
-  public updateDirection(value: Direction) {
-    this.options.direction = value;
-    this.eventManager.dispatchEvent("DirectionChange");
-  }
-
-  public updateOrientation(value: Orientation) {
-    this.options.orientation = value;
-    this.eventManager.dispatchEvent("OrientationChange");
-  }
-
-  public updateStep(value: number) {
-    this.setStep(value);
-    this.setHandle(this.options.from, "from");
-    this.setHandle(this.options.to, "to");
-    this.eventManager.dispatchEvent("StepChange");
-  }
-
-  public updateMin(value: number) {
-    this.setMinMax(value, this.options.max);
-    this.eventManager.dispatchEvent("MinChange");
-  }
-
-  public updateMax(value: number) {
-    this.setMinMax(this.options.min, value);
-    this.eventManager.dispatchEvent("MaxChange");
-  }
-
   public updateHandle(value: number, type: HandleType) {
     this.setHandle(value, type);
 
@@ -151,20 +109,25 @@ class Model {
   private setHandle(value: number, type: HandleType) {
     const { step } = this.options;
 
-    const newValue = this.adjustHandle(value, step);
+    const newValue = this.adjustHandle(value, step, type);
     const validatedValue = this.validateHandle(value, type);
     this.options[type] = value !== validatedValue ? validatedValue : newValue;
   }
 
-  private adjustHandle(value: number, step: number): number {
-    return Math.round(value / step) * step;
+  private adjustHandle(value: number, step: number, type: HandleType): number {
+    const { min } = this.options;
+    const relativeValue = value + (min * (-1));
+
+    const adjusted = (Math.round(relativeValue / step) * step) + min;
+    const validated = this.validateHandle(adjusted, type);
+    return validated;
   }
 
   private validateHandle(value: number, type: HandleType): number {
     const { to, max, min, from, range } = this.options;
 
-    value = this.validateHandleOnMinMax(value, min, max);
     value = this.validateHandleOnCollision(value, type, from, to, range);
+    value = this.validateHandleOnMinMax(value, min, max);
 
     return value;
   }
@@ -207,11 +170,13 @@ class Model {
   }
 
   private validateStep(step: number, length: number) {
-    if (step <= 0) {
+    const newStep = step > length ? length : step;
+    
+    if (newStep <= 0) {
       return 1;
     }
     
-    return step > length ? length : step;
+    return newStep;
   }
 
   private setStep(step: number) {

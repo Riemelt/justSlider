@@ -10,38 +10,6 @@ class JustSlider {
     $parent.append($slider);
   }
 
-  public updateTooltips(value: boolean) {
-    this.presenter.updateTooltips(value);
-  }
-
-  public updateRange(value: boolean) {
-    this.presenter.updateRange(value);
-  }
-
-  public updateProgressBar(value: boolean) {
-    this.presenter.updateProgressBar(value);
-  }
-
-  public updateDirection(value: Direction) {
-    this.presenter.updateDirection(value);
-  }
-
-  public updateOrientation(value: Orientation) {
-    this.presenter.updateOrientation(value);
-  }
-
-  public updateStep(value: number) {
-    this.presenter.updateStep(value);
-  }
-
-  public updateMax(value: number) {
-    this.presenter.updateMax(value);
-  }
-
-  public updateMin(value: number) {
-    this.presenter.updateMax(value);
-  }
-
   public updateHandle(type: HandleType, value: number) {
     this.presenter.updateHandle(type, value);
   }

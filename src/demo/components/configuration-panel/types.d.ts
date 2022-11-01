@@ -8,4 +8,5 @@ interface ConfigurationPanelOptions {
   toggleRange?:    ToggleOptions;
   toggleBar?:      ToggleOptions;
   toggleTooltip?:  ToggleOptions;
+  toggleForward?:  ToggleOptions;
 }

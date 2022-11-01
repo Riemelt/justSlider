@@ -19,10 +19,11 @@ class ConfigurationPanel {
     new InputField(this.$component.find(`.js-${this.className}__input-from`), options.inputFrom);
     new InputField(this.$component.find(`.js-${this.className}__input-to`), options.inputTo);
 
-    new Toggle(this.$component.find(`.js-${this.className}__toggle-vertical`));
-    new Toggle(this.$component.find(`.js-${this.className}__toggle-range`));
-    new Toggle(this.$component.find(`.js-${this.className}__toggle-bar`));
-    new Toggle(this.$component.find(`.js-${this.className}__toggle-tooltip`));
+    new Toggle(this.$component.find(`.js-${this.className}__toggle-vertical`), options.toggleVertical);
+    new Toggle(this.$component.find(`.js-${this.className}__toggle-forward`), options.toggleForward);
+    new Toggle(this.$component.find(`.js-${this.className}__toggle-range`), options.toggleRange);
+    new Toggle(this.$component.find(`.js-${this.className}__toggle-bar`), options.toggleBar);
+    new Toggle(this.$component.find(`.js-${this.className}__toggle-tooltip`), options.toggleTooltip);
   }
 }
 

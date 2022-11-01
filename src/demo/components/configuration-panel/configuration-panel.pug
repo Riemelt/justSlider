@@ -10,6 +10,7 @@ mixin configuration-panel(vars)
       inputFrom      = {},
       inputTo        = {},
       toggleVertical = {},
+      toggleForward  = {},
       toggleRange    = {},
       toggleBar      = {},
       toggleTooltip  = {},
@@ -37,6 +38,9 @@ mixin configuration-panel(vars)
     li(class=`${className}__item`)
       div(class=`${className}__toggle-vertical js-${className}__toggle-vertical`)
         +toggle(toggleVertical)
+    li(class=`${className}__item`)
+      div(class=`${className}__toggle-forward js-${className}__toggle-forward`)
+        +toggle(toggleForward)
     li(class=`${className}__item`)
       div(class=`${className}__toggle-range js-${className}__toggle-range`)
         +toggle(toggleRange)
