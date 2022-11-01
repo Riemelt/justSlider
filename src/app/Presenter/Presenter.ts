@@ -1,14 +1,19 @@
 import Model        from "../Model/Model";
 import View         from "../View/View";
 import EventManager from "../EventManager/EventManager";
-import { Direction, Options, Orientation }  from "../types";
+import { Direction, JustSliderOptions, Options, Orientation }  from "../types";
 
 class Presenter {
   private view: View;
   private model: Model;
   private eventManager: EventManager;
 
-  constructor(view: View, model: Model, options: Options) {
+  private onUpdate: (options: Options) => void;
+
+  constructor(view: View, model: Model, {
+    onUpdate,
+    ...options
+  }: JustSliderOptions) {
     this.eventManager = new EventManager();
 
     this.view = view;
@@ -16,16 +21,19 @@ class Presenter {
 
     this.model.setEventManager(this.eventManager);
     this.model.init(options);
-    
+
     const data = this.model.getOptions();
 
     this.view.init(data);
-    this.view.initComponents();
-    
-    this.createHandlers();
 
+    this.onUpdate = onUpdate;
+
+    this.createHandlers();
     this.registerEvents();
     this.addEventListeners();
+
+    this.view.initComponents();
+    this.eventManager.dispatchEvents(["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "OrientationUpdate", "TooltipsUpdate", "SliderUpdate"]);
   }
 
   public $getSlider(): JQuery<HTMLElement> {
@@ -54,27 +62,40 @@ class Presenter {
     this.eventManager.registerEvent("HandleFromMove");
     this.eventManager.registerEvent("HandleToMove");
     this.eventManager.registerEvent("SliderUpdate");
+    this.eventManager.registerEvent("OrientationUpdate");
+    this.eventManager.registerEvent("TooltipsUpdate");
+    this.eventManager.registerEvent("ProgressBarUpdate");
   }
 
   private addEventListeners() {
     this.eventManager.addEventListener("HandleFromMove", () => {
       const options = this.model.getOptions();
       this.view.updateHandleFrom(options);
-      this.view.updateProgressBar(options);
     });
 
     this.eventManager.addEventListener("HandleToMove", () => {
       const options = this.model.getOptions();
       this.view.updateHandleTo(options);
+    });
+
+    this.eventManager.addEventListener("ProgressBarUpdate", () => {
+      const options = this.model.getOptions();
       this.view.updateProgressBar(options);
+    });
+
+    this.eventManager.addEventListener("OrientationUpdate", () => {
+      const options = this.model.getOptions();
+      this.view.setOrientation(options.orientation);
+    });
+
+    this.eventManager.addEventListener("TooltipsUpdate", () => {
+      const options = this.model.getOptions();
+      this.view.updateTooltips(options);
     });
 
     this.eventManager.addEventListener("SliderUpdate", () => {
       const options = this.model.getOptions();
-      this.view.setOrientation(options.orientation);
-      this.view.updateHandleFrom(options);
-      this.view.updateHandleTo(options);
-      this.view.updateProgressBar(options);
+      this.onUpdate?.(options);
     });
   }
 }

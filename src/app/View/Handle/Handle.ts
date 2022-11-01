@@ -30,6 +30,7 @@ class Handle {
   }
 
   public delete() {
+    this.deleteHandlers();
     this.$point.remove();
   }
 
@@ -117,6 +118,10 @@ class Handle {
 
   private setHandlers() {
     this.$handle.on("mousedown.handle", this.handleMousedown.bind(this));
+  }
+
+  private deleteHandlers() {
+    this.$handle.off("mousedown.handle");
   }
 
   private handleMousedown(event: Event) {

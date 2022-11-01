@@ -4,11 +4,11 @@ import Model       from "./Model/Model";
 import Presenter   from "./Presenter/Presenter";
 import View        from "./View/View";
 import JustSlider  from "./JustSlider";
-import { Options } from "./types";
+import { JustSliderOptions, Options } from "./types";
 
 (function($) {
   $.fn.extend({
-    justSlider(options: Options) {
+    justSlider(options: JustSliderOptions) {
       const model     = new Model();
       const view      = new View();
       const presenter = new Presenter(view, model, options);

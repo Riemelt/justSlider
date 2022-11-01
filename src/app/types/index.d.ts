@@ -16,17 +16,8 @@ interface Options {
   progressBar?: boolean;
 }
 
-interface JustSliderOptions {
-  from?:        number;
-  to?:          number;
-  step?:        number;
-  min?:         number;
-  max?:         number;
-  orientation?: Orientation;
-  direction?:   Direction;
-  range?:       boolean;
-  tooltips?:    boolean;
-  progressBar?: boolean;
+interface JustSliderOptions extends Options {
+  onUpdate?: (options: Options) => void;
 }
 
 declare class JustSlider {

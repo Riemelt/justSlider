@@ -1,4 +1,4 @@
-import { Direction, JustSlider, Orientation }        from "../../../app/types";
+import { Direction, JustSlider, Options, Orientation }        from "../../../app/types";
 import { SliderDemoOptions } from "./types";
 import ConfigurationPanel    from "../configuration-panel";
 
@@ -20,10 +20,7 @@ class SliderDemo {
     this.options = options;
     this.$component = $parent.find(`.js-${this.className}`);
 
-    this.$slider = this.$component.find(`.js-${this.className}__slider`);
-    this.slider = this.$slider.justSlider(this.options.slider);
-
-    new ConfigurationPanel(this.$component.find(`.js-${this.className}__configuration-panel`), {
+    this.configurationPanel = new ConfigurationPanel(this.$component.find(`.js-${this.className}__configuration-panel`), {
       ...options.configurationPanel,
       inputFrom: {
         ...options.configurationPanel.inputFrom,
@@ -66,6 +63,16 @@ class SliderDemo {
         handleToggleChange: this.handleToggleDirectionChange.bind(this),
       },
     });
+
+    this.$slider = this.$component.find(`.js-${this.className}__slider`);
+    this.slider  = this.$slider.justSlider({
+      ...this.options.slider,
+      onUpdate: this.handleSliderUpdate.bind(this),
+    });
+  }
+
+  private handleSliderUpdate(options: Options) {
+    this.configurationPanel.update(options);
   }
 
   private handleInputFromChange(value: number) {

@@ -33,9 +33,6 @@ class View {
     this.handles = { from: undefined, to: undefined };
     this.initHtml();
     this.initAnimation();
-
-    const { orientation } = options;
-    this.setOrientation(orientation);
   }
 
   public setOrientation(orientation: Orientation) {
@@ -49,8 +46,6 @@ class View {
 
   public initComponents() {
     this.initHandleFrom();
-    this.updateHandleTo(this.options);
-    this.updateProgressBar(this.options);
   }
 
   public updateHandleFrom(options: Options) {
@@ -67,6 +62,7 @@ class View {
           $slider: this.$html,
           type:    "to"
         });
+        this.handles.to.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
       }
 
       this.handles.to.update(options);
@@ -114,9 +110,6 @@ class View {
     this.handleHandleMousemove = (position, type) => {
       handler(position, type);
     }
-    
-    this.handles.from?.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
-    this.handles.to?.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
   }
 
   public addCreateSliderClickHandler(handler: (value: number, type: HandleType) => void) {
@@ -166,7 +159,7 @@ class View {
       type:    "from"
     });
 
-    this.handles.from.update(this.options);
+    this.handles.from.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
   }
 }
 

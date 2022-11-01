@@ -10,6 +10,10 @@ class Toggle {
     this.render();
   }
 
+  public update(checked: boolean) {
+    this.$input.prop("checked", checked);
+  }
+
   private init($parent: JQuery<HTMLElement>, options: ToggleOptions) {
     this.options = options;
     this.$component = $parent.find(`.js-${this.className}`);

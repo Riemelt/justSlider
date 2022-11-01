@@ -10,6 +10,10 @@ class InputField {
     this.render();
   }
 
+  public update(value: number) {
+    this.$input.val(value);
+  }
+
   private init($parent: JQuery<HTMLElement>, options: InputFieldOptions) {
     this.options = options;
     this.$component = $parent.find(`.js-${this.className}`);
