@@ -36,8 +36,15 @@ class ConfigurationPanel {
     tooltips,
     range,
   }: Options) {
-    this.inputFrom.update(from);
-    this.inputTo.update(to);
+    this.inputFrom.update(from, step);
+
+    if (range) {
+      this.inputTo.enable();
+      this.inputTo.update(to, step);
+    } else {
+      this.inputTo.disable();
+    }
+
     this.inputStep.update(step);
     this.inputMin.update(min);
     this.inputMax.update(max);

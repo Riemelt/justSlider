@@ -10,8 +10,22 @@ class InputField {
     this.render();
   }
 
-  public update(value: number) {
+  public disable() {
+    this.$component.addClass(`${this.className}_disabled`);
+    this.$input.prop("disabled", true);
+  }
+
+  public enable() {
+    this.$component.removeClass(`${this.className}_disabled`);
+    this.$input.prop("disabled", false);
+  }
+
+  public update(value: number, step?: number) {
     this.$input.val(value);
+
+    if (step === undefined) return;
+
+    this.$input.prop("step", step);
   }
 
   private init($parent: JQuery<HTMLElement>, options: InputFieldOptions) {

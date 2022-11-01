@@ -129,10 +129,7 @@ class Model {
   }
 
   private adjustHandle(value: number, step: number, type: HandleType): number {
-    const { min } = this.options;
-    const relativeValue = value + (min * (-1));
-
-    const adjusted = (Math.round(relativeValue / step) * step) + min;
+    const adjusted = Math.round(value / step) * step;
     const validated = this.validateHandle(adjusted, type);
     return validated;
   }
