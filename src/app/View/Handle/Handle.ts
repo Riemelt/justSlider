@@ -4,6 +4,8 @@ import { TransformOptions } from "../types";
 import {
   transform,
   convertViewPositionToModel,
+  getCenterX,
+  getCenterY,
 } from "../utilities";
 
 import Tooltip from "./Tooltip/Tooltip";
@@ -124,34 +126,39 @@ class Handle {
     this.$handle.off("mousedown.handle");
   }
 
-  private handleMousedown(event: Event) {
+  private handleMousedown(event: MouseEvent) {
     event.preventDefault();
     this.$slider.removeClass("just-slider_animated");
 
-    $(document).on("mousemove.handle", this.handleDocumentMousemove.bind(this));
-    $(document).on("mouseup.handle", this.handleDocumentMouseup.bind(this));
-  }
+    const handleCenterX = getCenterX(this.$handle);
+    const handleCenterY = getCenterY(this.$handle);
+    const shift = this.options.orientation === "horizontal" ? event.pageX - handleCenterX : event.pageY - handleCenterY;
 
-  private handleDocumentMousemove(event: MouseEvent) {
-    const position = this.options.orientation === "horizontal" ? event.pageX : event.pageY;
-    const { min, max, orientation, direction } = this.options;
-    const convertedPosition = convertViewPositionToModel({
-      position,
-      min,
-      max,
-      orientation,
-      direction,
-      $context: this.$parent,
-    });
+    $(document).on("mousemove.handle", handleDocumentMousemove.bind(this));
+    $(document).on("mouseup.handle", handleDocumentMouseup.bind(this));
 
-    this.handleHandleMousemove?.(convertedPosition, this.type);
-  }
+    function handleDocumentMousemove(event: MouseEvent) {
+      const position = this.options.orientation === "horizontal" ? event.pageX - shift : event.pageY - shift;
+  
+      const { min, max, orientation, direction } = this.options;
+      const convertedPosition = convertViewPositionToModel({
+        position,
+        min,
+        max,
+        orientation,
+        direction,
+        $context: this.$parent,
+      });
+  
+      this.handleHandleMousemove?.(convertedPosition, this.type);
+    }
 
-  private handleDocumentMouseup() {
-    $(document).off("mouseup.handle");
-    $(document).off("mousemove.handle");
-
-    this.$slider.addClass("just-slider_animated");
+    function handleDocumentMouseup() {
+      $(document).off("mouseup.handle");
+      $(document).off("mousemove.handle");
+  
+      this.$slider.addClass("just-slider_animated");
+    }
   }
 }
 

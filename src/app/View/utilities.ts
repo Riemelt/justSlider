@@ -54,7 +54,23 @@ function getTranslateValue(shift: number, min: number, max: number, orientation:
   return percentage * sign;
 }
 
+function getCenterX($element: JQuery<HTMLElement>): number {
+  const offset = $element.offset().left;
+  const width = $element.outerWidth();
+
+  return offset + (width / 2);
+}
+
+function getCenterY($element: JQuery<HTMLElement>): number {
+  const offset = $element.offset().top;
+  const height = $element.outerHeight();
+
+  return offset + (height / 2);
+}
+
 export {
   transform,
   convertViewPositionToModel,
+  getCenterX,
+  getCenterY,
 };

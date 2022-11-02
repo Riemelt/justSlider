@@ -45,7 +45,7 @@
         "max": 100,
         "step": 26, 
         "range": true,
-        "orientation": "vertical",
+        "orientation": "horizontal",
         "direction": "forward",
         "progressBar": true,
         "tooltips": true
