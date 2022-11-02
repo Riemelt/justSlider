@@ -3,7 +3,7 @@ import "../styles";
 import Model        from "./Model/Model";
 import Presenter    from "./Presenter/Presenter";
 import View         from "./View/View";
-import JustSlider   from "./JustSlider";
+import JustSlider   from "./JustSlider/JustSlider";
 import EventManager from "./EventManager/EventManager";
 import { JustSliderOptions, Options } from "./types";
 

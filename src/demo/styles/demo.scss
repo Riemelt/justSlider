@@ -14,11 +14,12 @@ html,
 body {
   min-width: 320px;
   max-width: 1920px;
+  margin: 0 auto;
+  background-color: $dark-58;
 }
 
 .#{$className} {
   min-height: 100vh;
-  background-color: $dark-58;
   list-style-type: none;
   padding: 4.375rem 1.25rem;
 

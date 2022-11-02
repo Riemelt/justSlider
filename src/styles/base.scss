@@ -104,6 +104,7 @@ $className: 'just-slider';
       &__point {
         width: initial;
         height: 100%;
+        top: -100%;
         right: initial;
         left: 0;
       }
@@ -111,7 +112,8 @@ $className: 'just-slider';
       &__handle {
         right: initial;
         left: - calc(($handleHeight / 2) - ($sliderSize / 2));
-        top: - calc($handleHeight / 2);
+        top: initial;
+        bottom: - calc($handleHeight / 2);
       }
 
       &__tooltip {
