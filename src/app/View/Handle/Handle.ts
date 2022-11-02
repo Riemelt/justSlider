@@ -1,4 +1,5 @@
-import { Options }          from "../../types";
+import EventManager from "../../EventManager/EventManager";
+import { IAccessEventManager, Options }          from "../../types";
 import { TransformOptions } from "../types";
 
 import {
@@ -10,11 +11,12 @@ import {
 
 import Tooltip from "./Tooltip/Tooltip";
 
-class Handle {
+class Handle implements IAccessEventManager {
+  eventManager:    EventManager;
+
   private $point:  JQuery<HTMLElement>;
   private $handle: JQuery<HTMLElement>;
   private $parent: JQuery<HTMLElement>;
-  private $slider: JQuery<HTMLElement>;
 
   private handleHandleMousemove: (position: number, type: HandleType) => void;
 
@@ -25,6 +27,10 @@ class Handle {
 
   constructor(handleOptions: HandleOptions) {
     this.init(handleOptions);
+  }
+
+  public setEventManager(eventManager: EventManager) {
+    this.eventManager = eventManager;
   }
 
   public setHandleMousemoveHandler(handler: (position: number, type: HandleType) => void) {
@@ -97,10 +103,9 @@ class Handle {
     this.$point.css("transform", transformStyle);
   }
 
-  private init({$parent, $slider, type}: HandleOptions) {
+  private init({$parent, type}: HandleOptions) {
     this.type    = type;
     this.$parent = $parent;
-    this.$slider = $slider;
 
     this.initHtml();
     this.$handle = this.$point.find(".just-slider__handle");
@@ -128,7 +133,7 @@ class Handle {
 
   private handleMousedown(event: MouseEvent) {
     event.preventDefault();
-    this.$slider.removeClass("just-slider_animated");
+    this.eventManager.dispatchEvent("SliderClickDisable");
 
     const handleCenterX = getCenterX(this.$handle);
     const handleCenterY = getCenterY(this.$handle);
@@ -156,8 +161,8 @@ class Handle {
     function handleDocumentMouseup() {
       $(document).off("mouseup.handle");
       $(document).off("mousemove.handle");
-  
-      this.$slider.addClass("just-slider_animated");
+
+      this.eventManager.dispatchEvent("SliderClickEnable");
     }
   }
 }

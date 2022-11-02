@@ -1,9 +1,10 @@
 import EventManager from "../EventManager/EventManager";
-import { Direction, Options, Orientation } from "../types";
+import { Direction, Options, Orientation, IAccessEventManager } from "../types";
 
-class Model {
+class Model implements IAccessEventManager {
+  eventManager: EventManager;
+
   private options: Options;
-  private eventManager: EventManager;
 
   constructor() {
     //

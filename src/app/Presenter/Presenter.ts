@@ -1,29 +1,31 @@
 import Model        from "../Model/Model";
 import View         from "../View/View";
 import EventManager from "../EventManager/EventManager";
-import { Direction, JustSliderOptions, Options, Orientation }  from "../types";
+import { Direction, JustSliderOptions, Options, Orientation, IAccessEventManager }  from "../types";
 
-class Presenter {
+class Presenter implements IAccessEventManager {
+  eventManager: EventManager;
+
   private view: View;
   private model: Model;
-  private eventManager: EventManager;
 
   private onUpdate: (options: Options) => void;
 
-  constructor(view: View, model: Model, {
+  constructor(view: View, model: Model) {
+    this.view = view;
+    this.model = model;
+  }
+
+  public init({
     onUpdate,
     ...options
   }: JustSliderOptions) {
-    this.eventManager = new EventManager();
-
-    this.view = view;
-    this.model = model;
-
     this.model.setEventManager(this.eventManager);
     this.model.init(options);
 
     const data = this.model.getOptions();
 
+    this.view.setEventManager(this.eventManager);
     this.view.init(data);
 
     this.onUpdate = onUpdate;
@@ -33,7 +35,19 @@ class Presenter {
     this.addEventListeners();
 
     this.view.initComponents();
-    this.eventManager.dispatchEvents(["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "OrientationUpdate", "TooltipsUpdate", "SliderUpdate"]);
+    this.eventManager.dispatchEvents([
+      "HandleFromMove",
+      "HandleToMove",
+      "ProgressBarUpdate",
+      "OrientationUpdate",
+      "TooltipsUpdate",
+      "SliderClickEnable",
+      "SliderUpdate",
+    ]);
+  }
+
+  public setEventManager(eventManager: EventManager) {
+    this.eventManager = eventManager;
   }
 
   public $getSlider(): JQuery<HTMLElement> {
@@ -65,6 +79,8 @@ class Presenter {
     this.eventManager.registerEvent("OrientationUpdate");
     this.eventManager.registerEvent("TooltipsUpdate");
     this.eventManager.registerEvent("ProgressBarUpdate");
+    this.eventManager.registerEvent("SliderClickDisable");
+    this.eventManager.registerEvent("SliderClickEnable");
   }
 
   private addEventListeners() {
@@ -91,6 +107,14 @@ class Presenter {
     this.eventManager.addEventListener("TooltipsUpdate", () => {
       const options = this.model.getOptions();
       this.view.updateTooltips(options);
+    });
+
+    this.eventManager.addEventListener("SliderClickDisable", () => {
+      this.view.removeSliderClickHandler();
+    });
+
+    this.eventManager.addEventListener("SliderClickEnable", () => {
+      this.view.setSliderClickHandler();
     });
 
     this.eventManager.addEventListener("SliderUpdate", () => {

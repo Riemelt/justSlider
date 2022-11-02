@@ -1,3 +1,4 @@
+import EventManager from "../EventManager/EventManager";
 import Presenter from "../Presenter/Presenter";
 
 type Orientation = "vertical" | "horizontal";
@@ -20,6 +21,11 @@ interface JustSliderOptions extends Options {
   onUpdate?: (options: Options) => void;
 }
 
+interface IAccessEventManager {
+  eventManager: EventManager;
+  setEventManager: (eventManager: EventManager) => void;
+}
+
 declare class JustSlider {
   private presenter: Presenter;
   constructor($parent: JQuery<HTMLElement>, presenter: Presenter);
@@ -33,4 +39,5 @@ export {
   Options,
   JustSliderOptions,
   JustSlider,
+  IAccessEventManager,
 }

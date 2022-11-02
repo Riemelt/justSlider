@@ -1,7 +1,9 @@
 type SliderEvent =
-  "HandleFromMove"    |
-  "HandleToMove"      |
-  "SliderUpdate"      |
-  "OrientationUpdate" |
-  "ProgressBarUpdate" |
-  "TooltipsUpdate";
+  "HandleFromMove"     |
+  "HandleToMove"       |
+  "SliderUpdate"       |
+  "OrientationUpdate"  |
+  "ProgressBarUpdate"  |
+  "TooltipsUpdate"     |
+  "SliderClickDisable" |
+  "SliderClickEnable";

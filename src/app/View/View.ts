@@ -1,12 +1,14 @@
-import { Options, Orientation } from "../types";
+import EventManager from "../EventManager/EventManager";
+import { Options, Orientation, IAccessEventManager } from "../types";
 import Handle                   from "./Handle/Handle";
 import ProgressBar              from "./ProgressBar/ProgressBar";
 
 import { convertViewPositionToModel } from "./utilities";
 
-class View {
-  private options:     Options;
+class View implements IAccessEventManager {
+  eventManager:        EventManager;
 
+  private options:     Options;
   private $html:       JQuery<HTMLElement>;
   private $justSlider: JQuery<HTMLElement>;
 
@@ -22,6 +24,10 @@ class View {
 
   constructor() {
     //
+  }
+
+  public setEventManager(eventManager: EventManager) {
+    this.eventManager = eventManager;
   }
 
   public getHtml() {
@@ -59,9 +65,10 @@ class View {
       if (!this.handles.to) {
         this.handles.to = new Handle({
           $parent: this.$justSlider,
-          $slider: this.$html,
           type:    "to"
         });
+
+        this.handles.to.setEventManager(this.eventManager);
         this.handles.to.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
       }
 
@@ -114,7 +121,16 @@ class View {
 
   public addCreateSliderClickHandler(handler: (value: number, type: HandleType) => void) {
     this.sliderClickHandler = handler;
-    this.$justSlider.on("click.slider", this.handleSliderClick.bind(this));
+  }
+
+  public setSliderClickHandler() {
+    this.$html.addClass("just-slider_animated");
+    this.$justSlider.on("mousedown.slider", this.handleSliderClick.bind(this));
+  }
+
+  public removeSliderClickHandler() {
+    this.$html.removeClass("just-slider_animated");
+    this.$justSlider.off("mousedown.slider");
   }
 
   private handleSliderClick(event: MouseEvent) {
@@ -155,10 +171,10 @@ class View {
   private initHandleFrom() {
     this.handles.from = new Handle({
       $parent: this.$justSlider,
-      $slider: this.$html,
       type:    "from"
     });
 
+    this.handles.from.setEventManager(this.eventManager);
     this.handles.from.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
   }
 }
