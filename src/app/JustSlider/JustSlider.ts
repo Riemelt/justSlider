@@ -1,5 +1,5 @@
 import Presenter from "../Presenter/Presenter";
-import { Direction, Options, Orientation } from "../types";
+import { Options } from "../types";
 
 class JustSlider {
   private presenter: Presenter;

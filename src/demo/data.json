@@ -50,57 +50,6 @@
         "progressBar": true,
         "tooltips": true
       }
-    },
-    {
-      "configurationPanel": {
-        "inputMin": {
-          "title": "min",
-          "type": "number"
-        },
-        "inputMax": {
-          "title": "max",
-          "type": "number"
-        },
-        "inputStep": {
-          "title": "step",
-          "type": "number"
-        },
-        "inputFrom": {
-          "title": "from",
-          "type": "number"
-        },
-        "inputTo": {
-          "title": "to",
-          "type": "number"
-        },
-        "toggleVertical": {
-          "title": "vertical"
-        },
-        "toggleForward": {
-          "title": "forward"
-        },
-        "toggleRange": {
-          "title": "range"
-        },
-        "toggleBar": {
-          "title": "bar"
-        },
-        "toggleTooltip": {
-          "title": "tooltip"
-        }
-      },
-      "slider": {
-        "from": -45,
-        "to": 90,
-        "min": -2,
-        "max": 107,
-        "step": 26, 
-        "range": true,
-        "orientation": "horizontal",
-        "direction": "forward",
-        "progressBar": true,
-        "tooltips": true
-      }
     }
   ]
 }

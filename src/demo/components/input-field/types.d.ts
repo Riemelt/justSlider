@@ -4,3 +4,9 @@ interface InputFieldOptions {
   type?: string;
   handleInputChange?: (value: number) => void;
 }
+
+interface InputUpdate {
+  value: number,
+  step?: number,
+  min?:  number,
+}

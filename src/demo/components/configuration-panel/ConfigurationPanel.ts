@@ -36,18 +36,18 @@ class ConfigurationPanel {
     tooltips,
     range,
   }: Options) {
-    this.inputFrom.update(from, step);
+    this.inputFrom.update({ step, min, value: from });
 
     if (range) {
       this.inputTo.enable();
-      this.inputTo.update(to, step);
+      this.inputTo.update({ step, min, value: to });
     } else {
       this.inputTo.disable();
     }
 
-    this.inputStep.update(step);
-    this.inputMin.update(min);
-    this.inputMax.update(max);
+    this.inputStep.update({ value: step });
+    this.inputMin.update({ value: min });
+    this.inputMax.update({ value: max });
 
     this.toggleVertical.update(orientation === "vertical");
     this.toggleForward.update(direction === "forward");

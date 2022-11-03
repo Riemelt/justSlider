@@ -20,12 +20,20 @@ class InputField {
     this.$input.prop("disabled", false);
   }
 
-  public update(value: number, step?: number) {
+  public update({
+    value,
+    step,
+    min,
+  }: InputUpdate) {
     this.$input.val(value);
 
-    if (step === undefined) return;
+    if (step !== undefined) {
+      this.$input.prop("step", step);
+    }
 
-    this.$input.prop("step", step);
+    if (min !== undefined) {
+      this.$input.prop("min", min);
+    }
   }
 
   private init($parent: JQuery<HTMLElement>, options: InputFieldOptions) {

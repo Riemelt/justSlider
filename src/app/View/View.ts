@@ -135,7 +135,7 @@ class View implements IAccessEventManager {
 
   private handleSliderClick(event: MouseEvent) {
     const position = this.options.orientation === "horizontal" ? event.pageX : event.pageY;
-    const { min, max, orientation, direction, from, to } = this.options;
+    const { min, max, orientation, direction, from, to, range } = this.options;
 
     const converted = convertViewPositionToModel({
       position,
@@ -148,7 +148,7 @@ class View implements IAccessEventManager {
 
     const distanceToTo = Math.abs(to - converted);
     const distanceToFrom = Math.abs(from - converted);
-    const type = distanceToTo > distanceToFrom ? "from" : "to";
+    const type = distanceToTo > distanceToFrom || !range ? "from" : "to";
 
     this.sliderClickHandler(converted, type);
   }

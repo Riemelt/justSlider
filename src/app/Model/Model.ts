@@ -123,6 +123,7 @@ class Model implements IAccessEventManager {
 
   private setHandle(value: number, type: HandleType) {
     const { step } = this.options;
+    console.log(this.options);
 
     const newValue = this.adjustHandle(value, step, type);
     const validatedValue = this.validateHandle(value, type);
@@ -130,7 +131,10 @@ class Model implements IAccessEventManager {
   }
 
   private adjustHandle(value: number, step: number, type: HandleType): number {
-    const adjusted = Math.round(value / step) * step;
+    const { min } = this.options;
+    const relativeValue = value + (min * (-1));
+
+    const adjusted = (Math.round(relativeValue / step) * step) + min;
     const validated = this.validateHandle(adjusted, type);
     return validated;
   }
