@@ -1,13 +1,12 @@
 import EventManager from "../EventManager/EventManager";
-import { Direction, Options, Orientation, IAccessEventManager } from "../types";
+import { Options } from "../types";
 
-class Model implements IAccessEventManager {
-  eventManager: EventManager;
-
+class Model {
+  private eventManager: EventManager;
   private options: Options;
 
-  constructor() {
-    //
+  constructor(eventManager: EventManager) {
+    this.eventManager = eventManager;
   }
 
   public init({
@@ -106,10 +105,6 @@ class Model implements IAccessEventManager {
     }
   }
 
-  public setEventManager(eventManager: EventManager) {
-    this.eventManager = eventManager;
-  }
-
   public getOptions(): Options {
     return this.options;
   }
@@ -123,7 +118,6 @@ class Model implements IAccessEventManager {
 
   private setHandle(value: number, type: HandleType) {
     const { step } = this.options;
-    console.log(this.options);
 
     const newValue = this.adjustHandle(value, step, type);
     const validatedValue = this.validateHandle(value, type);

@@ -1,31 +1,29 @@
 import Model        from "../Model/Model";
 import View         from "../View/View";
 import EventManager from "../EventManager/EventManager";
-import { Direction, JustSliderOptions, Options, Orientation, IAccessEventManager }  from "../types";
+import { JustSliderOptions, Options }  from "../types";
 
-class Presenter implements IAccessEventManager {
-  eventManager: EventManager;
-
-  private view: View;
-  private model: Model;
+class Presenter {
+  private eventManager: EventManager;
+  private view:         View;
+  private model:        Model;
 
   private onUpdate: (options: Options) => void;
 
-  constructor(view: View, model: Model) {
-    this.view = view;
-    this.model = model;
+  constructor(view: View, model: Model, eventManager: EventManager) {
+    this.view         = view;
+    this.model        = model;
+    this.eventManager = eventManager;
   }
 
   public init({
     onUpdate,
     ...options
   }: JustSliderOptions) {
-    this.model.setEventManager(this.eventManager);
     this.model.init(options);
 
     const data = this.model.getOptions();
 
-    this.view.setEventManager(this.eventManager);
     this.view.init(data);
 
     this.onUpdate = onUpdate;
@@ -44,10 +42,6 @@ class Presenter implements IAccessEventManager {
       "SliderClickEnable",
       "SliderUpdate",
     ]);
-  }
-
-  public setEventManager(eventManager: EventManager) {
-    this.eventManager = eventManager;
   }
 
   public $getSlider(): JQuery<HTMLElement> {

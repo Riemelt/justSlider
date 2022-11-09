@@ -1,4 +1,11 @@
+import EventManager from "../../EventManager/EventManager";
+
 interface HandleOptions {
-  $parent: JQuery<HTMLElement>;
-  type:    HandleType;
+  eventManager: EventManager;
+  $parent:      JQuery<HTMLElement>;
+  type:         HandleType;
+}
+
+export {
+  HandleOptions,
 }

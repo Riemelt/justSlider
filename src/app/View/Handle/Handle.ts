@@ -1,5 +1,5 @@
 import EventManager from "../../EventManager/EventManager";
-import { IAccessEventManager, Options }          from "../../types";
+import { Options }          from "../../types";
 import { TransformOptions } from "../types";
 
 import {
@@ -10,13 +10,13 @@ import {
 } from "../utilities";
 
 import Tooltip from "./Tooltip/Tooltip";
+import { HandleOptions } from "./types";
 
-class Handle implements IAccessEventManager {
-  eventManager:    EventManager;
-
-  private $point:  JQuery<HTMLElement>;
-  private $handle: JQuery<HTMLElement>;
-  private $parent: JQuery<HTMLElement>;
+class Handle {
+  private eventManager: EventManager;
+  private $point:       JQuery<HTMLElement>;
+  private $handle:      JQuery<HTMLElement>;
+  private $parent:      JQuery<HTMLElement>;
 
   private handleHandleMousemove: (position: number, type: HandleType) => void;
 
@@ -26,11 +26,8 @@ class Handle implements IAccessEventManager {
   private tooltip: Tooltip;
 
   constructor(handleOptions: HandleOptions) {
+    this.eventManager = handleOptions.eventManager;
     this.init(handleOptions);
-  }
-
-  public setEventManager(eventManager: EventManager) {
-    this.eventManager = eventManager;
   }
 
   public setHandleMousemoveHandler(handler: (position: number, type: HandleType) => void) {

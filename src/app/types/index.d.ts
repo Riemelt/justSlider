@@ -1,4 +1,3 @@
-import EventManager from "../EventManager/EventManager";
 import { JustSlider } from "../JustSlider/types";
 
 type Orientation = "vertical" | "horizontal";
@@ -21,16 +20,10 @@ interface JustSliderOptions extends Options {
   onUpdate?: (options: Options) => void;
 }
 
-interface IAccessEventManager {
-  eventManager: EventManager;
-  setEventManager: (eventManager: EventManager) => void;
-}
-
 export {
   Orientation,
   Direction,
   Options,
   JustSliderOptions,
   JustSlider,
-  IAccessEventManager,
 }
