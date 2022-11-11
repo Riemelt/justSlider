@@ -1,12 +1,9 @@
 import EventManager from "../../EventManager/EventManager";
-import { Options }          from "../../types";
-import { TransformOptions } from "../types";
+import { Direction, Options, Orientation } from "../../types";
 
 import {
   transform,
   convertViewPositionToModel,
-  getCenterX,
-  getCenterY,
 } from "../utilities";
 
 import Tooltip from "./Tooltip/Tooltip";
@@ -95,8 +92,15 @@ class Handle {
     }
   }
 
-  private updatePosition(transformOptions: TransformOptions) {
-    const transformStyle = transform(transformOptions);
+  private updatePosition(options: {
+    shift:        number,
+    min:          number,
+    max:          number,
+    orientation:  Orientation,
+    direction:    Direction,
+    scale?:       number,
+  }) {
+    const transformStyle = transform(options);
     this.$point.css("transform", transformStyle);
   }
 
@@ -132,24 +136,30 @@ class Handle {
     event.preventDefault();
     this.eventManager.dispatchEvent("SliderClickDisable");
 
-    const handleCenterX = getCenterX(this.$handle);
-    const handleCenterY = getCenterY(this.$handle);
-    const shift = this.options.orientation === "horizontal" ? event.pageX - handleCenterX : event.pageY - handleCenterY;
+    const offset = this.options.orientation === "horizontal" ? this.$handle.offset().left : this.$handle.offset().top;
+    const length = this.options.orientation === "horizontal" ? this.$handle.outerWidth() : this.$handle.outerHeight();
+    const center = offset + (length / 2);
+    const shiftFromCenter  = this.options.orientation === "horizontal" ? event.pageX - center : event.pageY - center;
 
     $(document).on("mousemove.handle", handleDocumentMousemove.bind(this));
     $(document).on("mouseup.handle", handleDocumentMouseup.bind(this));
 
     function handleDocumentMousemove(event: MouseEvent) {
-      const position = this.options.orientation === "horizontal" ? event.pageX - shift : event.pageY - shift;
+      const position = this.options.orientation === "horizontal" ? event.pageX - shiftFromCenter : event.pageY - shiftFromCenter;
   
       const { min, max, orientation, direction } = this.options;
+
+      const length = orientation === "horizontal" ? this.$parent.width() : this.$parent.height();
+      const shift = orientation === "horizontal" ? this.$parent.position().left : this.$parent.position().top;
+
       const convertedPosition = convertViewPositionToModel({
         position,
         min,
         max,
         orientation,
         direction,
-        $context: this.$parent,
+        length,
+        shift,
       });
   
       this.handleHandleMousemove?.(convertedPosition, this.type);

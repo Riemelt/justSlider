@@ -132,13 +132,17 @@ class View {
     const position = this.options.orientation === "horizontal" ? event.pageX : event.pageY;
     const { min, max, orientation, direction, from, to, range } = this.options;
 
+    const length = orientation === "horizontal" ? this.$justSlider.width() : this.$justSlider.height();
+    const shift = orientation === "horizontal" ? this.$justSlider.position().left : this.$justSlider.position().top;
+
     const converted = convertViewPositionToModel({
       position,
       min,
       max,
       orientation,
       direction,
-      $context: this.$justSlider,
+      length,
+      shift,
     });
 
     const distanceToTo = Math.abs(to - converted);

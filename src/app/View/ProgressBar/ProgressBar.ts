@@ -1,5 +1,4 @@
-import { Options }          from "../../types";
-import { TransformOptions } from "../types";
+import { Direction, Options, Orientation }          from "../../types";
 import { transform }        from "../utilities";
 
 class ProgressBar {
@@ -37,8 +36,15 @@ class ProgressBar {
     this.$component.remove();
   }
 
-  private updatePosition(transformOptions: TransformOptions) {
-    const transformStyle = transform(transformOptions)
+  private updatePosition(options: {
+    shift:       number,
+    min:         number,
+    max:         number,
+    orientation: Orientation,
+    direction:   Direction,
+    scale?:      number,
+  }) {
+    const transformStyle = transform(options)
     this.$bar.css("transform", transformStyle);
   }
 

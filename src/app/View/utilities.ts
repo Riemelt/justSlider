@@ -2,18 +2,16 @@ import { Direction, Orientation } from "../types";
 
 function convertViewPositionToModel(options: {
   position:    number,
-  $context:    JQuery<HTMLElement>,
+  shift:       number,
+  length:      number,
   min:         number,
   max:         number,
   orientation: Orientation,
   direction:   Direction,
 }): number {
-  const { position, $context, min, max, orientation, direction } = options;
+  const { position, shift, length, min, max, orientation, direction } = options;
 
-  const sliderLength = orientation === "horizontal" ? $context.width() : $context.height();
-  const shift        = orientation === "horizontal" ? $context.position().left : $context.position().top;
-
-  const ratio        = (max - min) / sliderLength;
+  const ratio        = (max - min) / length;
   const realPosition = position - shift;
   const converted    = realPosition * ratio + min;
 
@@ -30,7 +28,7 @@ function transform(options: {
   max:         number,
   orientation: Orientation,
   direction:   Direction,
-  scale:       number,
+  scale?:      number,
 }): string {
   const { shift, min, max, orientation, direction, scale } = options;
 
@@ -39,9 +37,14 @@ function transform(options: {
   const translateValue = getTranslateValue(shift, min, max, orientation, direction);
   const translateStyle = getTranslateStyle(translateValue, axis);
 
-  const scaleStyle = scale !== undefined ? getScaleStyle(scale, axis) : "";
+  let result = translateStyle;
 
-  return `${translateStyle} ${scaleStyle}`;
+  if (scale !== undefined) {
+    const scaleStyle = getScaleStyle(scale, axis);
+    result += ` ${scaleStyle}`;
+  }
+
+  return result;
 }
 
 function getAxis(orientation: Orientation): string {
@@ -52,7 +55,7 @@ function getPercentage(value: number, min: number, max: number): number {
   return Math.abs((((value - min) / (max - min)) * 100))
 }
 
-function getScaleStyle(scale: number, axis: string) {
+function getScaleStyle(scale: number, axis: string): string {
   return `scale${axis}(${scale})`;
 }
 
@@ -71,23 +74,7 @@ function getTranslateValue(shift: number, min: number, max: number, orientation:
   return percentage * sign;
 }
 
-function getCenterX($element: JQuery<HTMLElement>): number {
-  const offset = $element.offset().left;
-  const width = $element.outerWidth();
-
-  return offset + (width / 2);
-}
-
-function getCenterY($element: JQuery<HTMLElement>): number {
-  const offset = $element.offset().top;
-  const height = $element.outerHeight();
-
-  return offset + (height / 2);
-}
-
 export {
   transform,
   convertViewPositionToModel,
-  getCenterX,
-  getCenterY,
 };
