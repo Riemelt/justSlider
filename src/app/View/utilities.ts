@@ -1,7 +1,15 @@
 import { Direction, Orientation } from "../types";
-import { ConvertPositionOptions, TransformOptions } from "./types";
 
-function convertViewPositionToModel({position, $context, min, max, orientation, direction}: ConvertPositionOptions): number {
+function convertViewPositionToModel(options: {
+  position:    number,
+  $context:    JQuery<HTMLElement>,
+  min:         number,
+  max:         number,
+  orientation: Orientation,
+  direction:   Direction,
+}): number {
+  const { position, $context, min, max, orientation, direction } = options;
+
   const sliderLength = orientation === "horizontal" ? $context.width() : $context.height();
   const shift        = orientation === "horizontal" ? $context.position().left : $context.position().top;
 
@@ -16,7 +24,16 @@ function convertViewPositionToModel({position, $context, min, max, orientation, 
   return min + max - converted;
 }
 
-function transform({shift, min, max, orientation, direction, scale}: TransformOptions): string {
+function transform(options: {
+  shift:       number,
+  min:         number,
+  max:         number,
+  orientation: Orientation,
+  direction:   Direction,
+  scale:       number,
+}): string {
+  const { shift, min, max, orientation, direction, scale } = options;
+
   const axis = getAxis(orientation);
 
   const translateValue = getTranslateValue(shift, min, max, orientation, direction);

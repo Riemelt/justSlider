@@ -1,5 +1,5 @@
 import Subject from "./Subject/Subject";
-import { EventSubjects } from "./types";
+import { EventSubjects, SliderEvent } from "./types";
 
 class EventManager {
   private eventsSubjects: EventSubjects;
@@ -8,22 +8,25 @@ class EventManager {
     this.eventsSubjects = {};
   }
 
-  public registerEvent(eventName: SliderEvent) {
-    const eventSubject = new Subject(eventName);
-    this.eventsSubjects[eventName] = eventSubject;
+  public getEventSubjects(): EventSubjects {
+    return this.eventsSubjects;
   }
 
-  public dispatchEvent(eventName: SliderEvent) {
+  public registerEvent(eventName: SliderEvent): void {
+    this.eventsSubjects[eventName] = new Subject();
+  }
+
+  public dispatchEvent(eventName: SliderEvent): void {
     this.eventsSubjects[eventName]?.observers.forEach(observer => observer());
   }
 
-  public dispatchEvents(eventNames: Array<SliderEvent>) {
+  public dispatchEvents(eventNames: Array<SliderEvent>): void {
     eventNames.forEach(eventName => {
       this.eventsSubjects[eventName]?.observers.forEach(observer => observer());
     });
   }
 
-  public addEventListener(eventName: SliderEvent, observer: () => void) {
+  public addEventListener(eventName: SliderEvent, observer: () => void): void {
     this.eventsSubjects[eventName].subscribe(observer);
   }
 }

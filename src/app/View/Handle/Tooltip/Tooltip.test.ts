@@ -7,7 +7,7 @@ describe("Tooltip", () => {
   const tooltipClass = ".just-slider__tooltip";
 
   beforeEach(() => {
-    $parent = $(`<div class="parent"></div>`);
+    $parent = $(`<div class="just-slider"></div>`);
     tooltip = new Tooltip($parent);
   });
 
@@ -27,7 +27,7 @@ describe("Tooltip", () => {
   test("Updates value in the html node", () => {
     tooltip.update(5);
     const $tooltip = $parent.find(tooltipClass);
-    
+
     expect($tooltip.html()).toBe("5");
   });
 });
