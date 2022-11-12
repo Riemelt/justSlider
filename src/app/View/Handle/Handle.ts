@@ -27,6 +27,10 @@ class Handle {
     this.init(handleOptions);
   }
 
+  public getHandleHTML(): JQuery<HTMLElement> {
+    return this.$handle;
+  }
+
   public setHandleMousemoveHandler(handler: (position: number, type: HandleType) => void) {
     this.handleHandleMousemove = handler;
   }
@@ -138,6 +142,7 @@ class Handle {
 
     const offset = this.options.orientation === "horizontal" ? this.$handle.offset().left : this.$handle.offset().top;
     const length = this.options.orientation === "horizontal" ? this.$handle.outerWidth() : this.$handle.outerHeight();
+
     const center = offset + (length / 2);
     const shiftFromCenter  = this.options.orientation === "horizontal" ? event.pageX - center : event.pageY - center;
 
@@ -150,7 +155,7 @@ class Handle {
       const { min, max, orientation, direction } = this.options;
 
       const length = orientation === "horizontal" ? this.$parent.width() : this.$parent.height();
-      const shift = orientation === "horizontal" ? this.$parent.position().left : this.$parent.position().top;
+      const shift = orientation === "horizontal" ? this.$parent.offset().left : this.$parent.offset().top;
 
       const convertedPosition = convertViewPositionToModel({
         position,
