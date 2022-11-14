@@ -1,4 +1,5 @@
 import EventManager from "../EventManager/EventManager";
+import { SliderEvent } from "../EventManager/types";
 import { Options } from "../types";
 
 class Model {

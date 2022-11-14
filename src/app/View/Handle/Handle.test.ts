@@ -2,7 +2,6 @@ import EventManager from "../../EventManager/EventManager";
 import { Options } from "../../types";
 import Handle from "./Handle";
 import Tooltip from "./Tooltip/Tooltip";
-jest.mock('./Tooltip/Tooltip');
 
 import * as Utilities from "../utilities";
 
@@ -29,7 +28,6 @@ describe("Handle", () => {
 
   beforeEach(() => {
     $(document).off();
-    (Tooltip as jest.Mock).mockRestore();
   });
 
   describe("Creates html node and appends to the parent", () => {
@@ -78,15 +76,6 @@ describe("Handle", () => {
     expect(mockedDelete).toBeCalled();
 
     mockedDelete.mockRestore();
-  });
-
-  test("Doesn't create new Tooltip if one is already created", () => {
-    generateHandle("from");
-    
-    handle.update({ ...options, tooltips: true });
-    handle.update({ ...options, tooltips: true });
-
-    expect(Tooltip).toHaveBeenCalledTimes(1);
   });
 
   describe("Updates focus", () => {
@@ -145,6 +134,7 @@ describe("Handle", () => {
     const $handle = $parent.find(`${pointClass} ${handleClass}`);
     $handle.trigger("mousedown");
     $(document).trigger("mousemove");
+    $(document).trigger("mouseup");
     expect(handler).toBeCalledTimes(1);
   });
 
@@ -177,7 +167,7 @@ describe("Handle", () => {
       mockedDispatchEvent.mockRestore();
     });
 
-    test("Drag'n'drop with horizontal mode", () => {
+    test("Drag'n'drop in horizontal mode", () => {
       const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
       const handler = jest.fn(() => undefined);
       const eventMousedown = new jQuery.Event( "mousedown", {
@@ -229,7 +219,7 @@ describe("Handle", () => {
       mockedHandleOffset.mockRestore();
     });
 
-    test("Drag'n'drop with vertical mode", () => {
+    test("Drag'n'drop in vertical mode", () => {
       const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
       const handler = jest.fn(() => undefined);
       const eventMousedown = new jQuery.Event( "mousedown", {

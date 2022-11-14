@@ -33,7 +33,6 @@ class View {
     this.options = options;
     this.handles = { from: undefined, to: undefined };
     this.initHtml();
-    this.initAnimation();
   }
 
   public setOrientation(orientation: Orientation) {
@@ -46,7 +45,7 @@ class View {
   }
 
   public initComponents() {
-    this.initHandleFrom();
+    this.initHandle("from");
   }
 
   public updateHandleFrom(options: Options) {
@@ -58,13 +57,7 @@ class View {
 
     if (range) {
       if (!this.handles.to) {
-        this.handles.to = new Handle({
-          $parent:      this.$justSlider,
-          type:         "to",
-          eventManager: this.eventManager,
-        });
-
-        this.handles.to.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
+        this.initHandle("to");
       }
 
       this.handles.to.update(options);
@@ -77,8 +70,8 @@ class View {
   }
 
   public updateTooltips(options: Options) {
-    this.handles["from"]?.updateTooltip(options);
-    this.handles["to"]?.updateTooltip(options);
+    this.handles.from?.updateTooltip(options);
+    this.handles.to?.updateTooltip(options);
   }
 
   public updateProgressBar(options: Options) {
@@ -133,7 +126,7 @@ class View {
     const { min, max, orientation, direction, from, to, range } = this.options;
 
     const length = orientation === "horizontal" ? this.$justSlider.width() : this.$justSlider.height();
-    const shift = orientation === "horizontal" ? this.$justSlider.position().left : this.$justSlider.position().top;
+    const shift = orientation === "horizontal" ? this.$justSlider.offset().left : this.$justSlider.offset().top;
 
     const converted = convertViewPositionToModel({
       position,
@@ -163,18 +156,14 @@ class View {
     this.$justSlider = this.$html.find(".just-slider__main");
   }
 
-  private initAnimation() {
-    this.$html.addClass("just-slider_animated");
-  }
-
-  private initHandleFrom() {
-    this.handles.from = new Handle({
+  private initHandle(type: HandleType) {
+    this.handles[type] = new Handle({
+      type,
       $parent:      this.$justSlider,
-      type:         "from",
       eventManager: this.eventManager,
     });
 
-    this.handles.from.setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
+    this.handles[type].setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
   }
 }
 
