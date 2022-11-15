@@ -22,7 +22,7 @@ class EventManager {
 
   public dispatchEvents(eventNames: Array<SliderEvent>): void {
     eventNames.forEach(eventName => {
-      this.eventsSubjects[eventName]?.observers.forEach(observer => observer());
+      this.dispatchEvent(eventName);
     });
   }
 

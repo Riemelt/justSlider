@@ -21,7 +21,7 @@ class Model {
     range       = false,
     tooltips    = false,
     progressBar = false,
-  }: Options) {
+  }: Options = {}) {
 
     this.options = { from, to, range, min, max, step, orientation, direction, tooltips, progressBar };
 
@@ -29,6 +29,10 @@ class Model {
     this.setStep(step);
     this.setHandle(from, "from");
     this.setHandle(to, "to");
+  }
+
+  public getOptions(): Options {
+    return this.options;
   }
 
   public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar }: Options) {
@@ -74,14 +78,14 @@ class Model {
       addEventsToDispatch(["TooltipsUpdate", "SliderUpdate"]);
     }
 
-    if (from !== undefined) {
-      addHandlesToUpdate(["from"]);
-      addEventsToDispatch(["HandleFromMove", "ProgressBarUpdate", "SliderUpdate"]);
-    }
-
     if (to !== undefined) {
       addHandlesToUpdate(["to"]);
       addEventsToDispatch(["HandleToMove", "ProgressBarUpdate", "SliderUpdate"]);
+    }
+
+    if (from !== undefined) {
+      addHandlesToUpdate(["from"]);
+      addEventsToDispatch(["HandleFromMove", "ProgressBarUpdate", "SliderUpdate"]);
     }
 
     handlesToUpdate.forEach(type => {
@@ -104,10 +108,6 @@ class Model {
     function addEventsToDispatch(events: SliderEvent[]) {
       events.forEach(event => eventsToDispatch.add(event));
     }
-  }
-
-  public getOptions(): Options {
-    return this.options;
   }
 
   public updateHandle(value: number, type: HandleType) {
