@@ -28,10 +28,10 @@ describe("ProgressBar", () => {
 
   describe("Updates transform styles", () => {
     const options: Options = { min: -100, max: 300, from: 200, to: 250, range: false, orientation: "horizontal", direction: "forward" };
-    let mockedTransform: jest.SpyInstance<string, [options: { shift: number; min: number; max: number; orientation: Orientation; direction: Direction; scale?: number; }]>;
+    let mockedTransform: jest.SpyInstance<{ property: string, style: string }, [options: { shift: number; min: number; max: number; orientation: Orientation; direction: Direction; scale?: number; }]>;
 
     beforeEach(() => {
-      mockedTransform = jest.spyOn(Utilities, "transform");
+      mockedTransform = jest.spyOn(Utilities, "getTransformStyles");
     });
 
     afterEach(() => {
@@ -49,9 +49,9 @@ describe("ProgressBar", () => {
         scale:       0.75,
       });
 
-      const transformValue = mockedTransform.mock.results[0].value;
+      const { property, style } = mockedTransform.mock.results[0].value;
       const $progressBar = $parent.find(progressBarClass);
-      expect($progressBar.css("transform")).toBe(transformValue);
+      expect($progressBar.css(property)).toBe(style);
     });
 
     test("Range is true", () => {
@@ -65,9 +65,9 @@ describe("ProgressBar", () => {
         scale:       0.125,
       });
 
-      const transformValue = mockedTransform.mock.results[0].value;
+      const { property, style } = mockedTransform.mock.results[0].value;
       const $progressBar = $parent.find(progressBarClass);
-      expect($progressBar.css("transform")).toBe(transformValue);
+      expect($progressBar.css(property)).toBe(style);
     });
 
     test("Direction is backward", () => {
@@ -81,9 +81,9 @@ describe("ProgressBar", () => {
         scale:       0.75,
       });
 
-      const transformValue = mockedTransform.mock.results[0].value;
+      const { property, style } = mockedTransform.mock.results[0].value;
       const $progressBar = $parent.find(progressBarClass);
-      expect($progressBar.css("transform")).toBe(transformValue);
+      expect($progressBar.css(property)).toBe(style);
     });
   });
 });

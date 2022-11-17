@@ -104,7 +104,7 @@ describe("Handle", () => {
   });
 
   test("Updates transform styles", () => {
-    const mockedTransform = jest.spyOn(Utilities, "transform");
+    const mockedTransform = jest.spyOn(Utilities, "getTransformStyles");
 
     generateHandle("from");
     handle.update(options);
@@ -117,10 +117,10 @@ describe("Handle", () => {
       shift:       options.from,
     });
 
-    const transformValue = mockedTransform.mock.results[0].value;
+    const { property, style } = mockedTransform.mock.results[0].value;
     const $point = $parent.find(pointClass);
 
-    expect($point.css("transform")).toBe(transformValue);
+    expect($point.css(property)).toBe(style);
 
     mockedTransform.mockRestore();
   });

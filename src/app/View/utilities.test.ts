@@ -1,12 +1,75 @@
 import { Orientation, Direction } from "../types";
 
 import {
-  transform,
+  getTransformStyles,
+  getPositionStyles,
   convertViewPositionToModel,
 } from "./utilities";
 
 describe("View utilities", () => {
-  describe("transform", () => {
+  describe("getPositionStyles", () => {
+    const testCases: Array<{
+      options: {
+        shift:       number,
+        min:         number,
+        max:         number,
+        orientation: Orientation,
+        direction:   Direction,
+      },
+      expected: {
+        property: string,
+        style: string,
+      },
+      case: string,
+    }> = [
+      {
+        options: { shift: 99, min: 0, max: 100, orientation: "horizontal", direction: "forward" },
+        expected: {
+          property: "left",
+          style: "99%"
+        },
+        case: "horizontal and forward, range is from 0 to 100, shift is 99",
+      },
+      {
+        options: { shift: 100, min: -100, max: 300, orientation: "horizontal", direction: "forward" },
+        expected: {
+          property: "left",
+          style: "50%"
+        },
+        case: "horizontal and forward, range is from -100 to 300, shift is 100",
+      },
+      {
+        options: { shift: 200, min: -100, max: 300, orientation: "horizontal", direction: "backward" },
+        expected: {
+          property: "left",
+          style: "25%"
+        },
+        case: "horizontal and backward, range is from -100 to 300, shift is 200",
+      },
+      {
+        options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "backward" },
+        expected: {
+          property: "bottom",
+          style: "25%"
+        },
+        case: "vertical and backward, range is from -100 to 300, shift is 200",
+      },
+      {
+        options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "forward" },
+        expected: {
+          property: "bottom",
+          style: "75%"
+        },
+        case: "vertical and forward, range is from -100 to 300, shift is 200",
+      },
+    ];
+
+    test.each(testCases)(`Returns "$expected" when $case`, ({ options, expected }) => {
+      expect(getPositionStyles(options)).toEqual(expected);
+    });
+  });
+
+  describe("getTransformStyles", () => {
     const testCases: Array<{
       options: {
         shift:       number,
@@ -16,43 +79,64 @@ describe("View utilities", () => {
         direction:   Direction,
         scale?:      number,
       },
-      expected: string,
+      expected: {
+        property: string,
+        style: string,
+      },
       case: string,
     }> = [
       {
         options: { shift: 99, min: 0, max: 100, orientation: "horizontal", direction: "forward" },
-        expected: "translateX(-1%)",
+        expected: {
+          property: "transform",
+          style: "translateX(-1%)"
+        },
         case: "horizontal and forward, range is from 0 to 100, shift is 99, no scale",
       },
       {
         options: { shift: 100, min: -100, max: 300, orientation: "horizontal", direction: "forward" },
-        expected: "translateX(-50%)",
+        expected: {
+          property: "transform",
+          style: "translateX(-50%)"
+        },
         case: "horizontal and forward, range is from -100 to 300, shift is 100, no scale",
       },
       {
         options: { shift: 100, min: -100, max: 300, orientation: "horizontal", direction: "forward", scale: 0.4 },
-        expected: "translateX(-50%) scaleX(0.4)",
+        expected: {
+          property: "transform",
+          style: "translateX(-50%) scaleX(0.4)"
+        },
         case: "horizontal and forward, range is from -100 to 300, shift is 100, scale is 0.4",
       },
       {
         options: { shift: 200, min: -100, max: 300, orientation: "horizontal", direction: "backward", scale: 0.4 },
-        expected: "translateX(-75%) scaleX(0.4)",
+        expected: {
+          property: "transform",
+          style: "translateX(-75%) scaleX(0.4)"
+        },
         case: "horizontal and backward, range is from -100 to 300, shift is 200, scale is 0.4",
       },
       {
         options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "backward", scale: 0.4 },
-        expected: "translateY(75%) scaleY(0.4)",
+        expected: {
+          property: "transform",
+          style: "translateY(75%) scaleY(0.4)"
+        },
         case: "vertical and backward, range is from -100 to 300, shift is 200, scale is 0.4",
       },
       {
         options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "forward", scale: 0.4 },
-        expected: "translateY(25%) scaleY(0.4)",
+        expected: {
+          property: "transform",
+          style: "translateY(25%) scaleY(0.4)"
+        },
         case: "vertical and forward, range is from -100 to 300, shift is 200, scale is 0.4",
       },
     ];
 
     test.each(testCases)(`Returns "$expected" when $case`, ({ options, expected }) => {
-      expect(transform(options)).toBe(expected);
+      expect(getTransformStyles(options)).toEqual(expected);
     });
   });
 

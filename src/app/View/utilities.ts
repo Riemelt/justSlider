@@ -22,14 +22,40 @@ function convertViewPositionToModel(options: {
   return min + max - converted;
 }
 
-function transform(options: {
+function getPositionStyles(options: {
+  shift:       number,
+  min:         number,
+  max:         number,
+  orientation: Orientation,
+  direction:   Direction,
+}): {
+  property: string,
+  style: string,
+} {
+  const { shift, min, max, orientation, direction } = options;
+
+  const positionValue = getPositionValue(shift, min, max, direction);
+  const style = `${positionValue}%`;
+
+  const property = orientation === "horizontal" ? "left" : "bottom";
+
+  return {
+    property,
+    style,
+  }
+}
+
+function getTransformStyles(options: {
   shift:       number,
   min:         number,
   max:         number,
   orientation: Orientation,
   direction:   Direction,
   scale?:      number,
-}): string {
+}): {
+  property: string,
+  style: string,
+} {
   const { shift, min, max, orientation, direction, scale } = options;
 
   const axis = getAxis(orientation);
@@ -44,7 +70,20 @@ function transform(options: {
     result += ` ${scaleStyle}`;
   }
 
-  return result;
+  return {
+    property: "transform",
+    style: result,
+  };
+}
+
+function getPositionValue(shift: number, min: number, max: number, direction: Direction): number {
+  const percentage = getPercentage(shift, min, max);
+
+  if (direction === "backward") {
+    return (100 - percentage);
+  }
+
+  return percentage;
 }
 
 function getAxis(orientation: Orientation): string {
@@ -75,6 +114,7 @@ function getTranslateValue(shift: number, min: number, max: number, orientation:
 }
 
 export {
-  transform,
+  getTransformStyles,
+  getPositionStyles,
   convertViewPositionToModel,
 };

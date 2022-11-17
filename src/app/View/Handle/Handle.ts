@@ -2,7 +2,7 @@ import EventManager from "../../EventManager/EventManager";
 import { Direction, Options, Orientation } from "../../types";
 
 import {
-  transform,
+  getTransformStyles,
   convertViewPositionToModel,
 } from "../utilities";
 
@@ -104,8 +104,8 @@ class Handle {
     direction:    Direction,
     scale?:       number,
   }) {
-    const transformStyle = transform(options);
-    this.$point.css("transform", transformStyle);
+    const { property, style } = getTransformStyles(options);
+    this.$point.css(property, style);
   }
 
   private init({$parent, type}: HandleOptions) {

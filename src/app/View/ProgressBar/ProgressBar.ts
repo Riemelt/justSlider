@@ -1,5 +1,5 @@
 import { Direction, Options, Orientation }          from "../../types";
-import { transform }        from "../utilities";
+import { getTransformStyles }        from "../utilities";
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;
@@ -44,8 +44,8 @@ class ProgressBar {
     direction:   Direction,
     scale?:      number,
   }) {
-    const transformStyle = transform(options)
-    this.$bar.css("transform", transformStyle);
+    const { property, style } = getTransformStyles(options)
+    this.$bar.css(property, style);
   }
 
   private init($parent: JQuery<HTMLElement>) {
