@@ -1,4 +1,5 @@
 import { JustSlider } from "../JustSlider/types";
+import { ScaleOptions, ScaleState } from "../View/Scale/types";
 
 type Orientation = "vertical" | "horizontal";
 type Direction   = "forward" | "backward";
@@ -14,6 +15,11 @@ interface Options {
   range?:       boolean;
   tooltips?:    boolean;
   progressBar?: boolean;
+  scale?:       ScaleOptions | null;
+}
+
+interface State extends Options {
+  scale?: ScaleState | null;
 }
 
 interface JustSliderOptions extends Options {
@@ -24,6 +30,7 @@ export {
   Orientation,
   Direction,
   Options,
+  State,
   JustSliderOptions,
   JustSlider,
 }

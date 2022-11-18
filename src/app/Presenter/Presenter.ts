@@ -22,7 +22,7 @@ class Presenter {
   }: JustSliderOptions) {
     this.model.init(options);
 
-    const data = this.model.getOptions();
+    const data = this.model.getState();
 
     this.view.init(data);
 
@@ -79,27 +79,27 @@ class Presenter {
 
   private addEventListeners() {
     this.eventManager.addEventListener("HandleFromMove", () => {
-      const options = this.model.getOptions();
+      const options = this.model.getState();
       this.view.updateHandleFrom(options);
     });
 
     this.eventManager.addEventListener("HandleToMove", () => {
-      const options = this.model.getOptions();
+      const options = this.model.getState();
       this.view.updateHandleTo(options);
     });
 
     this.eventManager.addEventListener("ProgressBarUpdate", () => {
-      const options = this.model.getOptions();
+      const options = this.model.getState();
       this.view.updateProgressBar(options);
     });
 
     this.eventManager.addEventListener("OrientationUpdate", () => {
-      const options = this.model.getOptions();
+      const options = this.model.getState();
       this.view.setOrientation(options.orientation);
     });
 
     this.eventManager.addEventListener("TooltipsUpdate", () => {
-      const options = this.model.getOptions();
+      const options = this.model.getState();
       this.view.updateTooltips(options);
     });
 
@@ -112,7 +112,7 @@ class Presenter {
     });
 
     this.eventManager.addEventListener("SliderUpdate", () => {
-      const options = this.model.getOptions();
+      const options = this.model.getState();
       this.onUpdate?.(options);
     });
   }
