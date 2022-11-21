@@ -97,7 +97,7 @@ describe("View", () => {
       view.initComponents();
   
       const handler = mockedSetHandler.mock.calls[0][0];
-      handler(0, "from");
+      handler(250, "from");
   
       expect(mockedHandler).toBeCalledTimes(1);
   

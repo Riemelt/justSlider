@@ -125,7 +125,8 @@ class View {
 
   public addCreateHandleHandlers(handler: (value: number, type: HandleType) => void): void {
     this.handleHandleMousemove = (position, type) => {
-      handler(position, type);
+      const converted = this.getConvertedPosition(position);
+      handler(converted, type);
     }
   }
 
@@ -145,10 +146,28 @@ class View {
 
   private handleSliderClick(event: MouseEvent): void {
     const position = this.state.orientation === "horizontal" ? event.pageX : event.pageY;
-    const { min, max, orientation, direction, from, to, range } = this.state;
+
+    const converted     = this.getConvertedPosition(position);
+    const closestHandle = this.getClosestHandle(converted);
+
+    this.sliderClickHandler(converted, closestHandle);
+  }
+
+  private getClosestHandle(position: number): HandleType {
+    const { from, to, range } = this.state;
+
+    const distanceToTo   = Math.abs(to - position);
+    const distanceToFrom = Math.abs(from - position);
+    const type           = distanceToTo > distanceToFrom || !range ? "from" : "to";
+
+    return type;
+  }
+
+  private getConvertedPosition(position: number): number {
+    const { min, max, orientation, direction } = this.state;
 
     const length = orientation === "horizontal" ? this.$justSlider.width() : this.$justSlider.height();
-    const shift = orientation === "horizontal" ? this.$justSlider.offset().left : this.$justSlider.offset().top;
+    const shift  = orientation === "horizontal" ? this.$justSlider.offset().left : this.$justSlider.offset().top;
 
     const converted = convertViewPositionToModel({
       position,
@@ -160,11 +179,7 @@ class View {
       shift,
     });
 
-    const distanceToTo   = Math.abs(to - converted);
-    const distanceToFrom = Math.abs(from - converted);
-    const type           = distanceToTo > distanceToFrom || !range ? "from" : "to";
-
-    this.sliderClickHandler(converted, type);
+    return converted;
   }
 
   private initHtml(): void {

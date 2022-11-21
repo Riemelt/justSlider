@@ -178,8 +178,8 @@ describe("Handle", () => {
     });
 
     test("Drag'n'drop in horizontal mode", () => {
-      const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
       const handler = jest.fn(() => undefined);
+
       const eventMousedown = new jQuery.Event( "mousedown", {
         pageX: 280,
       });
@@ -188,12 +188,6 @@ describe("Handle", () => {
       });
 
       generateHandle("from");
-
-      const mockedParentOffset = jest.spyOn($parent, "offset").mockImplementation(() => {
-        return { left: 150, top: 250, };
-      });
-
-      $parent.width(1000);
 
       handle.setHandleMousemoveHandler(handler);
       handle.update(state);
@@ -210,27 +204,12 @@ describe("Handle", () => {
       $(document).trigger(eventMousemove);
       $(document).trigger("mouseup");
 
-      expect(mockedConvertPosition).toBeCalledWith({
-        position:    270,
-        shift:       150,
-        length:      1000,
-        min:         state.min,
-        max:         state.max,
-        orientation: state.orientation,
-        direction:   state.direction,
-      });
+      expect(handler).toBeCalledWith(270, "from");
 
-      const convertedPosition = mockedConvertPosition.mock.results[0].value;
-
-      expect(handler).toBeCalledWith(convertedPosition, "from");
-
-      mockedConvertPosition.mockRestore();
-      mockedParentOffset.mockRestore();
       mockedHandleOffset.mockRestore();
     });
 
     test("Drag'n'drop in vertical mode", () => {
-      const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
       const handler = jest.fn(() => undefined);
       const eventMousedown = new jQuery.Event( "mousedown", {
         pageY: 470,
@@ -241,12 +220,6 @@ describe("Handle", () => {
 
       generateHandle("from");
 
-      const mockedParentOffset = jest.spyOn($parent, "offset").mockImplementation(() => {
-        return { left: 150, top: 250, };
-      });
-
-      $parent.height(1000);
-
       handle.setHandleMousemoveHandler(handler);
       handle.update({ ...state, orientation: "vertical", });
 
@@ -255,29 +228,15 @@ describe("Handle", () => {
       $handle.outerHeight(100);
       
       const mockedHandleOffset = jest.spyOn($handle, "offset").mockImplementation(() => {
-        return { left: 200, top: 200, };
+        return { left: 200, top: 400, };
       });
 
       $handle.trigger(eventMousedown);
       $(document).trigger(eventMousemove);
       $(document).trigger("mouseup");
 
-      expect(mockedConvertPosition).toBeCalledWith({
-        position:    280,
-        shift:       250,
-        length:      1000,
-        min:         state.min,
-        max:         state.max,
-        orientation: "vertical",
-        direction:   state.direction,
-      });
+      expect(handler).toBeCalledWith(480, "from");
 
-      const convertedPosition = mockedConvertPosition.mock.results[0].value;
-
-      expect(handler).toBeCalledWith(convertedPosition, "from");
-
-      mockedConvertPosition.mockRestore();
-      mockedParentOffset.mockRestore();
       mockedHandleOffset.mockRestore();
     });
   });
