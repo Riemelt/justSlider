@@ -42,6 +42,10 @@ class SliderDemo {
         ...options.configurationPanel.inputStep,
         handleInputChange: this.handleInputStepChange.bind(this),
       },
+      inputPrecision: {
+        ...options.configurationPanel.inputPrecision,
+        handleInputChange: this.handleInputPrecisionChange.bind(this),
+      },
       toggleVertical: {
         ...options.configurationPanel.toggleVertical,
         handleToggleChange: this.handleToggleOrientationChange.bind(this),
@@ -115,6 +119,10 @@ class SliderDemo {
 
   private handleInputStepChange(value: number) {
     this.slider.updateOptions({ step: value });
+  }
+
+  private handleInputPrecisionChange(value: number) {
+    this.slider.updateOptions({ precision: value });
   }
 
   private handleToggleOrientationChange(value: boolean) {

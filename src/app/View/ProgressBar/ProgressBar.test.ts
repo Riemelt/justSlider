@@ -5,7 +5,7 @@ import {
 } from "../../types";
 
 import ProgressBar from "./ProgressBar";
-import * as Utilities from "../utilities";
+import * as Utilities from "../utilities/utilities";
 
 describe("ProgressBar", () => {
   let $parent:     JQuery<HTMLElement>;

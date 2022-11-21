@@ -8,7 +8,7 @@ import {
   Orientation,
 } from "../types";
 
-import { convertViewPositionToModel } from "./utilities";
+import { convertViewPositionToModel } from "./utilities/utilities";
 
 class View {
   private eventManager: EventManager;

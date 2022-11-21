@@ -7,7 +7,7 @@ import {
 
 import {
   getTransformStyles,
-} from "../utilities";
+} from "../utilities/utilities";
 
 import Tooltip from "./Tooltip/Tooltip";
 import { HandleOptions } from "./types";
@@ -61,7 +61,7 @@ class Handle {
   }
 
   public updateTooltip(state: State): void {
-    const { tooltips } = state;
+    const { tooltips, precision } = state;
     const value = state[this.type];
 
     if (tooltips) {
@@ -69,7 +69,7 @@ class Handle {
         this.tooltip = new Tooltip(this.$handle);
       }
 
-      this.tooltip.update(value);
+      this.tooltip.update(value, precision);
       return;
     }
 

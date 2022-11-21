@@ -1,4 +1,5 @@
 import Tooltip from "./Tooltip";
+import * as Utilities from "../../utilities/utilities";
 
 describe("Tooltip", () => {
   let $parent: JQuery<HTMLElement>;
@@ -25,10 +26,21 @@ describe("Tooltip", () => {
   });
 
   test("Updates value in the html node", () => {
-    tooltip.update(5);
+    const mocked = jest.spyOn(Utilities, "getValueBasedOnPrecision");
+
+    const value = 5;
+    const precision = 0;
+
+    tooltip.update(value, precision);
+
     const $tooltip = $parent.find(tooltipClass);
 
-    expect($tooltip.html()).toBe("5");
+    expect(mocked).toBeCalledWith(5, 0);
+    const result = mocked.mock.results[0].value;
+
+    expect($tooltip.html()).toBe(result);
+
+    mocked.mockRestore();
   });
 });
 

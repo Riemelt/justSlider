@@ -1,9 +1,10 @@
-import { Orientation, Direction } from "../types";
+import { Orientation, Direction } from "../../types";
 
 import {
   getTransformStyles,
   getPositionStyles,
   convertViewPositionToModel,
+  getValueBasedOnPrecision,
 } from "./utilities";
 
 describe("View utilities", () => {
@@ -178,6 +179,40 @@ describe("View utilities", () => {
 
     test.each(testCases)(`Returns "$expected" when $case`, ({ options, expected }) => {
       expect(convertViewPositionToModel(options)).toBe(expected);
+    });
+  });
+
+  describe("getValueBasedOnPrecision", () => {
+    const testCases: Array<{
+      value:     number,
+      precision: number,
+      expected:  string,
+    }> = [
+      {
+        value: 20,
+        precision: 0,
+        expected: "20",
+      },
+      {
+        value: 20.1,
+        precision: 0,
+        expected: "20.1",
+      },
+      {
+        value: 20.123,
+        precision: 1,
+        expected: "20.1",
+      }
+      ,
+      {
+        value: 20.168,
+        precision: 2,
+        expected: "20.17",
+      }
+    ];
+
+    test.each(testCases)(`Returns "$expected" when $value and $precision`, ({ value, precision, expected }) => {
+      expect(getValueBasedOnPrecision(value, precision)).toBe(expected);
     });
   });
 });

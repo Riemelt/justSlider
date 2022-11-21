@@ -4,7 +4,7 @@ import {
   Orientation
 } from "../../types";
 
-import { getTransformStyles } from "../utilities";
+import { getTransformStyles } from "../utilities/utilities";
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;

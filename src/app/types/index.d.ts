@@ -10,6 +10,7 @@ interface Options {
   step?:        number;
   min?:         number;
   max?:         number;
+  precision?:   number;
   orientation?: Orientation;
   direction?:   Direction;
   range?:       boolean;

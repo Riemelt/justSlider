@@ -22,6 +22,10 @@
           "title": "to",
           "type": "number"
         },
+        "inputPrecision": {
+          "title": "precision",
+          "type": "number"
+        },
         "toggleVertical": {
           "title": "vertical"
         },
@@ -63,10 +67,11 @@
         "max": 100,
         "step": 26, 
         "range": true,
-        "orientation": "vertical",
+        "orientation": "horizontal",
         "direction": "forward",
         "progressBar": true,
         "tooltips": true,
+        "precision": 0,
         "scale": {
           "type": "steps",
           "density": 2,

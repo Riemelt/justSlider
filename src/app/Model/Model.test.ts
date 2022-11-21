@@ -47,6 +47,7 @@ describe("Model", () => {
     expect(state.tooltips).toBeDefined();
     expect(state.progressBar).toBeDefined();
     expect(state.scale).toBeDefined();
+    expect(state.precision).toBeDefined();
   });
 
   describe("Tooltips", () => {
@@ -586,6 +587,31 @@ describe("Model", () => {
           value: 100,
         },
       ]);
+    });
+  });
+
+  describe("Precision", () => {
+    test("Updates precision", () => {
+      model.init({ precision: 1 });
+      model.updateOptions({ precision: 2 });
+
+      const state = model.getState();
+
+      expect(state.precision).toBe(2);
+    });
+
+    test("Dispatches events on update", () => {
+      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
+      const events: Array<SliderEvent> = ["TooltipsUpdate", "ScaleUpdate", "SliderUpdate"];
+
+      model.init({ precision: 1 });
+      model.updateOptions({ precision: 2 });
+
+      events.forEach(event => {
+        expect(mockedDispatcher).toBeCalledWith(event);
+      });
+
+      mockedDispatcher.mockRestore();
     });
   });
 });

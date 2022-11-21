@@ -1,4 +1,8 @@
-import { getPositionStyles } from "../utilities";
+import {
+  getPositionStyles,
+  getValueBasedOnPrecision,
+} from "../utilities/utilities";
+
 import { Direction, Orientation, State } from "../../types";
 
 class Scale {
@@ -27,7 +31,7 @@ class Scale {
   public update(state: State) {
     this.$component.empty();
 
-    const { min, max, orientation, direction } = state;
+    const { min, max, orientation, direction, precision } = state;
     const { segments, numbers, lines } = state.scale;
 
     this.setStyleModificator(lines);
@@ -67,7 +71,7 @@ class Scale {
       }
 
       if (numbers) {
-        const $numberSegment = this.createNumberSegment(value, isBig);
+        const $numberSegment = this.createNumberSegment(value, isBig, precision);
         this.updatePosition({
           ...updatePositionOptions,
           $element: $numberSegment,
@@ -102,8 +106,9 @@ class Scale {
     }
   }
 
-  private createNumberSegment(value: number, isBig = false): JQuery<HTMLElement> {
-    const $segment = $(`<div class="${this.numberClass}">${value}</div>`);
+  private createNumberSegment(value: number, isBig = false, precision: number): JQuery<HTMLElement> {
+    const converted = getValueBasedOnPrecision(value, precision);
+    const $segment = $(`<div class="${this.numberClass}">${converted}</div>`);
     $segment.on("click.scale", () => this.handleNumberClick(value));
 
     if (isBig) {

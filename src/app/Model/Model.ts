@@ -23,9 +23,10 @@ class Model {
     tooltips    = false,
     progressBar = false,
     scale       = null,
+    precision   = 0,
   }: Options = {}) {
 
-    this.state = { from, to, range, min, max, step, orientation, direction, tooltips, progressBar };
+    this.state = { from, to, range, min, max, step, orientation, direction, tooltips, progressBar, precision };
 
     this.setMinMax(min, max);
     this.setStep(step);
@@ -38,7 +39,7 @@ class Model {
     return this.state;
   }
 
-  public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar, scale }: Options) {
+  public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar, scale, precision }: Options) {
     let shouldUpdateScale = false;
     const handlesToUpdate:  Set<HandleType>  = new Set();
     const eventsToDispatch: Set<SliderEvent> = new Set();
@@ -140,6 +141,16 @@ class Model {
     if (scale !== undefined) {
       shouldUpdateScale = true;
       eventsToDispatch
+        .add("ScaleUpdate")
+        .add("SliderUpdate");
+    }
+
+    if (precision !== undefined) {
+      if (precision <= 0) precision = 0;
+      this.state.precision = precision;
+      shouldUpdateScale = true;
+      eventsToDispatch
+        .add("TooltipsUpdate")
         .add("ScaleUpdate")
         .add("SliderUpdate");
     }

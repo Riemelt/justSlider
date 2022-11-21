@@ -3,7 +3,7 @@ import { State } from "../../types";
 import Handle from "./Handle";
 import Tooltip from "./Tooltip/Tooltip";
 
-import * as Utilities from "../utilities";
+import * as Utilities from "../utilities/utilities";
 
 describe("Handle", () => {
   let handle: Handle;

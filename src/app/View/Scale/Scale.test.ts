@@ -1,5 +1,5 @@
 import Scale from "./Scale";
-import * as Utilities from "../utilities";
+import * as Utilities from "../utilities/utilities";
 
 import {
   Segment,
@@ -78,19 +78,22 @@ describe("Scale", () => {
   describe("On update", () => {
     describe("Generates html nodes", () => {
       test("Numbers", () => {
+        const mocked = jest.spyOn(Utilities, "getValueBasedOnPrecision");
         scale.update(modelState);
   
         const $scale = $parent.find(scaleClass);
         const $numbers = $scale.find(numberClass);
   
         expect($numbers.length).toBe(3);
+
+        const { results } = mocked.mock;
   
         $numbers.each((index, number) => {
           const $number = $(number);
-          const value = Number($number.html());
-  
-          expect(value).toBe(numbers[index].value);
+          expect($number.html()).toBe(results[index].value);
         });
+
+        mocked.mockRestore();
       })
   
       test("Lines", () => {

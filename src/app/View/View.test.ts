@@ -4,7 +4,7 @@ import View           from "./View";
 import Handle         from "./Handle/Handle";
 import ProgressBar    from "./ProgressBar/ProgressBar";
 import Scale          from "./Scale/Scale";
-import * as Utilities from "./utilities";
+import * as Utilities from "./utilities/utilities";
 import {
   ScaleState,
 } from "./Scale/types";

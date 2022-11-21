@@ -1,3 +1,5 @@
+import { getValueBasedOnPrecision } from "../../utilities/utilities";
+
 class Tooltip {
   private $component: JQuery<HTMLElement>;
 
@@ -5,8 +7,9 @@ class Tooltip {
     this.init($parent);
   }
 
-  public update(value: number): void {
-    this.$component.html(`${value}`);
+  public update(value: number, precision: number): void {
+    const converted = getValueBasedOnPrecision(value, precision);
+    this.$component.html(converted);
   }
 
   public delete(): void {

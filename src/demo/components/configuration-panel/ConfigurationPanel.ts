@@ -7,11 +7,12 @@ class ConfigurationPanel {
   private $component: JQuery<HTMLElement>;
   private options: ConfigurationPanelOptions;
 
-  private inputMin:  InputField;
-  private inputMax:  InputField;
-  private inputStep: InputField;
-  private inputFrom: InputField;
-  private inputTo:   InputField;
+  private inputMin:       InputField;
+  private inputMax:       InputField;
+  private inputStep:      InputField;
+  private inputFrom:      InputField;
+  private inputTo:        InputField;
+  private inputPrecision: InputField;
 
   private toggleVertical: Toggle;
   private toggleForward:  Toggle;
@@ -42,6 +43,7 @@ class ConfigurationPanel {
     tooltips,
     range,
     scale,
+    precision,
   }: Options) {
     this.inputFrom.update({ step, min, value: from });
 
@@ -55,6 +57,7 @@ class ConfigurationPanel {
     this.inputStep.update({ value: step });
     this.inputMin.update({ value: min });
     this.inputMax.update({ value: max });
+    this.inputPrecision.update({ value: precision });
 
     this.toggleVertical.update(orientation === "vertical");
     this.toggleForward.update(direction === "forward");
@@ -89,6 +92,7 @@ class ConfigurationPanel {
     this.inputStep      = new InputField(this.$component.find(`.js-${this.className}__input-step`), options.inputStep);
     this.inputFrom      = new InputField(this.$component.find(`.js-${this.className}__input-from`), options.inputFrom);
     this.inputTo        = new InputField(this.$component.find(`.js-${this.className}__input-to`), options.inputTo);
+    this.inputPrecision = new InputField(this.$component.find(`.js-${this.className}__input-precision`), options.inputPrecision);
 
     this.toggleVertical = new Toggle(this.$component.find(`.js-${this.className}__toggle-vertical`), options.toggleVertical);
     this.toggleForward  = new Toggle(this.$component.find(`.js-${this.className}__toggle-forward`), options.toggleForward);

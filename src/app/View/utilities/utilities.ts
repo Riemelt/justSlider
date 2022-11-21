@@ -1,4 +1,4 @@
-import { Direction, Orientation } from "../types";
+import { Direction, Orientation } from "../../types";
 
 function convertViewPositionToModel(options: {
   position:    number,
@@ -113,8 +113,17 @@ function getTranslateValue(shift: number, min: number, max: number, orientation:
   return percentage * sign;
 }
 
+function getValueBasedOnPrecision(value: number, precision: number): string {
+  if (precision > 0) {
+    return value.toFixed(precision);
+  }
+
+  return value.toString();
+}
+
 export {
   getTransformStyles,
   getPositionStyles,
   convertViewPositionToModel,
+  getValueBasedOnPrecision,
 };

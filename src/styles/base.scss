@@ -118,13 +118,13 @@ $className: 'just-slider';
   &__scale-number {
     cursor: pointer;
     position: absolute;
-    margin-top: 1.5625rem;
+    margin-top: 1.25rem;
     line-height: 1.875rem;
-    font-size: 1rem;
+    font-size: .75rem;
 
     &_big {
       font-weight: 700;
-      font-size: 1.125rem;
+      font-size: .875rem;
     }
   }
 
