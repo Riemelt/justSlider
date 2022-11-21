@@ -14,6 +14,13 @@ mixin configuration-panel(vars)
       toggleRange    = {},
       toggleBar      = {},
       toggleTooltip  = {},
+      toggleScale    = {},
+      scale = {
+        inputDensity:  {},
+        toggleType:    {},
+        toggleNumbers: {},
+        toggleLines:   {},
+      },
     } = vars
 
     const className = "configuration-panel"
@@ -50,3 +57,21 @@ mixin configuration-panel(vars)
     li(class=`${className}__item`)
       div(class=`${className}__toggle-tooltip js-${className}__toggle-tooltip`)
         +toggle(toggleTooltip)
+    li(class=`${className}__item`)
+      div(class=`${className}__toggle-scale js-${className}__toggle-scale`)
+        +toggle(toggleScale)
+    li(class=`${className}__scale`)
+      h3(class=`${className}__scale-title`) Scale
+      ul(class=`${className}__scale-list`)
+        li(class=`${className}__item`)
+          div(class=`${className}__scale-density js-${className}__scale-density`)
+            +input-field(scale.inputDensity)
+        li(class=`${className}__item`)
+          div(class=`${className}__scale-type js-${className}__scale-type`)
+            +toggle(scale.toggleType)
+        li(class=`${className}__item`)
+          div(class=`${className}__scale-numbers js-${className}__scale-numbers`)
+            +toggle(scale.toggleNumbers)
+        li(class=`${className}__item`)
+          div(class=`${className}__scale-lines js-${className}__scale-lines`)
+            +toggle(scale.toggleLines)

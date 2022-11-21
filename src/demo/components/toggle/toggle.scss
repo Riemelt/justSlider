@@ -51,4 +51,8 @@ $className: 'toggle';
       right: 60%;
     }
   }
+
+  &_disabled {
+    opacity: 0.4;
+  }
 }

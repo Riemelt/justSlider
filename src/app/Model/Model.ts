@@ -39,12 +39,16 @@ class Model {
   }
 
   public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar, scale }: Options) {
+    let shouldUpdateScale = false;
     const handlesToUpdate:  Set<HandleType>  = new Set();
     const eventsToDispatch: Set<SliderEvent> = new Set();
 
     if (min !== undefined || max !== undefined) {
       this.setMinMax(min, max);
       this.setStep(this.state.step);
+
+      shouldUpdateScale = true;
+
       handlesToUpdate
         .add("from")
         .add("to");
@@ -52,11 +56,13 @@ class Model {
         .add("HandleFromMove")
         .add("HandleToMove")
         .add("ProgressBarUpdate")
+        .add("ScaleUpdate")
         .add("SliderUpdate");
     }
 
     if (step !== undefined) {
       this.setStep(step);
+      shouldUpdateScale = true;
       handlesToUpdate
         .add("from")
         .add("to");
@@ -64,6 +70,7 @@ class Model {
         .add("HandleFromMove")
         .add("HandleToMove")
         .add("ProgressBarUpdate")
+        .add("ScaleUpdate")
         .add("SliderUpdate");
     }
 
@@ -83,6 +90,7 @@ class Model {
         .add("HandleFromMove")
         .add("HandleToMove")
         .add("ProgressBarUpdate")
+        .add("ScaleUpdate")
         .add("SliderUpdate");
     }
 
@@ -93,6 +101,7 @@ class Model {
         .add("HandleFromMove")
         .add("HandleToMove")
         .add("ProgressBarUpdate")
+        .add("ScaleUpdate")
         .add("SliderUpdate");
     }
 
@@ -129,7 +138,7 @@ class Model {
     }
 
     if (scale !== undefined) {
-      this.setScale(scale);
+      shouldUpdateScale = true;
       eventsToDispatch
         .add("ScaleUpdate")
         .add("SliderUpdate");
@@ -145,6 +154,11 @@ class Model {
 
       this.setHandle(value, type);
     });
+
+    if (shouldUpdateScale) {
+      const scaleOptions = scale === undefined ? this.state.scale : scale;
+      this.setScale(scaleOptions);
+    }
 
     this.eventManager.dispatchEvents(Array.from(eventsToDispatch));
   }
@@ -162,12 +176,14 @@ class Model {
       return;
     }
 
+    const currentScale = this.state.scale;
+
     const {
-      type    = "steps",
-      set     = [0, 25, 50, 75, 100],
-      density = 3,
-      lines   = true,
-      numbers = true,
+      type    = currentScale?.type ? currentScale.type : "steps",
+      set     = currentScale?.set ? currentScale.set : [0, 25, 50, 75, 100],
+      density = currentScale?.density ? currentScale.density : 3,
+      lines   = currentScale?.lines ? currentScale.lines : true,
+      numbers = currentScale?.numbers ? currentScale.numbers : true,
     } = scale;
 
     this.state.scale = {

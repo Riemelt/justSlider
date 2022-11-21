@@ -1,4 +1,4 @@
-import { Direction, JustSlider, Options, Orientation }        from "../../../app/types";
+import { JustSlider, Options } from "../../../app/types";
 import { SliderDemoOptions } from "./types";
 import ConfigurationPanel    from "../configuration-panel";
 
@@ -62,6 +62,28 @@ class SliderDemo {
         ...options.configurationPanel.toggleForward,
         handleToggleChange: this.handleToggleDirectionChange.bind(this),
       },
+      toggleScale: {
+        ...options.configurationPanel.toggleScale,
+        handleToggleChange: this.handleToggleScaleChange.bind(this),
+      },
+      scale: {
+        inputDensity: {
+          ...options.configurationPanel.scale.inputDensity,
+          handleInputChange: this.handleInputScaleDensityChange.bind(this),
+        },
+        toggleType: {
+          ...options.configurationPanel.scale.toggleType,
+          handleToggleChange: this.handleToggleScaleTypeChange.bind(this),
+        },
+        toggleNumbers: {
+          ...options.configurationPanel.scale.toggleNumbers,
+          handleToggleChange: this.handleToggleScaleNumbersChange.bind(this),
+        },
+        toggleLines: {
+          ...options.configurationPanel.scale.toggleLines,
+          handleToggleChange: this.handleToggleScaleLinesChange.bind(this),
+        }
+      },
     });
 
     this.$slider = this.$component.find(`.js-${this.className}__slider`);
@@ -115,6 +137,28 @@ class SliderDemo {
 
   private handleToggleTooltipsChange(value: boolean) {
     this.slider.updateOptions({ tooltips: value });
+  }
+
+  private handleInputScaleDensityChange(value: number) {
+    this.slider.updateOptions({ scale: { density: value } });
+  }
+
+  private handleToggleScaleTypeChange(value: boolean) {
+    const type = value ? "steps" : "set";
+    this.slider.updateOptions({ scale: { type } });
+  }
+
+  private handleToggleScaleNumbersChange(value: boolean) {
+    this.slider.updateOptions({ scale: { numbers: value } });
+  }
+
+  private handleToggleScaleLinesChange(value: boolean) {
+    this.slider.updateOptions({ scale: { lines: value } });
+  }
+
+  private handleToggleScaleChange(value: boolean) {
+    const scale = value ? this.options.slider.scale : null;
+    this.slider.updateOptions({ scale });
   }
 }
 

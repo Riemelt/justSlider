@@ -25,6 +25,8 @@ class Scale {
   }
 
   public update(state: State) {
+    this.$component.empty();
+
     const { min, max, orientation, direction } = state;
     const { segments, numbers, lines } = state.scale;
 
@@ -32,16 +34,22 @@ class Scale {
 
     segments.forEach((segment, index) => {
       const { type, value } = segment;
+
+      const updatePositionOptions = {
+        min,
+        max,
+        direction,
+        orientation,
+        shift: value,
+      }
+
+      const isBig = this.isFirstOrLast(index, segments.length);
       
       if (type === "line") {
         if (lines) {
           const $segment = this.createLineSegment();
           this.updatePosition({
-            min,
-            max,
-            direction,
-            orientation,
-            shift: value,
+            ...updatePositionOptions,
             $element: $segment,
           });
         }
@@ -49,16 +57,20 @@ class Scale {
         return;
       }
 
-      if (numbers) {
-        const isBig = this.isFirstOrLast(index, segments.length);
-        const $segment = this.createNumberSegment(value, isBig);
+      if (lines) {
+        const lineSegmentSize = isBig ? "large" : "big";
+        const $lineSegment    = this.createLineSegment(lineSegmentSize);
         this.updatePosition({
-          min,
-          max,
-          direction,
-          orientation,
-          shift: value,
-          $element: $segment,
+          ...updatePositionOptions,
+          $element: $lineSegment,
+        });
+      }
+
+      if (numbers) {
+        const $numberSegment = this.createNumberSegment(value, isBig);
+        this.updatePosition({
+          ...updatePositionOptions,
+          $element: $numberSegment,
         });
       }
     });
@@ -90,7 +102,7 @@ class Scale {
     }
   }
 
-  private createNumberSegment(value: number, isBig: boolean): JQuery<HTMLElement> {
+  private createNumberSegment(value: number, isBig = false): JQuery<HTMLElement> {
     const $segment = $(`<div class="${this.numberClass}">${value}</div>`);
     $segment.on("click.scale", () => this.handleNumberClick(value));
 
@@ -103,8 +115,17 @@ class Scale {
     return $segment;
   }
 
-  private createLineSegment(): JQuery<HTMLElement> {
+  private createLineSegment(size: "normal" | "big" | "large" = "normal"): JQuery<HTMLElement> {
     const $segment = $(`<div class="${this.lineClass}"></div>`);
+
+    if (size === "big") {
+      $segment.addClass("just-slider__scale-line_big");
+    }
+
+    if (size === "large") {
+      $segment.addClass("just-slider__scale-line_large");
+    }
+
     this.$component.append($segment);
 
     return $segment;

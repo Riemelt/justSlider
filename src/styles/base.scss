@@ -6,6 +6,7 @@ $className: 'just-slider';
   width: 100%;
   box-sizing: border-box;
   background-color: $dark-shade-25;
+  position: relative;
 
   &__main {
     border-radius: inherit;
@@ -76,6 +77,57 @@ $className: 'just-slider';
     z-index: 1;
   }
 
+  &__scale {
+    left: 0;
+    top: 0;
+    position: absolute;
+    margin-top: 2.1875rem;
+    width: 100%;
+    height: 100%;
+
+    &_without-lines {
+      .#{$className}__scale-number {
+        margin-top: initial;
+      }
+    }
+  }
+
+  &__scale-line,
+  &__scale-number {
+    transform: translateX(-50%);
+  }
+
+  &__scale-line {
+    position: absolute;
+    width: .0625rem;
+    height: .4375rem;
+    background-color: $dark;
+    transform-origin: bottom left;
+
+    &_big {
+      width: .125rem;
+      height: .875rem;
+    }
+
+    &_large {
+      width: .125rem;
+      height: 1.25rem;
+    }
+  }
+
+  &__scale-number {
+    cursor: pointer;
+    position: absolute;
+    margin-top: 1.5625rem;
+    line-height: 1.875rem;
+    font-size: 1rem;
+
+    &_big {
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+  }
+
   &_animated {
     .#{$className} {
       &__point,
@@ -118,7 +170,7 @@ $className: 'just-slider';
 
       &__tooltip {
         transform: initial;
-        left: 150%;
+        right: 150%;
         padding: .625rem .625rem;
       }
 
@@ -126,6 +178,30 @@ $className: 'just-slider';
         left: 0;
         height: 100%;
         width: 100%;
+      }
+
+      &__scale {
+        top: 0;
+        margin-top: initial;
+        margin-left: 2.1875rem;
+
+        &_without-lines {
+          .#{$className}__scale-number {
+            margin-left: initial;
+          }
+        }
+      }
+
+      &__scale-line {
+        transform: rotate(90deg) translate(-50%, 0);
+        left: initial;
+        right: initial;
+      }
+
+      &__scale-number {
+        top: initial;
+        transform: translate(0, 50%);
+        margin-left: 1.5625rem;
       }
     }
   }

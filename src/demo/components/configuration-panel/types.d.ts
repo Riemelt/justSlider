@@ -9,4 +9,11 @@ interface ConfigurationPanelOptions {
   toggleBar?:      ToggleOptions;
   toggleTooltip?:  ToggleOptions;
   toggleForward?:  ToggleOptions;
+  toggleScale?:    ToggleOptions;
+  scale?: {
+    inputDensity?:   InputFieldOptions;
+    toggleType?:     ToggleOptions;
+    toggleNumbers?:  ToggleOptions;
+    toggleLines?:    ToggleOptions;
+  }
 }

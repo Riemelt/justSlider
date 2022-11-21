@@ -99,7 +99,7 @@ describe("Scale", () => {
         const $scale = $parent.find(scaleClass);
         const $lines = $scale.find(lineClass);
   
-        expect($lines.length).toBe(2);
+        expect($lines.length).toBe(5);
       })
 
       test("Only lines", () => {
@@ -114,7 +114,7 @@ describe("Scale", () => {
         const $scale = $parent.find(scaleClass);
         const $lines = $scale.find(lineClass);
 
-        expect($lines.length).toBe(2);
+        expect($lines.length).toBe(5);
 
         const $numbers = $scale.find(numberClass);
         expect($numbers.length).toBe(0);
@@ -162,12 +162,35 @@ describe("Scale", () => {
       expect($numbers.last().hasClass("just-slider__scale-number_big")).toBe(true);
     });
 
+    test("Sets style modificators for line segments", () => {
+      scale.update(modelState);
+
+      const $scale = $parent.find(scaleClass);
+      const $lines = $scale.find(lineClass);
+
+      expect($lines.first().hasClass("just-slider__scale-line_large")).toBe(true);
+      expect($lines.last().hasClass("just-slider__scale-line_large")).toBe(true);
+      expect($lines.eq(2).hasClass("just-slider__scale-line_big")).toBe(true);
+    });
+
     test("Sets position styles for segments", () => {
       const mockedPosition = jest.spyOn(Utilities, "getPositionStyles");
 
       scale.update(modelState);
 
-      segments.forEach((segment, index) => {
+      const segmentPoints: Array<Segment> = segments.reduce((acc, value) => {
+        acc.push(value);
+        if (value.type === "number") {
+          acc.push({
+            value: value.value,
+            type: "line",
+          });
+        }
+
+        return acc;
+      }, []);
+
+      segmentPoints.forEach((segment, index) => {
         expect(mockedPosition).toHaveBeenNthCalledWith(index + 1, {
           min:         modelState.min,
           max:         modelState.max,

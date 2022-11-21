@@ -10,6 +10,16 @@ class Toggle {
     this.render();
   }
 
+  public disable() {
+    this.$component.addClass(`${this.className}_disabled`);
+    this.$input.prop("disabled", true);
+  }
+
+  public enable() {
+    this.$component.removeClass(`${this.className}_disabled`);
+    this.$input.prop("disabled", false);
+  }
+
   public update(checked: boolean) {
     this.$input.prop("checked", checked);
   }

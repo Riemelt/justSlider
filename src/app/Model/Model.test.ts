@@ -1,7 +1,6 @@
 import EventManager from "../EventManager/EventManager";
 import { SliderEvent } from "../EventManager/types";
 import { Options } from "../types";
-import { ScaleOptions } from "../View/Scale/types";
 import Model from "./Model";
 
 describe("Model", () => {
@@ -112,7 +111,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"];
 
       model.init({ direction: "forward" });
       model.updateOptions({ direction: "backward" });
@@ -241,7 +240,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"];
 
       model.init({ min: 20 });
       model.updateOptions({ min: 50 });
@@ -294,7 +293,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"];
 
       model.init({ step: 10 });
       model.updateOptions({ step: 8 });

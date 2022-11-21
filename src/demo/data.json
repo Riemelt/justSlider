@@ -36,6 +36,24 @@
         },
         "toggleTooltip": {
           "title": "tooltip"
+        },
+        "toggleScale": {
+          "title": "scale"
+        },
+        "scale": {
+          "inputDensity": {
+            "title": "density",
+            "type": "number"
+          },
+          "toggleType": {
+            "title": "steps"
+          },
+          "toggleNumbers": {
+            "title": "numbers"
+          },
+          "toggleLines": {
+            "title": "lines"
+          }
         }
       },
       "slider": {
@@ -45,10 +63,16 @@
         "max": 100,
         "step": 26, 
         "range": true,
-        "orientation": "horizontal",
+        "orientation": "vertical",
         "direction": "forward",
         "progressBar": true,
-        "tooltips": true
+        "tooltips": true,
+        "scale": {
+          "type": "steps",
+          "density": 2,
+          "lines": true,
+          "numbers": true
+        }
       }
     }
   ]

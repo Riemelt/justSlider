@@ -1,24 +1,11 @@
-import { Direction, Orientation } from "../../../app/types";
-
-interface SliderOptions {
-  from?:        number;
-  to?:          number;
-  step?:        number;
-  min?:         number;
-  max?:         number;
-  orientation?: Orientation;
-  direction?:   Direction;
-  range?:       boolean;
-  tooltips?:    boolean;
-  progressBar?: boolean;
-}
+import { JustSliderOptions } from "../../../app/types";
 
 interface SliderDemoOptions {
-  slider:             SliderOptions;
+  slider:             JustSliderOptions;
   configurationPanel: ConfigurationPanelOptions;
 }
 
 export {
-  SliderOptions,
   SliderDemoOptions,
+  JustSliderOptions,
 }
