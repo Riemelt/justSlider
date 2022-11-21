@@ -38,57 +38,101 @@ class Model {
     return this.state;
   }
 
-  public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar }: Options) {
+  public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar, scale }: Options) {
     const handlesToUpdate:  Set<HandleType>  = new Set();
     const eventsToDispatch: Set<SliderEvent> = new Set();
 
     if (min !== undefined || max !== undefined) {
       this.setMinMax(min, max);
       this.setStep(this.state.step);
-      addHandlesToUpdate(["from", "to"]);
-      addEventsToDispatch(["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"]);
+      handlesToUpdate
+        .add("from")
+        .add("to");
+      eventsToDispatch
+        .add("HandleFromMove")
+        .add("HandleToMove")
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
     }
 
     if (step !== undefined) {
       this.setStep(step);
-      addHandlesToUpdate(["from", "to"]);
-      addEventsToDispatch(["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"]);
+      handlesToUpdate
+        .add("from")
+        .add("to");
+      eventsToDispatch
+        .add("HandleFromMove")
+        .add("HandleToMove")
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
     }
 
     if (range !== undefined) {
       this.state.range = range;
-      addHandlesToUpdate(["to"]);
-      addEventsToDispatch(["HandleToMove", "ProgressBarUpdate", "SliderUpdate"]);
+      handlesToUpdate
+        .add("to");
+      eventsToDispatch
+        .add("HandleToMove")
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
     }
 
     if (direction !== undefined) {
       this.state.direction = direction;
-      addEventsToDispatch(["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"]);
+      eventsToDispatch
+        .add("HandleFromMove")
+        .add("HandleToMove")
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
     }
 
     if (orientation !== undefined) {
       this.state.orientation = orientation;
-      addEventsToDispatch(["OrientationUpdate", "HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"]);
+      eventsToDispatch
+        .add("OrientationUpdate")
+        .add("HandleFromMove")
+        .add("HandleToMove")
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
     }
 
     if (progressBar !== undefined) {
       this.state.progressBar = progressBar;
-      addEventsToDispatch(["ProgressBarUpdate", "SliderUpdate"]);
+      eventsToDispatch
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
     }
 
     if (tooltips !== undefined) {
       this.state.tooltips = tooltips;
-      addEventsToDispatch(["TooltipsUpdate", "SliderUpdate"]);
+      eventsToDispatch
+        .add("TooltipsUpdate")
+        .add("SliderUpdate");
     }
 
     if (to !== undefined) {
-      addHandlesToUpdate(["to"]);
-      addEventsToDispatch(["HandleToMove", "ProgressBarUpdate", "SliderUpdate"]);
+      handlesToUpdate
+        .add("to");
+      eventsToDispatch
+        .add("HandleToMove")
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
     }
 
     if (from !== undefined) {
-      addHandlesToUpdate(["from"]);
-      addEventsToDispatch(["HandleFromMove", "ProgressBarUpdate", "SliderUpdate"]);
+      handlesToUpdate
+        .add("from");
+      eventsToDispatch
+        .add("HandleFromMove")
+        .add("ProgressBarUpdate")
+        .add("SliderUpdate");
+    }
+
+    if (scale !== undefined) {
+      this.setScale(scale);
+      eventsToDispatch
+        .add("ScaleUpdate")
+        .add("SliderUpdate");
     }
 
     handlesToUpdate.forEach(type => {
@@ -103,14 +147,6 @@ class Model {
     });
 
     this.eventManager.dispatchEvents(Array.from(eventsToDispatch));
-
-    function addHandlesToUpdate(types: HandleType[]) {
-      types.forEach(type => handlesToUpdate.add(type));
-    }
-
-    function addEventsToDispatch(events: SliderEvent[]) {
-      events.forEach(event => eventsToDispatch.add(event));
-    }
   }
 
   public updateHandle(value: number, type: HandleType) {

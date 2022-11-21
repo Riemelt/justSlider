@@ -1,6 +1,7 @@
 import EventManager from "../EventManager/EventManager";
 import { SliderEvent } from "../EventManager/types";
 import { Options } from "../types";
+import { ScaleOptions } from "../View/Scale/types";
 import Model from "./Model";
 
 describe("Model", () => {
@@ -403,6 +404,29 @@ describe("Model", () => {
       expect(scale.set).toBeDefined();
       expect(scale.numbers).toBeDefined();
       expect(scale.lines).toBeDefined();
+    });
+
+    test("Updates scale", () => {
+      model.init({ scale: { type: "steps" } });
+      model.updateOptions({ scale: { type: "set" } });
+
+      const state = model.getState();
+
+      expect(state.scale.type).toBe("set");
+    });
+
+    test("Dispatches events on update", () => {
+      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
+      const events: Array<SliderEvent> = ["ScaleUpdate", "SliderUpdate"];
+
+      model.init({ scale: { type: "steps" } });
+      model.updateOptions({ scale: { type: "set" } });
+
+      events.forEach(event => {
+        expect(mockedDispatcher).toBeCalledWith(event);
+      });
+
+      mockedDispatcher.mockRestore();
     });
 
     test("Density cannot be less than 0", () => {

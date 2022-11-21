@@ -1,15 +1,26 @@
 import EventManager   from "../EventManager/EventManager";
-import { State }    from "../types";
+import { State }      from "../types";
 import View           from "./View";
 import Handle         from "./Handle/Handle";
 import ProgressBar    from "./ProgressBar/ProgressBar";
 import Scale          from "./Scale/Scale";
 import * as Utilities from "./utilities";
+import {
+  ScaleState,
+} from "./Scale/types";
 
 describe("View", () => {
   let eventManager: EventManager;
   let view:         View;
+
+  const scale: ScaleState = {
+    segments: [],
+    lines:    true,
+    numbers:  true,
+  };
+
   const state:      State = {
+    scale,
     from:        200,
     to:          250,
     step:        10,
@@ -91,16 +102,40 @@ describe("View", () => {
     test("Creates handle mousemove handler", () => {
       const mockedHandler = jest.fn(() => undefined);
       const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandleMousemoveHandler");
+      const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
   
       view.init(state);
       view.addCreateHandleHandlers(mockedHandler);
       view.initComponents();
+
+      const $html = view.getHtml();
+      const $justSlider = $html.find(".just-slider__main");
+
+      const mockedOffset = jest.spyOn(jQuery.fn, "offset").mockImplementation(() => {
+        return { left: 150, top: 250, };
+      });
+
+      $justSlider.width(1000);
   
       const handler = mockedSetHandler.mock.calls[0][0];
       handler(250, "from");
+
+      expect(mockedConvertPosition).toBeCalledWith({
+        position:    250,
+        shift:       150,
+        length:      1000,
+        min:         state.min,
+        max:         state.max,
+        orientation: state.orientation,
+        direction:   state.direction,
+      });
+
+      const convertedPosition = mockedConvertPosition.mock.results[0].value;
   
-      expect(mockedHandler).toBeCalledTimes(1);
+      expect(mockedHandler).toBeCalledWith(convertedPosition, "from");
   
+      mockedOffset.mockRestore();
+      mockedConvertPosition.mockRestore();
       mockedSetHandler.mockRestore();
     });
   
@@ -172,15 +207,42 @@ describe("View", () => {
 
   describe("Scale", () => {
     test("Deletes scale", () => {
-      //
+      const mockedDelete = jest.spyOn(Scale.prototype, "delete");
+
+      view.init(state);
+      view.updateScale(state);
+      view.updateScale({ ...state, scale: null, });
+
+      expect(mockedDelete).toBeCalledTimes(1);
+
+      mockedDelete.mockRestore();
     });
 
     test("Updates scale", () => {
-      //
+      const mockedUpdate = jest.spyOn(Scale.prototype, "update");
+
+      view.init(state);
+      view.updateScale(state);
+
+      expect(mockedUpdate).toBeCalledTimes(1);
+
+      mockedUpdate.mockRestore();
     });
 
     test("Creates click handler", () => {
-      //
+      const mockedHandler    = jest.fn(() => undefined);
+      const mockedSetHandler = jest.spyOn(Scale.prototype, "setNumberClickHandler");
+
+      view.init(state);
+      view.addCreateScaleClickHandler(mockedHandler);
+      view.updateScale(state);
+
+      const handler = mockedSetHandler.mock.calls[0][0];
+      handler(180);
+
+      expect(mockedHandler).toBeCalledWith(180, "from");
+
+      mockedSetHandler.mockRestore();
     });
   });
 

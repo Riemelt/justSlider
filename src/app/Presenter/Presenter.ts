@@ -39,6 +39,7 @@ class Presenter {
       "ProgressBarUpdate",
       "OrientationUpdate",
       "TooltipsUpdate",
+      "ScaleUpdate",
       "SliderClickEnable",
       "SliderUpdate",
     ]);
@@ -64,6 +65,10 @@ class Presenter {
     this.view.addCreateSliderClickHandler((value: number, handle: HandleType) => {
       this.model.updateHandle(value, handle);
     });
+
+    this.view.addCreateScaleClickHandler((value: number, handle: HandleType) => {
+      this.model.updateHandle(value, handle);
+    });
   }
 
   private registerEvents() {
@@ -73,34 +78,40 @@ class Presenter {
     this.eventManager.registerEvent("OrientationUpdate");
     this.eventManager.registerEvent("TooltipsUpdate");
     this.eventManager.registerEvent("ProgressBarUpdate");
+    this.eventManager.registerEvent("ScaleUpdate");
     this.eventManager.registerEvent("SliderClickDisable");
     this.eventManager.registerEvent("SliderClickEnable");
   }
 
   private addEventListeners() {
     this.eventManager.addEventListener("HandleFromMove", () => {
-      const options = this.model.getState();
-      this.view.updateHandleFrom(options);
+      const state = this.model.getState();
+      this.view.updateHandleFrom(state);
     });
 
     this.eventManager.addEventListener("HandleToMove", () => {
-      const options = this.model.getState();
-      this.view.updateHandleTo(options);
+      const state = this.model.getState();
+      this.view.updateHandleTo(state);
     });
 
     this.eventManager.addEventListener("ProgressBarUpdate", () => {
-      const options = this.model.getState();
-      this.view.updateProgressBar(options);
+      const state = this.model.getState();
+      this.view.updateProgressBar(state);
     });
 
     this.eventManager.addEventListener("OrientationUpdate", () => {
-      const options = this.model.getState();
-      this.view.setOrientation(options.orientation);
+      const state = this.model.getState();
+      this.view.setOrientation(state.orientation);
     });
 
     this.eventManager.addEventListener("TooltipsUpdate", () => {
-      const options = this.model.getState();
-      this.view.updateTooltips(options);
+      const state = this.model.getState();
+      this.view.updateTooltips(state);
+    });
+    
+    this.eventManager.addEventListener("ScaleUpdate", () => {
+      const state = this.model.getState();
+      this.view.updateScale(state);
     });
 
     this.eventManager.addEventListener("SliderClickDisable", () => {
@@ -112,8 +123,8 @@ class Presenter {
     });
 
     this.eventManager.addEventListener("SliderUpdate", () => {
-      const options = this.model.getState();
-      this.onUpdate?.(options);
+      const state = this.model.getState();
+      this.onUpdate?.(state);
     });
   }
 }

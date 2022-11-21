@@ -24,7 +24,6 @@ describe("Scale", () => {
   ];
 
   const numbers: Array<Segment> = segments.filter(segment => segment.type === "number");
-  const lines:   Array<Segment> = segments.filter(segment => segment.type === "line");
 
   const state: ScaleState = {
     segments,

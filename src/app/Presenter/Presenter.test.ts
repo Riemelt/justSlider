@@ -2,6 +2,7 @@ import EventManager from "../EventManager/EventManager";
 import { SliderEvent } from "../EventManager/types";
 import Model from "../Model/Model";
 import { JustSliderOptions } from "../types";
+import { ScaleOptions } from "../View/Scale/types";
 import View from "../View/View";
 import Presenter from "./Presenter";
 
@@ -12,8 +13,16 @@ describe("Presenter", () => {
   let view:         View;
 
   const onUpdate = jest.fn(() => undefined);
+
+  const scale: ScaleOptions = {
+    type:    "steps",
+    lines:   true,
+    numbers: true,
+  };
   
   const options: JustSliderOptions = {
+    scale,
+    onUpdate,
     from:        0,
     to:          100,
     min:         0,
@@ -24,7 +33,6 @@ describe("Presenter", () => {
     range:       false,
     tooltips:    false,
     progressBar: false,
-    onUpdate,
   }
 
   function buildPresenter() {
@@ -60,21 +68,25 @@ describe("Presenter", () => {
   test("Creates view handlers", () => {
     const mockedViewHandleHandler      = jest.spyOn(view, "addCreateHandleHandlers");
     const mockedViewSliderClickHandler = jest.spyOn(view, "addCreateSliderClickHandler");
+    const mockedViewScaleClickHandler  = jest.spyOn(view, "addCreateScaleClickHandler");
 
     presenter.init(options);
 
     expect(mockedViewHandleHandler).toBeCalled();
     expect(mockedViewSliderClickHandler).toBeCalled();
+    expect(mockedViewScaleClickHandler).toBeCalled();
 
     const mockedUpdate = jest.spyOn(model, "updateHandle");
 
-    const handleHandler = mockedViewHandleHandler.mock.calls[0][0];
+    const handleHandler      = mockedViewHandleHandler.mock.calls[0][0];
     const sliderClickHandler = mockedViewSliderClickHandler.mock.calls[0][0];
+    const scaleClickHandler  = mockedViewScaleClickHandler.mock.calls[0][0];
 
     handleHandler(50, "from");
     sliderClickHandler(50, "from");
+    scaleClickHandler(50, "from");
 
-    expect(mockedUpdate).toBeCalledTimes(2);
+    expect(mockedUpdate).toBeCalledTimes(3);
   });
 
   test("Registers events", () => {
@@ -86,6 +98,7 @@ describe("Presenter", () => {
       "OrientationUpdate",
       "TooltipsUpdate",
       "ProgressBarUpdate",
+      "ScaleUpdate",
       "SliderClickDisable",
       "SliderClickEnable",
     ];
@@ -105,6 +118,7 @@ describe("Presenter", () => {
       "ProgressBarUpdate",
       "OrientationUpdate",
       "TooltipsUpdate",
+      "ScaleUpdate",
       "SliderClickEnable",
       "SliderUpdate",
     ];
@@ -187,6 +201,15 @@ describe("Presenter", () => {
       eventManager.dispatchEvent("SliderUpdate");
 
       expect(onUpdate).toBeCalledTimes(1);
+    });
+
+    test("ScaleUpdate", () => {
+      presenter.init(options);
+
+      const mockedUpdate = jest.spyOn(view, "updateScale");
+      eventManager.dispatchEvent("ScaleUpdate");
+
+      expect(mockedUpdate).toBeCalledTimes(1);
     });
   });
 

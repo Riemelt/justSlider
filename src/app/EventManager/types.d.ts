@@ -7,6 +7,7 @@ type SliderEvent =
   "OrientationUpdate"  |
   "ProgressBarUpdate"  |
   "TooltipsUpdate"     |
+  "ScaleUpdate"        |
   "SliderClickDisable" |
   "SliderClickEnable";
 
