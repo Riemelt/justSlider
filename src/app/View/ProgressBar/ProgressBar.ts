@@ -1,18 +1,21 @@
-import { Direction, Options, Orientation }          from "../../types";
-import { getTransformStyles }        from "../utilities";
+import {
+  Direction,
+  State,
+  Orientation
+} from "../../types";
+
+import { getTransformStyles } from "../utilities";
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;
-  private $bar: JQuery<HTMLElement>;
-  private options: Options;
+  private $bar:       JQuery<HTMLElement>;
 
   constructor($parent: JQuery<HTMLElement>) {
     this.init($parent);
   }
 
-  public update(options: Options) {
-    this.options = options;
-    const { min, max, from, to, range, orientation, direction } = options;
+  public update(state: State): void {
+    const { min, max, from, to, range, orientation, direction } = state;
 
     const start = range ? from : min;
     const end   = range ? to : from;
@@ -32,7 +35,7 @@ class ProgressBar {
     });
   }
 
-  public delete() {
+  public delete(): void {
     this.$component.remove();
   }
 
@@ -43,18 +46,18 @@ class ProgressBar {
     orientation: Orientation,
     direction:   Direction,
     scale?:      number,
-  }) {
+  }): void {
     const { property, style } = getTransformStyles(options)
     this.$bar.css(property, style);
   }
 
-  private init($parent: JQuery<HTMLElement>) {
+  private init($parent: JQuery<HTMLElement>): void {
     this.initHtml();
 
     $parent.append(this.$component);
   }
 
-  private initHtml() {
+  private initHtml(): void {
     this.$component = $(`
       <div class="just-slider__progress-bar-wrapper">
         <div class="just-slider__progress-bar">

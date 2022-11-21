@@ -1,18 +1,24 @@
 import EventManager from "../EventManager/EventManager";
-import { Options, Orientation } from "../types";
-import Handle                   from "./Handle/Handle";
-import ProgressBar              from "./ProgressBar/ProgressBar";
+import Handle       from "./Handle/Handle";
+import ProgressBar  from "./ProgressBar/ProgressBar";
+import Scale        from "./Scale/Scale";
+
+import {
+  State,
+  Orientation,
+} from "../types";
 
 import { convertViewPositionToModel } from "./utilities";
 
 class View {
   private eventManager: EventManager;
-  private options:      Options;
+  private state:        State;
   private $html:        JQuery<HTMLElement>;
   private $justSlider:  JQuery<HTMLElement>;
 
   private handleHandleMousemove: (position: number, type: HandleType) => void;
   private sliderClickHandler:    (position: number, type: HandleType) => void;
+  private scaleClickHandler:     (position: number, type: HandleType) => void;
 
   private handles: {
     from: Handle,
@@ -20,22 +26,23 @@ class View {
   };
 
   private progressBar: ProgressBar;
+  private scale:       Scale;
 
   constructor(eventManager: EventManager) {
     this.eventManager = eventManager;
   }
 
-  public getHtml() {
+  public getHtml(): JQuery<HTMLElement> {
     return this.$html;
   }
 
-  public init(options: Options) {
-    this.options = options;
+  public init(state: State): void {
+    this.state   = state;
     this.handles = { from: undefined, to: undefined };
     this.initHtml();
   }
 
-  public setOrientation(orientation: Orientation) {
+  public setOrientation(orientation: Orientation): void {
     if (orientation === "vertical") {
       this.$html.addClass("just-slider_vertical");
       return;
@@ -44,23 +51,23 @@ class View {
     this.$html.removeClass("just-slider_vertical");
   }
 
-  public initComponents() {
+  public initComponents(): void {
     this.initHandle("from");
   }
 
-  public updateHandleFrom(options: Options) {
-    this.handles.from.update(options);
+  public updateHandleFrom(state: State): void {
+    this.handles.from.update(state);
   }
 
-  public updateHandleTo(options: Options) {
-    const { range } = options;
+  public updateHandleTo(state: State): void {
+    const { range } = state;
 
     if (range) {
       if (!this.handles.to) {
         this.initHandle("to");
       }
 
-      this.handles.to.update(options);
+      this.handles.to.update(state);
       return;
     }
 
@@ -69,20 +76,20 @@ class View {
     this.deleteHandle("to");
   }
 
-  public updateTooltips(options: Options) {
-    this.handles.from?.updateTooltip(options);
-    this.handles.to?.updateTooltip(options);
+  public updateTooltips(state: State): void {
+    this.handles.from?.updateTooltip(state);
+    this.handles.to?.updateTooltip(state);
   }
 
-  public updateProgressBar(options: Options) {
-    const { progressBar } = options;
+  public updateProgressBar(state: State): void {
+    const { progressBar } = state;
 
     if (progressBar) {
       if (!this.progressBar) {
         this.progressBar = new ProgressBar(this.$justSlider);
       }
 
-      this.progressBar.update(options);
+      this.progressBar.update(state);
       return;
     }
 
@@ -91,39 +98,54 @@ class View {
     this.deleteProgressBar();
   }
 
-  public deleteProgressBar() {
+  public deleteProgressBar(): void {
     this.progressBar?.delete();
     delete this.progressBar;
   }
 
-  public deleteHandle(type: HandleType) {
+  public deleteHandle(type: HandleType): void {
     this.handles[type]?.delete();
     delete this.handles[type];
   }
 
-  public addCreateHandleHandlers(handler: (value: number, type: HandleType) => void) {
+  public updateScale(state: State): void {
+    //
+  }
+
+  public deleteScale(): void {
+    //
+  }
+
+  public addCreateScaleClickHandler(handler: (value: number, type: HandleType) => void): void {
+    this.scaleClickHandler = (position) => {
+
+      //handler(position, type);
+    }
+  }
+
+  public addCreateHandleHandlers(handler: (value: number, type: HandleType) => void): void {
     this.handleHandleMousemove = (position, type) => {
       handler(position, type);
     }
   }
 
-  public addCreateSliderClickHandler(handler: (value: number, type: HandleType) => void) {
+  public addCreateSliderClickHandler(handler: (value: number, type: HandleType) => void): void {
     this.sliderClickHandler = handler;
   }
 
-  public setSliderClickHandler() {
+  public setSliderClickHandler(): void {
     this.$html.addClass("just-slider_animated");
     this.$justSlider.on("mousedown.slider", this.handleSliderClick.bind(this));
   }
 
-  public removeSliderClickHandler() {
+  public removeSliderClickHandler(): void {
     this.$html.removeClass("just-slider_animated");
     this.$justSlider.off("mousedown.slider");
   }
 
-  private handleSliderClick(event: MouseEvent) {
-    const position = this.options.orientation === "horizontal" ? event.pageX : event.pageY;
-    const { min, max, orientation, direction, from, to, range } = this.options;
+  private handleSliderClick(event: MouseEvent): void {
+    const position = this.state.orientation === "horizontal" ? event.pageX : event.pageY;
+    const { min, max, orientation, direction, from, to, range } = this.state;
 
     const length = orientation === "horizontal" ? this.$justSlider.width() : this.$justSlider.height();
     const shift = orientation === "horizontal" ? this.$justSlider.offset().left : this.$justSlider.offset().top;
@@ -138,14 +160,14 @@ class View {
       shift,
     });
 
-    const distanceToTo = Math.abs(to - converted);
+    const distanceToTo   = Math.abs(to - converted);
     const distanceToFrom = Math.abs(from - converted);
-    const type = distanceToTo > distanceToFrom || !range ? "from" : "to";
+    const type           = distanceToTo > distanceToFrom || !range ? "from" : "to";
 
     this.sliderClickHandler(converted, type);
   }
 
-  private initHtml() {
+  private initHtml(): void {
     this.$html = $(`
       <div class="just-slider">
         <div class="just-slider__main">
@@ -156,7 +178,7 @@ class View {
     this.$justSlider = this.$html.find(".just-slider__main");
   }
 
-  private initHandle(type: HandleType) {
+  private initHandle(type: HandleType): void {
     this.handles[type] = new Handle({
       type,
       $parent:      this.$justSlider,

@@ -1,14 +1,15 @@
-import EventManager from "../EventManager/EventManager";
-import { Options } from "../types";
-import View from "./View";
-import Handle from "./Handle/Handle";
-import ProgressBar from "./ProgressBar/ProgressBar";
+import EventManager   from "../EventManager/EventManager";
+import { State }    from "../types";
+import View           from "./View";
+import Handle         from "./Handle/Handle";
+import ProgressBar    from "./ProgressBar/ProgressBar";
+import Scale          from "./Scale/Scale";
 import * as Utilities from "./utilities";
 
 describe("View", () => {
   let eventManager: EventManager;
   let view:         View;
-  const options:    Options = {
+  const state:      State = {
     from:        200,
     to:          250,
     step:        10,
@@ -23,12 +24,12 @@ describe("View", () => {
 
   beforeEach(() => {
     eventManager = new EventManager();
-    view =         new View(eventManager);
+    view         = new View(eventManager);
   });
 
   describe("On initialization", () => {
     test("Generates html node", () => {
-      view.init(options);
+      view.init(state);
   
       const $html = view.getHtml();
       expect($html.is(".just-slider"));
@@ -39,7 +40,7 @@ describe("View", () => {
   });
 
   test("Sets vertical orientation", () => {
-    view.init(options);
+    view.init(state);
     view.setOrientation("vertical");
 
     const $html = view.getHtml();
@@ -47,7 +48,7 @@ describe("View", () => {
   });
 
   test("Unsets vertical orientation", () => {
-    view.init(options);
+    view.init(state);
     view.setOrientation("vertical");
     view.setOrientation("horizontal");
 
@@ -58,12 +59,12 @@ describe("View", () => {
   describe("Handles", () => {
     describe("Updates HandleTo", () => {
       test("Creates and updates HandleTo if range is true", () => {
-        const mockedUpdate = jest.spyOn(Handle.prototype, "update");
+        const mockedUpdate     = jest.spyOn(Handle.prototype, "update");
         const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandleMousemoveHandler");
   
-        view.init(options);
+        view.init(state);
         view.addCreateHandleHandlers(() => undefined);
-        view.updateHandleTo(options);
+        view.updateHandleTo(state);
   
         expect(mockedSetHandler).toBeCalledTimes(1);
         expect(mockedUpdate).toBeCalledTimes(1);
@@ -75,10 +76,10 @@ describe("View", () => {
       test("Deletes HandleTo if range is false", () => {
         const mockedHandleDelete = jest.spyOn(view, "deleteHandle");
   
-        view.init(options);
+        view.init(state);
         view.addCreateHandleHandlers(() => undefined);
-        view.updateHandleTo(options);
-        view.updateHandleTo({ ...options, range: false});
+        view.updateHandleTo(state);
+        view.updateHandleTo({ ...state, range: false});
   
         expect(mockedHandleDelete).toBeCalledTimes(1);
         expect(mockedHandleDelete).toBeCalledWith("to");
@@ -91,7 +92,7 @@ describe("View", () => {
       const mockedHandler = jest.fn(() => undefined);
       const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandleMousemoveHandler");
   
-      view.init(options);
+      view.init(state);
       view.addCreateHandleHandlers(mockedHandler);
       view.initComponents();
   
@@ -106,10 +107,10 @@ describe("View", () => {
     test("Updates HandleFrom", () => {
       const mockedUpdate = jest.spyOn(Handle.prototype, "update");
   
-      view.init(options);
+      view.init(state);
       view.addCreateHandleHandlers(() => undefined);
       view.initComponents();
-      view.updateHandleFrom(options);
+      view.updateHandleFrom(state);
   
       expect(mockedUpdate).toBeCalledTimes(1);
       mockedUpdate.mockRestore();
@@ -118,7 +119,7 @@ describe("View", () => {
     test("Deletes a handle", () => { 
       const mockedHandleDelete = jest.spyOn(Handle.prototype, "delete");
   
-      view.init(options);
+      view.init(state);
       view.addCreateHandleHandlers(() => undefined);
       view.initComponents();
       view.deleteHandle("from");
@@ -132,12 +133,12 @@ describe("View", () => {
   test("Updates tooltips", () => {
     const mockedUpdateTooltip = jest.spyOn(Handle.prototype, "updateTooltip");
 
-    view.init(options);
+    view.init(state);
     view.addCreateHandleHandlers(() => undefined);
     view.initComponents();
 
-    view.updateHandleTo(options);
-    view.updateTooltips(options);
+    view.updateHandleTo(state);
+    view.updateTooltips(state);
 
     expect(mockedUpdateTooltip).toBeCalledTimes(3);
 
@@ -148,9 +149,9 @@ describe("View", () => {
     test("Deletes progress bar", () => {
       const mockedDelete = jest.spyOn(ProgressBar.prototype, "delete");
 
-      view.init(options);
-      view.updateProgressBar(options);
-      view.updateProgressBar({ ...options, progressBar: false, });
+      view.init(state);
+      view.updateProgressBar(state);
+      view.updateProgressBar({ ...state, progressBar: false, });
 
       expect(mockedDelete).toBeCalledTimes(1);
 
@@ -160,8 +161,8 @@ describe("View", () => {
     test("Updates progress bar", () => {
       const mockedUpdate = jest.spyOn(ProgressBar.prototype, "update");
 
-      view.init(options);
-      view.updateProgressBar(options);
+      view.init(state);
+      view.updateProgressBar(state);
 
       expect(mockedUpdate).toBeCalledTimes(1);
 
@@ -169,10 +170,24 @@ describe("View", () => {
     })
   });
 
+  describe("Scale", () => {
+    test("Deletes scale", () => {
+      //
+    });
+
+    test("Updates scale", () => {
+      //
+    });
+
+    test("Creates click handler", () => {
+      //
+    });
+  });
+
   describe("Slider click", () => {
     test("Enables slider click handler and adds animation", () => {
       const handler = jest.fn(() => undefined);
-      view.init(options);
+      view.init(state);
       view.addCreateSliderClickHandler(handler);
       view.setSliderClickHandler();
 
@@ -187,7 +202,7 @@ describe("View", () => {
 
     test("Disables slider click handler and removes animation", () => {
       const handler = jest.fn(() => undefined);
-      view.init(options);
+      view.init(state);
       view.addCreateSliderClickHandler(handler);
       view.setSliderClickHandler();
 
@@ -210,7 +225,7 @@ describe("View", () => {
         pageX: 280,
       });
 
-      view.init(options);
+      view.init(state);
       view.addCreateSliderClickHandler(handler);
       view.setSliderClickHandler();
 
@@ -229,10 +244,10 @@ describe("View", () => {
         position:    280,
         shift:       150,
         length:      1000,
-        min:         options.min,
-        max:         options.max,
-        orientation: options.orientation,
-        direction:   options.direction,
+        min:         state.min,
+        max:         state.max,
+        orientation: state.orientation,
+        direction:   state.direction,
       });
 
       const convertedPosition = mockedConvertPosition.mock.results[0].value;
@@ -252,7 +267,7 @@ describe("View", () => {
       });
 
       view.init({
-        ...options,
+        ...state,
         orientation: "vertical",
         from: 0,
       });
@@ -274,10 +289,10 @@ describe("View", () => {
         position:    280,
         shift:       250,
         length:      1000,
-        min:         options.min,
-        max:         options.max,
+        min:         state.min,
+        max:         state.max,
         orientation: "vertical",
-        direction:   options.direction,
+        direction:   state.direction,
       });
 
       const convertedPosition = mockedConvertPosition.mock.results[0].value;

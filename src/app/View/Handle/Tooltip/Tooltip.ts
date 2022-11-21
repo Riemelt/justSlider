@@ -5,21 +5,21 @@ class Tooltip {
     this.init($parent);
   }
 
-  public update(value: number) {
+  public update(value: number): void {
     this.$component.html(`${value}`);
   }
 
-  public delete() {
+  public delete(): void {
     this.$component.remove();
   }
 
-  private init($parent: JQuery<HTMLElement>) {
+  private init($parent: JQuery<HTMLElement>): void {
     this.initHtml();
 
     $parent.append(this.$component);
   }
 
-  private initHtml() {
+  private initHtml(): void {
     this.$component = $(`
       <div class="just-slider__tooltip">
       </div>

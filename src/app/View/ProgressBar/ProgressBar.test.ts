@@ -1,4 +1,9 @@
-import { Direction, Options, Orientation } from "../../types";
+import {
+  Direction,
+  State,
+  Orientation
+} from "../../types";
+
 import ProgressBar from "./ProgressBar";
 import * as Utilities from "../utilities";
 
@@ -27,8 +32,16 @@ describe("ProgressBar", () => {
   });
 
   describe("Updates transform styles", () => {
-    const options: Options = { min: -100, max: 300, from: 200, to: 250, range: false, orientation: "horizontal", direction: "forward" };
-    let mockedTransform: jest.SpyInstance<{ property: string, style: string }, [options: { shift: number; min: number; max: number; orientation: Orientation; direction: Direction; scale?: number; }]>;
+    const state: State = {
+      min:         -100,
+      max:         300,
+      from:        200,
+      to:          250,
+      range:       false,
+      orientation: "horizontal",
+      direction:   "forward",
+    };
+    let mockedTransform: jest.SpyInstance<{ property: string; style: string; }, [options: { shift: number; min: number; max: number; orientation: Orientation; direction: Direction; scale?: number; }]>;
 
     beforeEach(() => {
       mockedTransform = jest.spyOn(Utilities, "getTransformStyles");
@@ -39,13 +52,13 @@ describe("ProgressBar", () => {
     });
 
     test("Range is false", () => {
-      progressBar.update(options);
+      progressBar.update(state);
       expect(mockedTransform).toBeCalledWith({
-        min:         options.min,
-        max:         options.max,
-        orientation: options.orientation,
-        direction:   options.direction,
-        shift:       options.from,
+        min:         state.min,
+        max:         state.max,
+        orientation: state.orientation,
+        direction:   state.direction,
+        shift:       state.from,
         scale:       0.75,
       });
 
@@ -55,13 +68,13 @@ describe("ProgressBar", () => {
     });
 
     test("Range is true", () => {
-      progressBar.update({ ...options, range: true, });
+      progressBar.update({ ...state, range: true, });
       expect(mockedTransform).toBeCalledWith({
-        min:         options.min,
-        max:         options.max,
-        orientation: options.orientation,
-        direction:   options.direction,
-        shift:       options.to,
+        min:         state.min,
+        max:         state.max,
+        orientation: state.orientation,
+        direction:   state.direction,
+        shift:       state.to,
         scale:       0.125,
       });
 
@@ -71,13 +84,13 @@ describe("ProgressBar", () => {
     });
 
     test("Direction is backward", () => {
-      progressBar.update({ ...options, direction: "backward", });
+      progressBar.update({ ...state, direction: "backward", });
       expect(mockedTransform).toBeCalledWith({
-        min:         options.min,
-        max:         options.max,
-        orientation: options.orientation,
+        min:         state.min,
+        max:         state.max,
+        orientation: state.orientation,
         direction:   "backward",
-        shift:       options.min,
+        shift:       state.min,
         scale:       0.75,
       });
 

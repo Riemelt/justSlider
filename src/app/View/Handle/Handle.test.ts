@@ -1,5 +1,5 @@
 import EventManager from "../../EventManager/EventManager";
-import { Options } from "../../types";
+import { State } from "../../types";
 import Handle from "./Handle";
 import Tooltip from "./Tooltip/Tooltip";
 
@@ -12,7 +12,17 @@ describe("Handle", () => {
 
   const handleClass = ".just-slider__handle";
   const pointClass  = ".just-slider__point";
-  const options: Options = { from: 200, to: 250, step: 10, min: -100, max: 300, orientation: "horizontal", direction: "forward", range: true, tooltips: false };
+  const state: State = {
+    from:        200,
+    to:          250,
+    step:        10,
+    min:         -100,
+    max:         300,
+    orientation: "horizontal",
+    direction:   "forward",
+    range:       true,
+    tooltips:    false,
+  };
 
   function generateHandle(type: HandleType) {
     $parent = $(`<div class="just-slider"></div>`);
@@ -60,7 +70,7 @@ describe("Handle", () => {
 
     const mockedUpdate = jest.spyOn(Tooltip.prototype, "update");
 
-    handle.update({ ...options, tooltips: true });
+    handle.update({ ...state, tooltips: true });
     expect(mockedUpdate).toBeCalled();
 
     mockedUpdate.mockRestore();
@@ -71,8 +81,8 @@ describe("Handle", () => {
 
     const mockedDelete = jest.spyOn(Tooltip.prototype, "delete");
 
-    handle.update({ ...options, tooltips: true });
-    handle.update({ ...options, tooltips: false });
+    handle.update({ ...state, tooltips: true });
+    handle.update({ ...state, tooltips: false });
     expect(mockedDelete).toBeCalled();
 
     mockedDelete.mockRestore();
@@ -85,7 +95,7 @@ describe("Handle", () => {
     test("Sets focus", () => {
       generateHandle("to");
 
-      handle.update({ ...options, from: -80, to: -50, });
+      handle.update({ ...state, from: -80, to: -50, });
       const $point = $parent.find(pointClass);
 
       expect($point.hasClass(focusedClass)).toBe(true);
@@ -95,7 +105,7 @@ describe("Handle", () => {
     test("Unsets focus", () => {
       generateHandle("to");
 
-      handle.update(options);
+      handle.update(state);
       const $point = $parent.find(pointClass);
 
       expect($point.hasClass(focusedClass)).toBe(false);
@@ -107,14 +117,14 @@ describe("Handle", () => {
     const mockedTransform = jest.spyOn(Utilities, "getTransformStyles");
 
     generateHandle("from");
-    handle.update(options);
+    handle.update(state);
 
     expect(mockedTransform).toBeCalledWith({
-      min:         options.min,
-      max:         options.max,
-      orientation: options.orientation,
-      direction:   options.direction,
-      shift:       options.from,
+      min:         state.min,
+      max:         state.max,
+      orientation: state.orientation,
+      direction:   state.direction,
+      shift:       state.from,
     });
 
     const { property, style } = mockedTransform.mock.results[0].value;
@@ -129,7 +139,7 @@ describe("Handle", () => {
     generateHandle("from");
     const handler = jest.fn(() => undefined);
     handle.setHandleMousemoveHandler(handler);
-    handle.update(options);
+    handle.update(state);
 
     const $handle = $parent.find(`${pointClass} ${handleClass}`);
     $handle.trigger("mousedown");
@@ -142,7 +152,7 @@ describe("Handle", () => {
     test("Disables slider click on mousedown", () => {
       const mockedDispatchEvent = jest.spyOn(EventManager.prototype, "dispatchEvent");
       generateHandle("from");
-      handle.update(options);
+      handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
       $handle.trigger("mousedown");
@@ -156,7 +166,7 @@ describe("Handle", () => {
     test("Enables slider click on mouseup", () => {
       const mockedDispatchEvent = jest.spyOn(EventManager.prototype, "dispatchEvent");
       generateHandle("from");
-      handle.update(options);
+      handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
       $handle.trigger("mousedown");
@@ -186,7 +196,7 @@ describe("Handle", () => {
       $parent.width(1000);
 
       handle.setHandleMousemoveHandler(handler);
-      handle.update(options);
+      handle.update(state);
 
       const $handle = handle.getHandleHTML();
 
@@ -204,10 +214,10 @@ describe("Handle", () => {
         position:    270,
         shift:       150,
         length:      1000,
-        min:         options.min,
-        max:         options.max,
-        orientation: options.orientation,
-        direction:   options.direction,
+        min:         state.min,
+        max:         state.max,
+        orientation: state.orientation,
+        direction:   state.direction,
       });
 
       const convertedPosition = mockedConvertPosition.mock.results[0].value;
@@ -238,7 +248,7 @@ describe("Handle", () => {
       $parent.height(1000);
 
       handle.setHandleMousemoveHandler(handler);
-      handle.update({ ...options, orientation: "vertical", });
+      handle.update({ ...state, orientation: "vertical", });
 
       const $handle = handle.getHandleHTML();
 
@@ -256,10 +266,10 @@ describe("Handle", () => {
         position:    280,
         shift:       250,
         length:      1000,
-        min:         options.min,
-        max:         options.max,
+        min:         state.min,
+        max:         state.max,
         orientation: "vertical",
-        direction:   options.direction,
+        direction:   state.direction,
       });
 
       const convertedPosition = mockedConvertPosition.mock.results[0].value;

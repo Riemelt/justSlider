@@ -1,5 +1,9 @@
 import EventManager from "../../EventManager/EventManager";
-import { Direction, Options, Orientation } from "../../types";
+import {
+  Direction,
+  State,
+  Orientation,
+} from "../../types";
 
 import {
   getTransformStyles,
@@ -17,8 +21,8 @@ class Handle {
 
   private handleHandleMousemove: (position: number, type: HandleType) => void;
 
-  private type: HandleType;
-  private options: Options;
+  private type:  HandleType;
+  private state: State;
 
   private tooltip: Tooltip;
 
@@ -31,19 +35,19 @@ class Handle {
     return this.$handle;
   }
 
-  public setHandleMousemoveHandler(handler: (position: number, type: HandleType) => void) {
+  public setHandleMousemoveHandler(handler: (position: number, type: HandleType) => void): void {
     this.handleHandleMousemove = handler;
   }
 
-  public delete() {
+  public delete(): void {
     this.deleteHandlers();
     this.$point.remove();
   }
 
-  public update(options: Options) {
-    this.options = options;
-    const value = options[this.type];
-    const { min, max, orientation, direction } = options;
+  public update(state: State): void {
+    this.state = state;
+    const value = state[this.type];
+    const { min, max, orientation, direction } = state;
 
     this.updatePosition({
       min,
@@ -54,12 +58,12 @@ class Handle {
     });
 
     this.updateFocus(value, min, max, this.type);
-    this.updateTooltip(options);
+    this.updateTooltip(state);
   }
 
-  public updateTooltip(options: Options) {
-    const { tooltips } = options;
-    const value = options[this.type];
+  public updateTooltip(state: State): void {
+    const { tooltips } = state;
+    const value = state[this.type];
 
     if (tooltips) {
       if (!this.tooltip) {
@@ -75,7 +79,7 @@ class Handle {
     this.deleteTooltip();
   }
 
-  private deleteTooltip() {
+  private deleteTooltip(): void {
     this.tooltip?.delete();
     delete this.tooltip;
   }
@@ -103,12 +107,12 @@ class Handle {
     orientation:  Orientation,
     direction:    Direction,
     scale?:       number,
-  }) {
+  }): void {
     const { property, style } = getTransformStyles(options);
     this.$point.css(property, style);
   }
 
-  private init({$parent, type}: HandleOptions) {
+  private init({ $parent, type }: HandleOptions): void {
     this.type    = type;
     this.$parent = $parent;
 
@@ -119,7 +123,7 @@ class Handle {
     $parent.append(this.$point);
   }
 
-  private initHtml() {
+  private initHtml(): void {
     this.$point = $(`
       <div class="just-slider__point">
         <div class="just-slider__handle">
@@ -128,31 +132,31 @@ class Handle {
     `);
   }
 
-  private setHandlers() {
+  private setHandlers(): void {
     this.$handle.on("mousedown.handle", this.handleMousedown.bind(this));
   }
 
-  private deleteHandlers() {
+  private deleteHandlers(): void {
     this.$handle.off("mousedown.handle");
   }
 
-  private handleMousedown(event: MouseEvent) {
+  private handleMousedown(event: MouseEvent): void {
     event.preventDefault();
     this.eventManager.dispatchEvent("SliderClickDisable");
 
-    const offset = this.options.orientation === "horizontal" ? this.$handle.offset().left : this.$handle.offset().top;
-    const length = this.options.orientation === "horizontal" ? this.$handle.outerWidth() : this.$handle.outerHeight();
+    const offset = this.state.orientation === "horizontal" ? this.$handle.offset().left : this.$handle.offset().top;
+    const length = this.state.orientation === "horizontal" ? this.$handle.outerWidth() : this.$handle.outerHeight();
 
     const center = offset + (length / 2);
-    const shiftFromCenter  = this.options.orientation === "horizontal" ? event.pageX - center : event.pageY - center;
+    const shiftFromCenter  = this.state.orientation === "horizontal" ? event.pageX - center : event.pageY - center;
 
     $(document).on("mousemove.handle", handleDocumentMousemove.bind(this));
     $(document).on("mouseup.handle", handleDocumentMouseup.bind(this));
 
-    function handleDocumentMousemove(event: MouseEvent) {
-      const position = this.options.orientation === "horizontal" ? event.pageX - shiftFromCenter : event.pageY - shiftFromCenter;
+    function handleDocumentMousemove(event: MouseEvent): void {
+      const position = this.state.orientation === "horizontal" ? event.pageX - shiftFromCenter : event.pageY - shiftFromCenter;
   
-      const { min, max, orientation, direction } = this.options;
+      const { min, max, orientation, direction } = this.state;
 
       const length = orientation === "horizontal" ? this.$parent.width() : this.$parent.height();
       const shift = orientation === "horizontal" ? this.$parent.offset().left : this.$parent.offset().top;
@@ -170,7 +174,7 @@ class Handle {
       this.handleHandleMousemove?.(convertedPosition, this.type);
     }
 
-    function handleDocumentMouseup() {
+    function handleDocumentMouseup(): void {
       $(document).off("mouseup.handle");
       $(document).off("mousemove.handle");
 

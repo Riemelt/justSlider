@@ -144,7 +144,7 @@ class Model {
 
     this.setScaleDensity(density);
     this.setScaleSet(set);
-    const generateScaleSegments = (type === "steps") ? this.generateScaleSegmentsStepsMode : this.generateScaleSegmentsSetMode;
+    const generateScaleSegments = (type === "steps") ? this.generateScaleSegmentsStepsMode.bind(this) : this.generateScaleSegmentsSetMode.bind(this);
     generateScaleSegments();
   }
 

@@ -92,7 +92,7 @@ class Scale {
 
   private createNumberSegment(value: number, isBig: boolean): JQuery<HTMLElement> {
     const $segment = $(`<div class="${this.numberClass}">${value}</div>`);
-    $segment.on("click.scale", this.handleNumberClick.bind(this, value));
+    $segment.on("click.scale", () => this.handleNumberClick(value));
 
     if (isBig) {
       $segment.addClass("just-slider__scale-number_big");

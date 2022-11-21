@@ -15,6 +15,34 @@ describe("Scale", () => {
   const numberClass = ".just-slider__scale-number";
   const lineClass   = ".just-slider__scale-line";
 
+  const segments: Array<Segment> = [
+    { value: 0, type: "number" },
+    { value: 25, type: "line" },
+    { value: 50, type: "number" },
+    { value: 75, type: "line" },
+    { value: 100, type: "number" },
+  ];
+
+  const numbers: Array<Segment> = segments.filter(segment => segment.type === "number");
+  const lines:   Array<Segment> = segments.filter(segment => segment.type === "line");
+
+  const state: ScaleState = {
+    segments,
+    lines: true,
+    numbers: true,
+  };
+
+  const modelState: State = {
+    min:         -100,
+    max:         300,
+    from:        200,
+    to:          250,
+    range:       false,
+    orientation: "horizontal",
+    direction:   "forward",
+    scale:       state,
+  };
+
   beforeEach(() => {
     $parent = $(`<div class="just-slider"></div>`);
     scale = new Scale($parent);
@@ -34,38 +62,21 @@ describe("Scale", () => {
   });
 
   test("Handles mouse clicks on number segments", () => {
-    
+    const handler = jest.fn(() => undefined);
+
+    scale.setNumberClickHandler(handler);
+    scale.update(modelState);
+
+    const $scale = $parent.find(scaleClass);
+    const $numbers = $scale.find(numberClass);
+
+    $numbers.last().trigger("click");
+
+    expect(handler).toBeCalledTimes(1);
+    expect(handler).toBeCalledWith(100);
   });
 
   describe("On update", () => {
-    const segments: Array<Segment> = [
-      { value: 0, type: "number" },
-      { value: 25, type: "line" },
-      { value: 50, type: "number" },
-      { value: 75, type: "line" },
-      { value: 100, type: "number" },
-    ];
-
-    const numbers: Array<Segment> = segments.filter(segment => segment.type === "number");
-    const lines:   Array<Segment> = segments.filter(segment => segment.type === "line");
-
-    const state: ScaleState = {
-      segments,
-      lines: true,
-      numbers: true,
-    };
-
-    const modelState: State = {
-      min:         -100,
-      max:         300,
-      from:        200,
-      to:          250,
-      range:       false,
-      orientation: "horizontal",
-      direction:   "forward",
-      scale:       state,
-    };
-
     describe("Generates html nodes", () => {
       test("Numbers", () => {
         scale.update(modelState);
