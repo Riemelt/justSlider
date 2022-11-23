@@ -18,7 +18,7 @@ class Handle {
   private $handle:         JQuery<HTMLElement>;
   private shiftFromCenter: number;
 
-  private handleHandleMousemove: (position: number, type: HandleType) => void;
+  private handleHandlePointermove: (position: number, type: HandleType) => void;
 
   private type:  HandleType;
   private state: State;
@@ -34,8 +34,8 @@ class Handle {
     return this.$handle;
   }
 
-  public setHandleMousemoveHandler(handler: (position: number, type: HandleType) => void): void {
-    this.handleHandleMousemove = handler;
+  public setHandlePointermoveHandler(handler: (position: number, type: HandleType) => void): void {
+    this.handleHandlePointermove = handler;
   }
 
   public delete(): void {
@@ -131,14 +131,14 @@ class Handle {
   }
 
   private setHandlers(): void {
-    this.$handle.on("mousedown.handle", this.handleMousedown.bind(this));
+    this.$handle.on("pointerdown.handle", this.handlePointerdown.bind(this));
   }
 
   private deleteHandlers(): void {
-    this.$handle.off("mousedown.handle");
+    this.$handle.off("pointerdown.handle");
   }
 
-  private handleMousedown(event: MouseEvent): void {
+  private handlePointerdown(event: PointerEvent): void {
     event.preventDefault();
     this.eventManager.dispatchEvent("SliderClickDisable");
 
@@ -148,18 +148,18 @@ class Handle {
     const center         = offset + (length / 2);
     this.shiftFromCenter = this.state.orientation === "horizontal" ? event.pageX - center : event.pageY - center;
 
-    $(document).on("mousemove.handle", this.handleDocumentMousemove.bind(this));
-    $(document).on("mouseup.handle", this.handleDocumentMouseup.bind(this));
+    $(document).on("pointermove.handle", this.handleDocumentPointermove.bind(this));
+    $(document).on("pointerup.handle", this.handleDocumentPointerup.bind(this));
   }
   
-  private handleDocumentMousemove(event: MouseEvent): void {
+  private handleDocumentPointermove(event: PointerEvent): void {
     const position = this.state.orientation === "horizontal" ? event.pageX - this.shiftFromCenter : event.pageY - this.shiftFromCenter;
-    this.handleHandleMousemove?.(position, this.type);
+    this.handleHandlePointermove?.(position, this.type);
   }
 
-  private handleDocumentMouseup(): void {
-    $(document).off("mouseup.handle");
-    $(document).off("mousemove.handle");
+  private handleDocumentPointerup(): void {
+    $(document).off("pointerup.handle");
+    $(document).off("pointermove.handle");
 
     this.eventManager.dispatchEvent("SliderClickEnable");
   }

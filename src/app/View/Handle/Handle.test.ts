@@ -135,42 +135,42 @@ describe("Handle", () => {
     mockedTransform.mockRestore();
   });
 
-  test("Sets MouseMove handler", () => {
+  test("Sets PointerMove handler", () => {
     generateHandle("from");
     const handler = jest.fn(() => undefined);
-    handle.setHandleMousemoveHandler(handler);
+    handle.setHandlePointermoveHandler(handler);
     handle.update(state);
 
     const $handle = $parent.find(`${pointClass} ${handleClass}`);
-    $handle.trigger("mousedown");
-    $(document).trigger("mousemove");
-    $(document).trigger("mouseup");
+    $handle.trigger("pointerdown");
+    $(document).trigger("pointermove");
+    $(document).trigger("pointerup");
     expect(handler).toBeCalledTimes(1);
   });
 
   describe("Drag'n'drop", () => {
-    test("Disables slider click on mousedown", () => {
+    test("Disables slider click on pointerdown", () => {
       const mockedDispatchEvent = jest.spyOn(EventManager.prototype, "dispatchEvent");
       generateHandle("from");
       handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
-      $handle.trigger("mousedown");
-      $(document).trigger("mouseup");
+      $handle.trigger("pointerdown");
+      $(document).trigger("pointerup");
 
       expect(mockedDispatchEvent).toBeCalledWith("SliderClickDisable");
 
       mockedDispatchEvent.mockRestore();
     });
 
-    test("Enables slider click on mouseup", () => {
+    test("Enables slider click on pointerup", () => {
       const mockedDispatchEvent = jest.spyOn(EventManager.prototype, "dispatchEvent");
       generateHandle("from");
       handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
-      $handle.trigger("mousedown");
-      $(document).trigger("mouseup");
+      $handle.trigger("pointerdown");
+      $(document).trigger("pointerup");
 
       expect(mockedDispatchEvent).toBeCalledWith("SliderClickEnable");
 
@@ -180,16 +180,16 @@ describe("Handle", () => {
     test("Drag'n'drop in horizontal mode", () => {
       const handler = jest.fn(() => undefined);
 
-      const eventMousedown = new jQuery.Event( "mousedown", {
+      const eventPointerdown = new jQuery.Event("pointerdown", {
         pageX: 280,
       });
-      const eventMousemove = new jQuery.Event( "mousemove", {
+      const eventPointermove = new jQuery.Event("pointermove", {
         pageX: 300,
       });
 
       generateHandle("from");
 
-      handle.setHandleMousemoveHandler(handler);
+      handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
       const $handle = handle.getHandleHTML();
@@ -200,9 +200,9 @@ describe("Handle", () => {
         return { left: 200, top: 200, };
       });
 
-      $handle.trigger(eventMousedown);
-      $(document).trigger(eventMousemove);
-      $(document).trigger("mouseup");
+      $handle.trigger(eventPointerdown);
+      $(document).trigger(eventPointermove);
+      $(document).trigger("pointerup");
 
       expect(handler).toBeCalledWith(270, "from");
 
@@ -211,16 +211,16 @@ describe("Handle", () => {
 
     test("Drag'n'drop in vertical mode", () => {
       const handler = jest.fn(() => undefined);
-      const eventMousedown = new jQuery.Event( "mousedown", {
+      const eventPointerdown = new jQuery.Event("pointerdown", {
         pageY: 470,
       });
-      const eventMousemove = new jQuery.Event( "mousemove", {
+      const eventPointermove = new jQuery.Event("pointermove", {
         pageY: 500,
       });
 
       generateHandle("from");
 
-      handle.setHandleMousemoveHandler(handler);
+      handle.setHandlePointermoveHandler(handler);
       handle.update({ ...state, orientation: "vertical", });
 
       const $handle = handle.getHandleHTML();
@@ -231,9 +231,9 @@ describe("Handle", () => {
         return { left: 200, top: 400, };
       });
 
-      $handle.trigger(eventMousedown);
-      $(document).trigger(eventMousemove);
-      $(document).trigger("mouseup");
+      $handle.trigger(eventPointerdown);
+      $(document).trigger(eventPointermove);
+      $(document).trigger("pointerup");
 
       expect(handler).toBeCalledWith(480, "from");
 

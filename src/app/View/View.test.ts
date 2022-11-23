@@ -71,7 +71,7 @@ describe("View", () => {
     describe("Updates HandleTo", () => {
       test("Creates and updates HandleTo if range is true", () => {
         const mockedUpdate     = jest.spyOn(Handle.prototype, "update");
-        const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandleMousemoveHandler");
+        const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandlePointermoveHandler");
   
         view.init(state);
         view.addCreateHandleHandlers(() => undefined);
@@ -101,7 +101,7 @@ describe("View", () => {
 
     test("Creates handle mousemove handler", () => {
       const mockedHandler = jest.fn(() => undefined);
-      const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandleMousemoveHandler");
+      const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandlePointermoveHandler");
       const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
   
       view.init(state);
@@ -256,7 +256,7 @@ describe("View", () => {
       const $html = view.getHtml();
       const $justSlider = $html.find(".just-slider__main");
   
-      $justSlider.trigger("mousedown");
+      $justSlider.trigger("pointerdown");
 
       expect($html.hasClass("just-slider_animated")).toBe(true);
       expect(handler).toBeCalledTimes(1);
@@ -273,7 +273,7 @@ describe("View", () => {
       const $html = view.getHtml();
       const $justSlider = $html.find(".just-slider__main");
   
-      $justSlider.trigger("mousedown");
+      $justSlider.trigger("pointerdown");
 
       expect($html.hasClass("just-slider_animated")).toBe(false);
       expect(handler).toBeCalledTimes(0);
@@ -283,7 +283,7 @@ describe("View", () => {
       const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
       const handler = jest.fn(() => undefined);
 
-      const eventMousedown = new jQuery.Event( "mousedown", {
+      const eventPointerdown = new jQuery.Event("pointerdown", {
         pageX: 280,
       });
 
@@ -300,7 +300,7 @@ describe("View", () => {
 
       $justSlider.width(1000);
   
-      $justSlider.trigger(eventMousedown);
+      $justSlider.trigger(eventPointerdown);
 
       expect(mockedConvertPosition).toBeCalledWith({
         position:    280,
@@ -324,7 +324,7 @@ describe("View", () => {
       const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
       const handler = jest.fn(() => undefined);
 
-      const eventMousedown = new jQuery.Event( "mousedown", {
+      const eventPointerdown = new jQuery.Event("pointerdown", {
         pageY: 280,
       });
 
@@ -345,7 +345,7 @@ describe("View", () => {
 
       $justSlider.height(1000);
   
-      $justSlider.trigger(eventMousedown);
+      $justSlider.trigger(eventPointerdown);
 
       expect(mockedConvertPosition).toBeCalledWith({
         position:    280,

@@ -8,8 +8,10 @@ const path = require('path');
 const srcPath = path.resolve(__dirname, "./src");
 
 const entryPoints = {
-  index: "./app/index.ts",
-  demo: "./demo/index.ts",
+  justSlider: "./app/index.ts",
+  demo: {
+    import: "./demo/index.ts",
+  },
 };
 
 const mode = process.env.NODE_ENV === "production" ? "production" : "development";
@@ -20,33 +22,31 @@ module.exports = {
   mode,
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "./[name].[contenthash].css",
+      filename: "./[name]/[name].[contenthash].css",
       ignoreOrder: true,
     }),
-    new webpack.ProvidePlugin({
+    /*new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
       "window.jQuery": "jquery",
-    }),
+    }),*/
     require('autoprefixer'),
     new HtmlWebpackPlugin({
       template: "./demo/index.pug", // relative path to the HTML files
-      filename: "./index.html", // output HTML files
+      filename: "./demo/index.html", // output HTML files
       chunks: ["demo"],
     }),
   ],
   entry: entryPoints,
   output: {
-    filename: "./[name].js",
+    filename: "./[name]/[name].js",
     clean: true,
   },
   devtool: (mode === "development") ? "eval-source-map" : false,
-  optimization: {
-    splitChunks: {
-      chunks: "all",
-    },
-  },
   resolve: {
+    alias: {
+      jquery: "jquery/src/jquery"
+    },
     extensions: [".tsx", ".ts", ".js"],
   },
   module: {

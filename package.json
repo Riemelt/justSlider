@@ -4,7 +4,7 @@
   "description": "Slider plugin for jQuery",
   "main": "index.js",
   "scripts": {
-    "start": "set NODE_ENV=development&&webpack serve --open",
+    "start": "set NODE_ENV=development&&webpack serve --open /demo",
     "dev": "set NODE_ENV=development&&webpack",
     "build": "set NODE_ENV=production&&webpack",
     "deploy": "gh-pages -d dist",
@@ -48,10 +48,12 @@
     "core-js": "^3.25.5",
     "css-loader": "^6.7.1",
     "eslint": "^8.24.0",
+    "gh-pages": "^4.0.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^29.1.2",
     "jest-environment-jsdom": "^29.3.1",
+    "jquery": "^3.6.1",
     "jsdom": "^20.0.2",
     "mini-css-extract-plugin": "^2.6.1",
     "postcss": "^8.4.17",
@@ -68,8 +70,5 @@
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.11.1"
-  },
-  "dependencies": {
-    "jquery": "^3.6.1"
   }
 }

@@ -16,9 +16,9 @@ class View {
   private $html:        JQuery<HTMLElement>;
   private $justSlider:  JQuery<HTMLElement>;
 
-  private handleHandleMousemove: (position: number, type: HandleType) => void;
-  private sliderClickHandler:    (position: number, type: HandleType) => void;
-  private scaleClickHandler:     (position: number, type: HandleType) => void;
+  private handleHandlePointermove: (position: number, type: HandleType) => void;
+  private sliderClickHandler:      (position: number, type: HandleType) => void;
+  private scaleClickHandler:       (position: number, type: HandleType) => void;
 
   private handles: {
     from: Handle,
@@ -82,7 +82,7 @@ class View {
   }
 
   public addCreateHandleHandlers(handler: (value: number, type: HandleType) => void): void {
-    this.handleHandleMousemove = (position, type) => {
+    this.handleHandlePointermove = (position, type) => {
       const converted = this.getConvertedPosition(position);
       handler(converted, type);
     }
@@ -151,12 +151,12 @@ class View {
 
   public setSliderClickHandler(): void {
     this.$html.addClass("just-slider_animated");
-    this.$justSlider.on("mousedown.slider", this.handleSliderClick.bind(this));
+    this.$justSlider.on("pointerdown.slider", this.handleSliderClick.bind(this));
   }
 
   public removeSliderClickHandler(): void {
     this.$html.removeClass("just-slider_animated");
-    this.$justSlider.off("mousedown.slider");
+    this.$justSlider.off("pointerdown.slider");
   }
 
   private initHandle(type: HandleType): void {
@@ -166,10 +166,10 @@ class View {
       eventManager: this.eventManager,
     });
 
-    this.handles[type].setHandleMousemoveHandler(this.handleHandleMousemove.bind(this));
+    this.handles[type].setHandlePointermoveHandler(this.handleHandlePointermove.bind(this));
   }
 
-  private handleSliderClick(event: MouseEvent): void {
+  private handleSliderClick(event: PointerEvent): void {
     const position = this.state.orientation === "horizontal" ? event.pageX : event.pageY;
 
     const converted     = this.getConvertedPosition(position);

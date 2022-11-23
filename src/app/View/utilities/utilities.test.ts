@@ -196,7 +196,7 @@ describe("View utilities", () => {
       {
         value: 20.1,
         precision: 0,
-        expected: "20.1",
+        expected: "20",
       },
       {
         value: 20.123,

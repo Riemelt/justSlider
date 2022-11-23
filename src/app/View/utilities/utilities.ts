@@ -114,11 +114,7 @@ function getTranslateValue(shift: number, min: number, max: number, orientation:
 }
 
 function getValueBasedOnPrecision(value: number, precision: number): string {
-  if (precision > 0) {
-    return value.toFixed(precision);
-  }
-
-  return value.toString();
+  return value.toFixed(precision);
 }
 
 export {
