@@ -6,10 +6,25 @@ $className: 'input-field';
   &__label {
     display: flex;
     justify-content: space-between;
-    min-height: 2.5rem;
-    border: .25rem solid $dark-58;
+    min-height: 1rem;
+    border: 3px solid $dark-58;
     border-radius: 1.25rem;
     overflow: hidden;
+
+    &:focus-within {
+      border-color: $rose;
+
+      .#{$className} {
+        &__title,
+        &__input {
+          color: $rose;
+        }
+
+        &__title {
+          background-color: $dark-shade-5;
+        }
+      }
+    }
   }
 
   &__title {
@@ -20,15 +35,15 @@ $className: 'input-field';
     align-items: center;
     height: 100%;
     width: 100%;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
-    padding: .3125rem;
+    padding: .25rem;
   }
 
   &__input {
     flex: 2 2 auto;
     width: 100%;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
     padding: 0 .625rem;
     border: none;

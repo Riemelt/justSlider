@@ -259,7 +259,7 @@ describe("Handle", () => {
 
       const $handle = handle.getHandleHTML();
 
-      $handle.outerHeight(100);
+      $handle.outerWidth(100);
       
       const mockedHandleOffset = jest.spyOn($handle, "offset").mockImplementation(() => {
         return { left: 200, top: 400, };

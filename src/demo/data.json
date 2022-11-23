@@ -65,15 +65,15 @@
         "to": 90,
         "min": -100,
         "max": 100,
-        "step": 26, 
+        "step": 1, 
         "range": true,
-        "orientation": "horizontal",
+        "orientation": "vertical",
         "direction": "forward",
         "progressBar": true,
         "tooltips": true,
         "precision": 0,
         "scale": {
-          "type": "steps",
+          "type": "set",
           "density": 2,
           "lines": true,
           "numbers": true

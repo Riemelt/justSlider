@@ -46,6 +46,7 @@ $className: 'just-slider';
     justify-content: center;
     align-items: center;
     touch-action: none;
+    transform-origin: center;
   }
 
   &__tooltip {
@@ -164,15 +165,17 @@ $className: 'just-slider';
 
       &__handle {
         right: initial;
-        left: - calc(($handleHeight / 2) - ($sliderSize / 2));
+        left: - calc(($handleWidth / 2) - ($sliderSize / 2));
         top: initial;
         bottom: - calc($handleHeight / 2);
+        transform: rotate(90deg);
       }
 
       &__tooltip {
         transform: initial;
-        right: 150%;
+        top: 150%;
         padding: .625rem .625rem;
+        transform: rotate(-90deg) translate(0, 0);
       }
 
       &__progress-bar {

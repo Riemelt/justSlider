@@ -175,7 +175,7 @@ class Handle {
     this.eventManager.dispatchEvent("SliderClickDisable");
 
     const offset = this.state.orientation === "horizontal" ? this.$handle.offset().left : this.$handle.offset().top;
-    const length = this.state.orientation === "horizontal" ? this.$handle.outerWidth() : this.$handle.outerHeight();
+    const length = this.$handle.outerWidth();
 
     const center         = offset + (length / 2);
     this.shiftFromCenter = this.state.orientation === "horizontal" ? event.pageX - center : event.pageY - center;
