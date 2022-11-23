@@ -16,7 +16,7 @@ class View {
   private $html:        JQuery<HTMLElement>;
   private $justSlider:  JQuery<HTMLElement>;
 
-  private handleHandlePointermove: (position: number, type: HandleType) => void;
+  private handleHandlePointermove: (position: number, type: HandleType, isConverted?: boolean) => void;
   private sliderClickHandler:      (position: number, type: HandleType) => void;
   private scaleClickHandler:       (position: number, type: HandleType) => void;
 
@@ -82,8 +82,8 @@ class View {
   }
 
   public addCreateHandleHandlers(handler: (value: number, type: HandleType) => void): void {
-    this.handleHandlePointermove = (position, type) => {
-      const converted = this.getConvertedPosition(position);
+    this.handleHandlePointermove = (position, type, isConverted = false) => {
+      const converted = isConverted ? position : this.getConvertedPosition(position);
       handler(converted, type);
     }
   }

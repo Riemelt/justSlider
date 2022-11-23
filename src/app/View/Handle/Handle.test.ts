@@ -148,6 +148,40 @@ describe("Handle", () => {
     expect(handler).toBeCalledTimes(1);
   });
 
+  describe("Keyboard control", () => {
+    test("Moves forward by step when right arrow is pressed", () => {
+      const handler = jest.fn(() => undefined);
+      const eventKeydown = new jQuery.Event("keydown", {
+        key: "ArrowRight",
+      });
+
+      generateHandle("from");
+      handle.setHandlePointermoveHandler(handler);
+      handle.update(state);
+
+      const $handle = handle.getHandleHTML();
+      $handle.trigger(eventKeydown);
+
+      expect(handler).toBeCalledWith(210, "from", true);
+    });
+
+    test("Moves backward by step when left arrow is pressed", () => {
+      const handler = jest.fn(() => undefined);
+      const eventKeydown = new jQuery.Event("keydown", {
+        key: "ArrowLeft",
+      });
+
+      generateHandle("from");
+      handle.setHandlePointermoveHandler(handler);
+      handle.update(state);
+
+      const $handle = handle.getHandleHTML();
+      $handle.trigger(eventKeydown);
+
+      expect(handler).toBeCalledWith(190, "from", true);
+    });
+  });
+
   describe("Drag'n'drop", () => {
     test("Disables slider click on pointerdown", () => {
       const mockedDispatchEvent = jest.spyOn(EventManager.prototype, "dispatchEvent");

@@ -18,7 +18,7 @@ class Handle {
   private $handle:         JQuery<HTMLElement>;
   private shiftFromCenter: number;
 
-  private handleHandlePointermove: (position: number, type: HandleType) => void;
+  private handleHandlePointermove: (position: number, type: HandleType, isConverted?: boolean) => void;
 
   private type:  HandleType;
   private state: State;
@@ -124,7 +124,7 @@ class Handle {
   private initHtml(): void {
     this.$point = $(`
       <div class="just-slider__point">
-        <div class="just-slider__handle">
+        <div class="just-slider__handle" tabindex="0">
         </div>
       </div>
     `);
@@ -132,10 +132,42 @@ class Handle {
 
   private setHandlers(): void {
     this.$handle.on("pointerdown.handle", this.handlePointerdown.bind(this));
+    this.$handle.on("keydown.handle", this.handleKeydown.bind(this));
   }
 
   private deleteHandlers(): void {
     this.$handle.off("pointerdown.handle");
+    this.$handle.off("keydown.handle");
+  }
+
+  private handleKeydown(event: KeyboardEvent): void {
+    const { key }             = event;
+    const value               = this.state[this.type];
+    const { step, direction } = this.state;
+
+    if (key === "ArrowRight" || key === "ArrowUp") {
+      event.preventDefault();
+      const newValue = this.moveByStep({ value, direction, step });
+      this.handleHandlePointermove?.(newValue, this.type, true);
+      return;
+    }
+
+    if (key === "ArrowLeft" || key === "ArrowDown") {
+      event.preventDefault();
+      const newValue = this.moveByStep({ value, direction, step: -step });
+      this.handleHandlePointermove?.(newValue, this.type, true);
+      return;
+    }
+  }
+
+  private moveByStep(options: {
+    value:     number,
+    step:      number,
+    direction: Direction,
+  }): number {
+    const { value, step, direction } = options;
+    const sign = direction === "forward" ? 1 : -1;
+    return value + sign * step;
   }
 
   private handlePointerdown(event: PointerEvent): void {
