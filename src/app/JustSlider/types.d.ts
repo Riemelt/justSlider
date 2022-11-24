@@ -1,11 +1,11 @@
 import Presenter from "../Presenter/Presenter";
-import { Options } from "../types";
+import { JustSliderOptions, Options } from "../types";
 
 declare class JustSlider {
   private presenter: Presenter;
-  constructor($parent: JQuery<HTMLElement>, presenter: Presenter);
+  constructor($parent: JQuery<HTMLElement>, presenter: Presenter, options: JustSliderOptions);
   public updateOptions:     (options: Options) => void;
-  public updateHandle:      (type: HandleType, value: number) => void;
+  public update:      (type: HandleType, value: number) => void;
 }
 
 export {

@@ -15,7 +15,7 @@ import { JustSliderOptions } from "./types";
 
       presenter.init(options);
 
-      const slider = new JustSlider(this, presenter);
+      const slider = new JustSlider(this, presenter, options);
 
       return slider;
     }

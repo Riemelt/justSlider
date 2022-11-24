@@ -30,16 +30,17 @@ describe("JustSlider", () => {
     onUpdate,
   }
 
+  function initSlider(options: JustSliderOptions) {
+    presenter.init(options);
+    justSlider = new JustSlider($parent, presenter, options);
+  }
+
   beforeEach(() => {
     $parent = $(`<div class="slider"></div>`);
     eventManager = new EventManager();
     model        = new Model(eventManager);
     view         = new View(eventManager);
     presenter    = new Presenter(view, model, eventManager);
-
-    presenter.init(options);
-
-    justSlider = new JustSlider($parent, presenter)
   });
 
   afterEach(() => {
@@ -47,6 +48,8 @@ describe("JustSlider", () => {
   });
 
   test("Appends HTML node of slider", () => {
+    initSlider(options);
+
     const sliderClass = ".just-slider";
 
     const $slider = $parent.find(sliderClass);
@@ -55,14 +58,16 @@ describe("JustSlider", () => {
   });
 
   describe("API", () => {
-    test("updateHandle", () => {
+    test("update", () => {
+      initSlider(options);
       const mockedUpdate = jest.spyOn(presenter, "updateHandle");
-      justSlider.updateHandle("from", 100);
+      justSlider.update("from", 100);
 
       expect(mockedUpdate).toBeCalledWith("from", 100);
     });
 
     test("updateOptions", () => {
+      initSlider(options);
       const mockedUpdate = jest.spyOn(presenter, "updateOptions");
       justSlider.updateOptions({
         min: 50,
@@ -73,6 +78,55 @@ describe("JustSlider", () => {
         min: 50,
         max: 150,
       });
+    });
+
+    test("$slider", () => {
+      initSlider(options);
+      const mockedGetSlider = jest.spyOn(presenter, "$getSlider");
+      const $slider = justSlider.$slider();
+  
+      expect($slider).toEqual(mockedGetSlider.mock.results[0].value);
+    });
+
+    describe("get", () => {
+      test("Range is true", () => {
+        initSlider({ ...options, range: true });
+
+        const values = justSlider.get();
+        expect(typeof values).toBe("object");
+
+        if (typeof values === "object") {
+          const [from, to] = values;
+          expect(from).toBe(0);
+          expect(to).toBe(100);
+        }
+      });
+
+      test("Range is false", () => {
+        initSlider(options);
+
+        const from = justSlider.get();
+        expect(from).toBe(0);
+      });
+    });
+
+    test("getState", () => {
+      initSlider(options);
+
+      const mockedGetState = jest.spyOn(presenter, "getState");
+      const state = justSlider.getState();
+  
+      expect(state).toEqual(mockedGetState.mock.results[0].value);
+    });
+
+    test("reset", () => {
+      initSlider(options);
+
+      justSlider.update("from", 50);
+      justSlider.reset();
+      const from = justSlider.get();
+
+      expect(from).toBe(0);
     });
   });
 });

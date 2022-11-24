@@ -243,4 +243,13 @@ describe("Presenter", () => {
 
     expect($html).toEqual(mockedGetHtml.mock.results[0].value);
   });
+
+  test("Returns slider's state", () => {
+    const mockedGetState = jest.spyOn(model, "getState");
+
+    presenter.init(options);
+    const state = presenter.getState();
+
+    expect(state).toEqual(mockedGetState.mock.results[0].value);
+  });
 });

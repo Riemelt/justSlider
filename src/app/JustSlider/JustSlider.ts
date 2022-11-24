@@ -1,16 +1,36 @@
 import Presenter from "../Presenter/Presenter";
-import { Options } from "../types";
+import { JustSliderOptions, Options, State } from "../types";
 
 class JustSlider {
-  private presenter: Presenter;
+  private presenter:        Presenter;
+  private readonly options: JustSliderOptions;
 
-  constructor($parent: JQuery<HTMLElement>, presenter: Presenter) {
+  constructor($parent: JQuery<HTMLElement>, presenter: Presenter, options: JustSliderOptions) {
+    this.options   = options;
     this.presenter = presenter;
-    const $slider = this.presenter.$getSlider();
+    const $slider  = this.presenter.$getSlider();
     $parent.append($slider);
   }
 
-  public updateHandle(type: HandleType, value: number) {
+  public getState(): State {
+    return this.presenter.getState();
+  }
+
+  public get(): number | Array<number> {
+    const { from, to, range } = this.presenter.getState();
+    return range ? [from, to] : from;
+  }
+
+  public $slider(): JQuery<HTMLElement> {
+    return this.presenter.$getSlider();
+  }
+
+  public reset(): void {
+    this.presenter.updateHandle("to", this.options.to);
+    this.presenter.updateHandle("from", this.options.from);
+  }
+
+  public update(type: HandleType, value: number) {
     this.presenter.updateHandle(type, value);
   }
 

@@ -1,7 +1,7 @@
 import Model        from "../Model/Model";
 import View         from "../View/View";
 import EventManager from "../EventManager/EventManager";
-import { JustSliderOptions, Options }  from "../types";
+import { JustSliderOptions, Options, State }  from "../types";
 
 class Presenter {
   private eventManager: EventManager;
@@ -43,6 +43,10 @@ class Presenter {
       "SliderClickEnable",
       "SliderUpdate",
     ]);
+  }
+
+  public getState(): State {
+    return this.model.getState();
   }
 
   public $getSlider(): JQuery<HTMLElement> {
