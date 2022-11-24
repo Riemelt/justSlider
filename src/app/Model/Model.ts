@@ -7,6 +7,11 @@ class Model {
   private eventManager: EventManager;
   private state: State;
 
+  static adjustFloat(value: number, precision: number): number {
+    const decimals = 10 ** precision;
+    return Math.round(value * decimals) / decimals;
+  }
+
   constructor(eventManager: EventManager) {
     this.eventManager = eventManager;
   }
@@ -213,11 +218,11 @@ class Model {
 
   private generateScaleSegmentsStepsMode() {
     const { density } = this.state.scale;
-    const { min, max, step }     = this.state;
+    const { min, max, step, precision }     = this.state;
 
     const lineStep = (max - min) * density / 100;
 
-    for (let value = min; value < max; value += step) {
+    for (let value = min; value < max; value = Model.adjustFloat(value + step, precision)) {
       const numberSegment: Segment = {
         value,
         type: "number",
@@ -225,7 +230,8 @@ class Model {
 
       this.state.scale.segments.push(numberSegment);
 
-      const nextValue           = (value + step) >= max ? max : value + step;
+      let nextValue             = Model.adjustFloat(value + step, precision);
+      nextValue                 = nextValue >= max ? max : nextValue;
       const distanceToNextValue = nextValue - value;
 
       let linesPerStep: number;
@@ -337,11 +343,13 @@ class Model {
   }
 
   private setHandle(value: number, type: HandleType) {
-    const { step } = this.state;
+    const { step, precision } = this.state;
 
-    const newValue = this.adjustHandle(value, step, type);
+    const newValue       = this.adjustHandle(value, step, type);
     const validatedValue = this.validateHandle(value, type);
-    this.state[type] = value !== validatedValue ? validatedValue : newValue;
+    const valueToSet     = value !== validatedValue ? validatedValue : newValue;
+    
+    this.state[type] = Model.adjustFloat(valueToSet, precision);
   }
 
   private adjustHandle(value: number, step: number, type: HandleType): number {

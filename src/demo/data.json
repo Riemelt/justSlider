@@ -1,6 +1,6 @@
 {
-  "demos": [
-    {
+  "demos": {
+    "primary": {
       "configurationPanel": {
         "inputMin": {
           "title": "min",
@@ -61,24 +61,266 @@
         }
       },
       "slider": {
-        "from": -45,
-        "to": 90,
-        "min": -100,
-        "max": 100,
-        "step": 1, 
+        "from": 0,
+        "to": 40,
+        "min": -50,
+        "max": 50,
+        "step": 10, 
         "range": true,
-        "orientation": "vertical",
+        "orientation": "horizontal",
         "direction": "forward",
         "progressBar": true,
         "tooltips": true,
         "precision": 0,
         "scale": {
           "type": "set",
+          "set": [0, 25, 50, 75, 100],
           "density": 2,
           "lines": true,
           "numbers": true
         }
       }
+    },
+    "secondary": {
+      "configurationPanel": {
+        "inputMin": {
+          "title": "min",
+          "type": "number"
+        },
+        "inputMax": {
+          "title": "max",
+          "type": "number"
+        },
+        "inputStep": {
+          "title": "step",
+          "type": "number"
+        },
+        "inputFrom": {
+          "title": "from",
+          "type": "number"
+        },
+        "inputTo": {
+          "title": "to",
+          "type": "number"
+        },
+        "inputPrecision": {
+          "title": "precision",
+          "type": "number"
+        },
+        "toggleVertical": {
+          "title": "vertical"
+        },
+        "toggleForward": {
+          "title": "forward"
+        },
+        "toggleRange": {
+          "title": "range"
+        },
+        "toggleBar": {
+          "title": "bar"
+        },
+        "toggleTooltip": {
+          "title": "tooltip"
+        },
+        "toggleScale": {
+          "title": "scale"
+        },
+        "scale": {
+          "inputDensity": {
+            "title": "density",
+            "type": "number"
+          },
+          "toggleType": {
+            "title": "steps"
+          },
+          "toggleNumbers": {
+            "title": "numbers"
+          },
+          "toggleLines": {
+            "title": "lines"
+          }
+        }
+      },
+      "slider": {
+        "from": 0.5,
+        "to": 0.5,
+        "min": 0,
+        "max": 1.0,
+        "step": 0.1, 
+        "range": false,
+        "orientation": "vertical",
+        "direction": "forward",
+        "progressBar": true,
+        "tooltips": false,
+        "precision": 1,
+        "scale": {
+          "type": "steps",
+          "density": 3,
+          "lines": true,
+          "numbers": true
+        }
+      }
+    },
+    "tertiary": {
+      "configurationPanel": {
+        "inputMin": {
+          "title": "min",
+          "type": "number"
+        },
+        "inputMax": {
+          "title": "max",
+          "type": "number"
+        },
+        "inputStep": {
+          "title": "step",
+          "type": "number"
+        },
+        "inputFrom": {
+          "title": "from",
+          "type": "number"
+        },
+        "inputTo": {
+          "title": "to",
+          "type": "number"
+        },
+        "inputPrecision": {
+          "title": "precision",
+          "type": "number"
+        },
+        "toggleVertical": {
+          "title": "vertical"
+        },
+        "toggleForward": {
+          "title": "forward"
+        },
+        "toggleRange": {
+          "title": "range"
+        },
+        "toggleBar": {
+          "title": "bar"
+        },
+        "toggleTooltip": {
+          "title": "tooltip"
+        },
+        "toggleScale": {
+          "title": "scale"
+        },
+        "scale": {
+          "inputDensity": {
+            "title": "density",
+            "type": "number"
+          },
+          "toggleType": {
+            "title": "steps"
+          },
+          "toggleNumbers": {
+            "title": "numbers"
+          },
+          "toggleLines": {
+            "title": "lines"
+          }
+        }
+      },
+      "slider": {
+        "from": 30000,
+        "to": 60000,
+        "min": 0,
+        "max": 100000,
+        "step": 5000, 
+        "range": true,
+        "orientation": "horizontal",
+        "direction": "backward",
+        "progressBar": true,
+        "tooltips": true,
+        "precision": 0,
+        "scale": {
+          "type": "set",
+          "set": [0, 50, 70, 80, 90, 100],
+          "density": 1,
+          "lines": true,
+          "numbers": true
+        }
+      }
+    },
+    "quaternary": {
+      "configurationPanel": {
+        "inputMin": {
+          "title": "min",
+          "type": "number"
+        },
+        "inputMax": {
+          "title": "max",
+          "type": "number"
+        },
+        "inputStep": {
+          "title": "step",
+          "type": "number"
+        },
+        "inputFrom": {
+          "title": "from",
+          "type": "number"
+        },
+        "inputTo": {
+          "title": "to",
+          "type": "number"
+        },
+        "inputPrecision": {
+          "title": "precision",
+          "type": "number"
+        },
+        "toggleVertical": {
+          "title": "vertical"
+        },
+        "toggleForward": {
+          "title": "forward"
+        },
+        "toggleRange": {
+          "title": "range"
+        },
+        "toggleBar": {
+          "title": "bar"
+        },
+        "toggleTooltip": {
+          "title": "tooltip"
+        },
+        "toggleScale": {
+          "title": "scale"
+        },
+        "scale": {
+          "inputDensity": {
+            "title": "density",
+            "type": "number"
+          },
+          "toggleType": {
+            "title": "steps"
+          },
+          "toggleNumbers": {
+            "title": "numbers"
+          },
+          "toggleLines": {
+            "title": "lines"
+          }
+        }
+      },
+      "slider": {
+        "from": 5,
+        "to": 5,
+        "min": 0,
+        "max": 10,
+        "step": 1, 
+        "range": false,
+        "orientation": "horizontal",
+        "direction": "forward",
+        "progressBar": false,
+        "tooltips": true,
+        "precision": 0,
+        "scale": {
+          "type": "steps",
+          "density": 4,
+          "lines": false,
+          "numbers": true
+        }
+      }
     }
-  ]
+  }
 }

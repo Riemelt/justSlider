@@ -1,4 +1,5 @@
 $className: 'demo';
+$justSlider: 'just-slider';
 
 * {
   margin: 0px;
@@ -29,6 +30,87 @@ body {
 
     &:first-child {
       margin-top: initial;
+    }
+  }
+
+  &__slider-demo-secondary {
+    .#{$justSlider} {
+      border-radius: initial;
+      height: .25rem;
+      width: 100%;
+
+      &_vertical {
+        width: .25rem;
+        height: 100%;
+      }
+
+      &__progress-bar {
+        background-color: $dark;
+      }
+
+      &__handle {
+        border-radius: initial;
+        border: initial;
+        width: .875rem;
+        height: 2.5rem;
+        background-color: $dark;
+      }
+    }
+  }
+
+  &__slider-demo-tertiary {
+    .#{$justSlider} {
+      border-radius: initial;
+      height: .375rem;
+      width: 100%;
+      background-color: $green-50;
+
+      &_vertical {
+        width: .375rem;
+        height: 100%;
+      }
+
+      &__progress-bar {
+        background-color: $green;
+      }
+
+      &__handle {
+        border-radius: initial;
+        border: initial;
+        width: .875rem;
+        height: 2.8125rem;
+        background-color: $green;
+      }
+
+      &__tooltip {
+        font-weight: 700;
+        color: $green;
+        background-color: initial;
+      }
+
+      &__scale-line {
+        background-color: $green;
+      }
+
+      &__scale-number {
+        color: $green;
+        font-size: .625rem;
+      }
+    }
+  }
+
+  &__slider-demo-quaternary {
+    .#{$justSlider} {
+      background-color: $rose-25;
+
+      &__handle {
+        border: initial;
+        background-color: $rose;
+      }
+
+      &__progress-bar {
+        background-color: $rose-50;
+      }
     }
   }
 }

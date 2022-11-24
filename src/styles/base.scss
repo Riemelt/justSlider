@@ -7,19 +7,19 @@ $className: 'just-slider';
   box-sizing: border-box;
   background-color: $dark-shade-25;
   position: relative;
+  height: $sliderSize;
 
   &__main {
     border-radius: inherit;
-    min-height: $sliderSize;
-    max-height: $sliderSize;
     position: relative;
+    height: inherit;
   }
 
   &__point {
     position: absolute;
     width: 100%;
     right: 0;
-    top: 0;
+    top: 50%;
     z-index: 4;
 
     &_focused {
@@ -37,16 +37,17 @@ $className: 'just-slider';
     position: absolute;
     height: $handleHeight;
     width: $handleWidth;
-    right: - calc($handleWidth / 2);
-    top: - calc(($handleHeight / 2) - ($sliderSize / 2));
+    left: 100%;
+    top: 100%;
     background-color: $blue;
-    border: 4px solid white;
+    border: .25rem solid white;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     touch-action: none;
-    transform-origin: center;
+    transform-origin: bottom left;
+    transform: translate(-50%, -50%);
   }
 
   &__tooltip {
@@ -143,8 +144,7 @@ $className: 'just-slider';
     height: inherit;
     max-height: inherit;
     min-height: inherit;
-    min-width: $sliderSize;
-    max-width: $sliderSize;
+    width: $sliderSize;
     box-sizing: initial;
     margin: 0 auto;
 
@@ -157,18 +157,18 @@ $className: 'just-slider';
 
       &__point {
         width: initial;
+        right: initial;
         height: 100%;
         top: -100%;
-        right: initial;
-        left: 0;
+        left: 50%;
       }
 
       &__handle {
         right: initial;
-        left: - calc(($handleWidth / 2) - ($sliderSize / 2));
         top: initial;
-        bottom: - calc($handleHeight / 2);
-        transform: rotate(90deg);
+        left: 0;
+        bottom: 0;
+        transform: rotate(90deg) translate(-50%, 50%);
       }
 
       &__tooltip {

@@ -5,12 +5,22 @@ include ./components/slider-demo/slider-demo
 -
   const className = "demo"
   const data = require("./data.json")
+  const demos = data.demos
 
 doctype html
 html
   +head({ title })
   body
     ul(class=`${className} js-${className}`)
-      each demo in data.demos
-        li(class=`${className}__slider-demo js-${className}__slider-demo`)
-          +slider-demo(demo)
+      li(class=`${className}__slider-demo`)
+        div(class=`${className}__slider-demo-primary js-${className}__slider-demo-primary`)
+          +slider-demo(demos.primary)
+      li(class=`${className}__slider-demo`)
+        div(class=`${className}__slider-demo-secondary js-${className}__slider-demo-secondary`)
+          +slider-demo(demos.secondary)
+      li(class=`${className}__slider-demo`)
+        div(class=`${className}__slider-demo-tertiary js-${className}__slider-demo-tertiary`)
+          +slider-demo(demos.tertiary)
+      li(class=`${className}__slider-demo`)
+        div(class=`${className}__slider-demo-quaternary js-${className}__slider-demo-quaternary`)
+          +slider-demo(demos.quaternary)

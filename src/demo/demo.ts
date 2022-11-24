@@ -7,7 +7,6 @@ class Demo {
   private className: string;
   private options: DemoOptions;
   private $component: JQuery<HTMLElement>;
-  private $sliderDemos: JQuery<HTMLElement>;
 
   constructor($element: JQuery<HTMLElement>, options: DemoOptions) {
     this.className = "demo";
@@ -17,13 +16,18 @@ class Demo {
   private init($element: JQuery<HTMLElement>, options: DemoOptions) {
     this.$component = $element;
     this.options = options;
-    this.$sliderDemos = this.$component.find(`.js-${this.className}__slider-demo`);
-    this.$sliderDemos.each(this.initSliderDemo.bind(this));
-  }
 
-  private initSliderDemo(index: number, element: HTMLElement) {
-    const $element = $(element);
-    new SliderDemo($element, this.options.demos[index]);
+    const $sliderDemoPrimary = this.$component.find(`.js-${this.className}__slider-demo-primary`);
+    new SliderDemo($sliderDemoPrimary, this.options.demos.primary);
+
+    const $sliderDemoSecondary = this.$component.find(`.js-${this.className}__slider-demo-secondary`);
+    new SliderDemo($sliderDemoSecondary, this.options.demos.secondary);
+
+    const $sliderDemoTertiary = this.$component.find(`.js-${this.className}__slider-demo-tertiary`);
+    new SliderDemo($sliderDemoTertiary, this.options.demos.tertiary);
+
+    const $sliderDemoQuaternary = this.$component.find(`.js-${this.className}__slider-demo-quaternary`);
+    new SliderDemo($sliderDemoQuaternary, this.options.demos.quaternary);
   }
 }
 
