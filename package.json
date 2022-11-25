@@ -1,12 +1,17 @@
 {
-  "name": "justslider",
+  "name": "just-slider",
   "version": "1.0.0",
   "description": "Slider plugin for jQuery",
-  "main": "index.js",
+  "main": "./dist/just-slider.js",
+  "files": [
+    "/dist"
+  ],
   "scripts": {
-    "start": "set NODE_ENV=development&&webpack serve --open /demo",
-    "dev": "set NODE_ENV=development&&webpack",
-    "build": "set NODE_ENV=production&&webpack",
+    "start": "set NODE_ENV=development&&webpack serve --open --config ./webpack.demo.config.js",
+    "dev": "set NODE_ENV=development&&webpack --config ./webpack.main.config.js",
+    "build": "set NODE_ENV=production&&webpack --config ./webpack.main.config.js",
+    "build:demo": "set NODE_ENV=production&&webpack --config ./webpack.demo.config.js",
+    "dev:demo": "set NODE_ENV=development&&webpack --config ./webpack.demo.config.js",
     "deploy": "gh-pages -d dist",
     "lint": "eslint . --ext .ts",
     "test": "jest --coverage"

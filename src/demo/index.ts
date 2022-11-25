@@ -1,4 +1,3 @@
-import "jquery";
 import Demo from "./Demo";
 import "../app";
 import "./styles/demo.scss";

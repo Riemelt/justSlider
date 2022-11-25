@@ -1,17 +1,14 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const PugPlugin = require('pug-plugin');
+const HtmlWebpackPlugin     = require("html-webpack-plugin");
+const MiniCssExtractPlugin  = require("mini-css-extract-plugin");
+const PugPlugin             = require("pug-plugin");
+const webpack               = require("webpack");
 
-const webpack = require('webpack');
-
-const path = require('path');
+const path    = require('path');
 const srcPath = path.resolve(__dirname, "./src");
+const output  = path.resolve(__dirname, "./demo");
 
 const entryPoints = {
-  justSlider: "./app/index.ts",
-  demo: {
-    import: "./demo/index.ts",
-  },
+  demo: "./demo/index.ts",
 };
 
 const mode = process.env.NODE_ENV === "production" ? "production" : "development";
@@ -22,31 +19,29 @@ module.exports = {
   mode,
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "./[name]/[name].[contenthash].css",
+      filename: "./[name].[contenthash].css",
       ignoreOrder: true,
     }),
-    /*new webpack.ProvidePlugin({
+    new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
       "window.jQuery": "jquery",
-    }),*/
+    }),
     require('autoprefixer'),
     new HtmlWebpackPlugin({
-      template: "./demo/index.pug", // relative path to the HTML files
-      filename: "./demo/index.html", // output HTML files
+      template: "./demo/index.pug",
+      filename: "./index.html",
       chunks: ["demo"],
     }),
   ],
   entry: entryPoints,
   output: {
-    filename: "./[name]/[name].js",
+    filename: "./[name].[contenthash].js",
+    path: output,
     clean: true,
   },
   devtool: (mode === "development") ? "eval-source-map" : false,
   resolve: {
-    alias: {
-      jquery: "jquery/src/jquery"
-    },
     extensions: [".tsx", ".ts", ".js"],
   },
   module: {
@@ -108,7 +103,7 @@ module.exports = {
   devServer: {
     hot: true,
     static: {
-      directory: path.resolve(__dirname, "dist"),
+      directory: path.resolve(__dirname, "demo"),
     },
   },
 };
