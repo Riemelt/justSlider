@@ -222,11 +222,11 @@
         }
       },
       "slider": {
-        "from": 30000,
-        "to": 60000,
+        "from": 3000,
+        "to": 6000,
         "min": 0,
-        "max": 100000,
-        "step": 5000, 
+        "max": 10000,
+        "step": 500, 
         "range": true,
         "orientation": "horizontal",
         "direction": "backward",
@@ -236,7 +236,7 @@
         "scale": {
           "type": "set",
           "set": [0, 50, 70, 80, 90, 100],
-          "density": 1,
+          "density": 2,
           "lines": true,
           "numbers": true
         }

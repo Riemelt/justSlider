@@ -1,4 +1,4 @@
-import { JustSlider, Options } from "../../../app/types";
+import { JustSlider, State } from "../../../app/types";
 import { SliderDemoOptions } from "./types";
 import ConfigurationPanel    from "../configuration-panel";
 
@@ -97,16 +97,16 @@ class SliderDemo {
     });
   }
 
-  private handleSliderUpdate(options: Options) {
-    this.configurationPanel.update(options);
+  private handleSliderUpdate(state: State) {
+    this.configurationPanel.update(state);
   }
 
   private handleInputFromChange(value: number) {
-    this.slider.updateHandle("from", value);
+    this.slider.update("from", value);
   }
 
   private handleInputToChange(value: number) {
-    this.slider.updateHandle("to", value);
+    this.slider.update("to", value);
   }
 
   private handleInputMinChange(value: number) {

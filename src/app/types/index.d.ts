@@ -24,7 +24,7 @@ interface State extends Options {
 }
 
 interface JustSliderOptions extends Options {
-  onUpdate?: (options: Options) => void;
+  onUpdate?: (state: State) => void;
 }
 
 export {

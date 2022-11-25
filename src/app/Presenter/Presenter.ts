@@ -26,7 +26,7 @@ class Presenter {
 
     this.view.init(data);
 
-    this.onUpdate = onUpdate;
+    this.setOnUpdate(onUpdate);
 
     this.createHandlers();
     this.registerEvents();
@@ -57,8 +57,18 @@ class Presenter {
     this.model.updateHandle(value, type);
   }
 
-  public updateOptions(options: Options) {
+  public updateOptions({
+    onUpdate,
+    ...options
+  }: JustSliderOptions): void {
     this.model.updateOptions(options);
+    this.setOnUpdate(onUpdate);
+  }
+
+  private setOnUpdate(onUpdate?: (state: State) => void) {
+    if (onUpdate) {
+      this.onUpdate = onUpdate;
+    }
   }
 
   private createHandlers() {

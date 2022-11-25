@@ -1,5 +1,5 @@
 import Presenter from "../Presenter/Presenter";
-import { JustSliderOptions, Options, State } from "../types";
+import { JustSliderOptions, State } from "../types";
 
 class JustSlider {
   private presenter:        Presenter;
@@ -34,7 +34,7 @@ class JustSlider {
     this.presenter.updateHandle(type, value);
   }
 
-  public updateOptions(options: Options) {
+  public updateOptions(options: JustSliderOptions) {
     this.presenter.updateOptions(options);
   }
 }
