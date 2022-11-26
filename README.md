@@ -177,10 +177,85 @@ const justSlider = $("div.container").justSlider({
 });
 ```
 
-Or you can do it anytime when slider is already created by rewriting previous callback.
+Or you can do it anytime when slider is already created by overwriting previous callback.
 
 ```javascript
 justSlider.updateOptions({
   onUpdate: callback,
 });
 ```
+
+## Development
+
+### Install
+
+```sh
+git clone https://github.com/Riemelt/justSlider.git
+cd justSlider
+npm i
+```
+
+### Commands
+
+Run demo on dev-server
+
+```sh
+npm start
+```
+
+Build demo in development mode. Built demo is located at `/demo` folder.
+
+```sh
+npm run dev:demo
+```
+
+Build demo in production mode. Built demo is located at `/demo` folder.
+
+```sh
+npm run build:demo
+```
+
+Build plugin in development mode. Built plugin is located at `/dist` folder.
+
+```sh
+npm run dev
+```
+
+Build plugin in production mode. Built plugin is located at `/dist` folder.
+
+```sh
+npm run build
+```
+
+Run unit-tests
+
+```sh
+npm test
+```
+
+## Architecture
+
+Plugin's placed at `src/app` and its styles are at `src/styles`.
+Entry point is `index.ts`, which imports styles and `just-slider-jquery.ts` file, which, in turn, creates the plugin by extending jquery object.
+
+Application is made using MVP and Observer patterns. It's made out of JustSlider, Model, Presenter, View, Subview classes and EventManager class as a link between them.
+
+User gets an instance of JustSlider class when creating slider with jquery on a DOM element. It stores initial slider values and provides API methods for user to update or get slider's state. In order to do so, it has Presenter instance and calls its methods.
+
+EventManager is a mutual class that provides possibility to subscribe on slider changes to dispatch them lately everytime the events are triggered.
+
+Presenter has instances of Model, View and EventManager. It initializes both model and view, registers events and creates user input handlers for View, using its API.
+
+For example, View has `addCreateHandleHandlers`. Presenter provides a callback to view, which will be called with slider changes when user interacts with slider. That callback, in turn, will update Model, where all the validations and logic are happening. Eventually Model updates slider's state and dispatches events via EventManager.
+
+Presenter also adds event listeners to the manager. Events trigger View to update visual part of the slider when new Model state is set and trigger `onUpdate` callback provived with slider options.
+
+Model and View are independent and don't know anything about each other or Presenter. Though, they have EventManager instance to dispatch events on user inputs. 
+
+Model class is responsible for all the buisness logic, validating and operating with data and slider's options. It recieves data, updates slider's state and dispatches events. Presenter is the only class that calls Model methods.
+
+View generates all the HTML nodes and updates visual part of the application. It gets updated whenever events from EventManager are triggered. Some of view calculation halpers are stored in `View/utilities.ts` and shared with different subviews.
+
+View is responsible for handling clicks on the slider and handling/creating/deleting/updating its subviews.
+
+Each Subview class is also independent and provides methods like `update` and `setHandler` to the layer above.
