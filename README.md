@@ -259,3 +259,7 @@ View generates all the HTML nodes and updates visual part of the application. It
 View is responsible for handling clicks on the slider and handling/creating/deleting/updating its subviews.
 
 Each Subview class is also independent and provides methods like `update` and `setHandler` to the layer above.
+
+## UML diagram
+
+![uml](/uml/uml.png)

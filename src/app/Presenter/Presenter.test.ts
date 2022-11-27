@@ -134,18 +134,22 @@ describe("Presenter", () => {
     test("HandleFromMove", () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "updateHandleFrom");
+      const mockedUpdate = jest.spyOn(view, "updateHandle");
       eventManager.dispatchEvent("HandleFromMove");
 
+      const type = mockedUpdate.mock.calls[0][1];
+      expect(type).toBe("from");
       expect(mockedUpdate).toBeCalledTimes(1);
     });
 
     test("HandleToMove", () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "updateHandleTo");
+      const mockedUpdate = jest.spyOn(view, "updateHandle");
       eventManager.dispatchEvent("HandleToMove");
 
+      const type = mockedUpdate.mock.calls[0][1];
+      expect(type).toBe("to");
       expect(mockedUpdate).toBeCalledTimes(1);
     });
 
@@ -239,9 +243,9 @@ describe("Presenter", () => {
     const mockedGetHtml = jest.spyOn(view, "getHtml");
 
     presenter.init(options);
-    const $html = presenter.$getSlider();
+    const $slider = presenter.$getSlider();
 
-    expect($html).toEqual(mockedGetHtml.mock.results[0].value);
+    expect($slider).toEqual(mockedGetHtml.mock.results[0].value);
   });
 
   test("Returns slider's state", () => {

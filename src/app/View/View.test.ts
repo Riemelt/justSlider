@@ -42,10 +42,10 @@ describe("View", () => {
     test("Generates html node", () => {
       view.init(state);
   
-      const $html = view.getHtml();
-      expect($html.is(".just-slider"));
+      const $component = view.getHtml();
+      expect($component.is(".just-slider"));
   
-      const $main = $html.find(".just-slider__main");
+      const $main = $component.find(".just-slider__main");
       expect($main.length).toBe(1);
     });
   });
@@ -54,8 +54,8 @@ describe("View", () => {
     view.init(state);
     view.setOrientation("vertical");
 
-    const $html = view.getHtml();
-    expect($html.hasClass("just-slider_vertical")).toBe(true);
+    const $component = view.getHtml();
+    expect($component.hasClass("just-slider_vertical")).toBe(true);
   });
 
   test("Unsets vertical orientation", () => {
@@ -63,8 +63,8 @@ describe("View", () => {
     view.setOrientation("vertical");
     view.setOrientation("horizontal");
 
-    const $html = view.getHtml();
-    expect($html.hasClass("just-slider_vertical")).toBe(false);
+    const $component = view.getHtml();
+    expect($component.hasClass("just-slider_vertical")).toBe(false);
   });
 
   describe("Handles", () => {
@@ -75,7 +75,7 @@ describe("View", () => {
   
         view.init(state);
         view.addCreateHandleHandlers(() => undefined);
-        view.updateHandleTo(state);
+        view.updateHandle(state, "to");
   
         expect(mockedSetHandler).toBeCalledTimes(1);
         expect(mockedUpdate).toBeCalledTimes(1);
@@ -89,8 +89,8 @@ describe("View", () => {
   
         view.init(state);
         view.addCreateHandleHandlers(() => undefined);
-        view.updateHandleTo(state);
-        view.updateHandleTo({ ...state, range: false});
+        view.updateHandle(state, "to");
+        view.updateHandle({ ...state, range: false}, "to");
   
         expect(mockedHandleDelete).toBeCalledTimes(1);
         expect(mockedHandleDelete).toBeCalledWith("to");
@@ -108,8 +108,8 @@ describe("View", () => {
       view.addCreateHandleHandlers(mockedHandler);
       view.initComponents();
 
-      const $html = view.getHtml();
-      const $justSlider = $html.find(".just-slider__main");
+      const $component = view.getHtml();
+      const $justSlider = $component.find(".just-slider__main");
 
       const mockedOffset = jest.spyOn(jQuery.fn, "offset").mockImplementation(() => {
         return { left: 150, top: 250, };
@@ -145,7 +145,7 @@ describe("View", () => {
       view.init(state);
       view.addCreateHandleHandlers(() => undefined);
       view.initComponents();
-      view.updateHandleFrom(state);
+      view.updateHandle(state, "from");
   
       expect(mockedUpdate).toBeCalledTimes(1);
       mockedUpdate.mockRestore();
@@ -172,7 +172,7 @@ describe("View", () => {
     view.addCreateHandleHandlers(() => undefined);
     view.initComponents();
 
-    view.updateHandleTo(state);
+    view.updateHandle(state, "to");
     view.updateTooltips(state);
 
     expect(mockedUpdateTooltip).toBeCalledTimes(3);
@@ -253,12 +253,12 @@ describe("View", () => {
       view.addCreateSliderClickHandler(handler);
       view.setSliderClickHandler();
 
-      const $html = view.getHtml();
-      const $justSlider = $html.find(".just-slider__main");
+      const $component = view.getHtml();
+      const $justSlider = $component.find(".just-slider__main");
   
       $justSlider.trigger("pointerdown");
 
-      expect($html.hasClass("just-slider_animated")).toBe(true);
+      expect($component.hasClass("just-slider_animated")).toBe(true);
       expect(handler).toBeCalledTimes(1);
     });
 
@@ -270,12 +270,12 @@ describe("View", () => {
 
       view.removeSliderClickHandler();
 
-      const $html = view.getHtml();
-      const $justSlider = $html.find(".just-slider__main");
+      const $component = view.getHtml();
+      const $justSlider = $component.find(".just-slider__main");
   
       $justSlider.trigger("pointerdown");
 
-      expect($html.hasClass("just-slider_animated")).toBe(false);
+      expect($component.hasClass("just-slider_animated")).toBe(false);
       expect(handler).toBeCalledTimes(0);
     });
 
@@ -291,8 +291,8 @@ describe("View", () => {
       view.addCreateSliderClickHandler(handler);
       view.setSliderClickHandler();
 
-      const $html = view.getHtml();
-      const $justSlider = $html.find(".just-slider__main");
+      const $component = view.getHtml();
+      const $justSlider = $component.find(".just-slider__main");
 
       const mockedOffset = jest.spyOn(jQuery.fn, "offset").mockImplementation(() => {
         return { left: 150, top: 250, };
@@ -336,8 +336,8 @@ describe("View", () => {
       view.addCreateSliderClickHandler(handler);
       view.setSliderClickHandler();
 
-      const $html = view.getHtml();
-      const $justSlider = $html.find(".just-slider__main");
+      const $component = view.getHtml();
+      const $justSlider = $component.find(".just-slider__main");
 
       const mockedOffset = jest.spyOn(jQuery.fn, "offset").mockImplementation(() => {
         return { left: 150, top: 250, };

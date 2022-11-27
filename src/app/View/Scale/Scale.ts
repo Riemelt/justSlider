@@ -17,18 +17,18 @@ class Scale {
     this.init($parent);
   }
 
-  public setNumberClickHandler(handler: (position: number) => void) {
+  public setNumberClickHandler(handler: (position: number) => void): void {
     this.handleNumberClick = handler;
   }
 
-  public delete() {
+  public delete(): void {
     const $numberSegments = this.$component.find(`.${this.numberClass}`);
     $numberSegments.off("click.scale");
     
     this.$component.remove();
   }
 
-  public update(state: State) {
+  public update(state: State): void {
     this.$component.empty();
 
     const { min, max, orientation, direction, precision } = state;
@@ -87,7 +87,7 @@ class Scale {
     max:         number,
     direction:   Direction,
     orientation: Orientation,
-  }) {
+  }): void {
     const { $element, shift, min, max, direction, orientation } = options;
     const { property, style } = getPositionStyles({ shift, min, max, direction, orientation });
 
@@ -98,7 +98,7 @@ class Scale {
     return index === 0 || index === length - 1;
   }
 
-  private setStyleModificator(lines: boolean) {
+  private setStyleModificator(lines: boolean): void {
     if (lines) {
       this.$component.removeClass("just-slider__scale_without-lines");
     } else {
@@ -136,13 +136,13 @@ class Scale {
     return $segment;
   }
 
-  private init($parent: JQuery<HTMLElement>) {
+  private init($parent: JQuery<HTMLElement>): void {
     this.initHtml();
 
     $parent.append(this.$component);
   }
 
-  private initHtml() {
+  private initHtml(): void {
     this.$component = $(`<div class="just-slider__scale"></div>`);
   }
 }

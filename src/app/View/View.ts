@@ -13,7 +13,7 @@ import { convertViewPositionToModel } from "./utilities/utilities";
 class View {
   private eventManager: EventManager;
   private state:        State;
-  private $html:        JQuery<HTMLElement>;
+  private $component:   JQuery<HTMLElement>;
   private $justSlider:  JQuery<HTMLElement>;
 
   private handleHandlePointermove: (position: number, type: HandleType, isConverted?: boolean) => void;
@@ -33,7 +33,7 @@ class View {
   }
 
   public getHtml(): JQuery<HTMLElement> {
-    return this.$html;
+    return this.$component;
   }
 
   public init(state: State): void {
@@ -44,36 +44,20 @@ class View {
 
   public setOrientation(orientation: Orientation): void {
     if (orientation === "vertical") {
-      this.$html.addClass("just-slider_vertical");
+      this.$component.addClass("just-slider_vertical");
       return;
     }
 
-    this.$html.removeClass("just-slider_vertical");
+    this.$component.removeClass("just-slider_vertical");
   }
 
   public initComponents(): void {
     this.initHandle("from");
   }
 
-  public updateHandleFrom(state: State): void {
-    this.handles.from.update(state);
-  }
-
-  public updateHandleTo(state: State): void {
-    const { range } = state;
-
-    if (range) {
-      if (!this.handles.to) {
-        this.initHandle("to");
-      }
-
-      this.handles.to.update(state);
-      return;
-    }
-
-    if (!this.handles.to) return;
-    
-    this.deleteHandle("to");
+  public updateHandle(state: State, type: HandleType): void {
+    const update = type === "from" ? this.updateHandleFrom.bind(this) : this.updateHandleTo.bind(this);
+    update(state);
   }
 
   public deleteHandle(type: HandleType): void {
@@ -120,7 +104,7 @@ class View {
 
     if (scale) {
       if (!this.scale) {
-        this.scale = new Scale(this.$html);
+        this.scale = new Scale(this.$component);
         this.scale.setNumberClickHandler(this.scaleClickHandler?.bind(this));
       }
 
@@ -150,13 +134,34 @@ class View {
   }
 
   public setSliderClickHandler(): void {
-    this.$html.addClass("just-slider_animated");
+    this.$component.addClass("just-slider_animated");
     this.$justSlider.on("pointerdown.slider", this.handleSliderClick.bind(this));
   }
 
   public removeSliderClickHandler(): void {
-    this.$html.removeClass("just-slider_animated");
+    this.$component.removeClass("just-slider_animated");
     this.$justSlider.off("pointerdown.slider");
+  }
+
+  private updateHandleFrom(state: State): void {
+    this.handles.from.update(state);
+  }
+
+  private updateHandleTo(state: State): void {
+    const { range } = state;
+
+    if (range) {
+      if (!this.handles.to) {
+        this.initHandle("to");
+      }
+
+      this.handles.to.update(state);
+      return;
+    }
+
+    if (!this.handles.to) return;
+    
+    this.deleteHandle("to");
   }
 
   private initHandle(type: HandleType): void {
@@ -208,14 +213,14 @@ class View {
   }
 
   private initHtml(): void {
-    this.$html = $(`
+    this.$component = $(`
       <div class="just-slider">
         <div class="just-slider__main">
         </div>
       </div>
     `);
 
-    this.$justSlider = this.$html.find(".just-slider__main");
+    this.$justSlider = this.$component.find(".just-slider__main");
   }
 }
 

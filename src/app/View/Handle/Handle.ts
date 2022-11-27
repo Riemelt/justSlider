@@ -14,7 +14,7 @@ import { HandleOptions } from "./types";
 
 class Handle {
   private eventManager:    EventManager;
-  private $point:          JQuery<HTMLElement>;
+  private $component:      JQuery<HTMLElement>;
   private $handle:         JQuery<HTMLElement>;
   private shiftFromCenter: number;
 
@@ -40,7 +40,7 @@ class Handle {
 
   public delete(): void {
     this.deleteHandlers();
-    this.$point.remove();
+    this.$component.remove();
   }
 
   public update(state: State): void {
@@ -91,11 +91,11 @@ class Handle {
     const medium = ((max - min) / 2) + min;
 
     if (value < medium) {
-      this.$point.addClass("just-slider__point_focused");
-      this.$point.removeClass("just-slider__point_unfocused");
+      this.$component.addClass("just-slider__point_focused");
+      this.$component.removeClass("just-slider__point_unfocused");
     } else {
-      this.$point.removeClass("just-slider__point_focused");
-      this.$point.addClass("just-slider__point_unfocused");
+      this.$component.removeClass("just-slider__point_focused");
+      this.$component.addClass("just-slider__point_unfocused");
     }
   }
 
@@ -108,21 +108,21 @@ class Handle {
     scale?:       number,
   }): void {
     const { property, style } = getTransformStyles(options);
-    this.$point.css(property, style);
+    this.$component.css(property, style);
   }
 
   private init({ $parent, type }: HandleOptions): void {
     this.type = type;
 
     this.initHtml();
-    this.$handle = this.$point.find(".just-slider__handle");
+    this.$handle = this.$component.find(".just-slider__handle");
 
     this.setHandlers();
-    $parent.append(this.$point);
+    $parent.append(this.$component);
   }
 
   private initHtml(): void {
-    this.$point = $(`
+    this.$component = $(`
       <div class="just-slider__point">
         <div class="just-slider__handle" tabindex="0">
         </div>

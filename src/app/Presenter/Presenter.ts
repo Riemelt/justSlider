@@ -100,12 +100,12 @@ class Presenter {
   private addEventListeners() {
     this.eventManager.addEventListener("HandleFromMove", () => {
       const state = this.model.getState();
-      this.view.updateHandleFrom(state);
+      this.view.updateHandle(state, "from");
     });
 
     this.eventManager.addEventListener("HandleToMove", () => {
       const state = this.model.getState();
-      this.view.updateHandleTo(state);
+      this.view.updateHandle(state, "to");
     });
 
     this.eventManager.addEventListener("ProgressBarUpdate", () => {

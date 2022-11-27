@@ -7,7 +7,7 @@ $className: 'slider-demo';
   width: 100%;
   gap: 5%;
 
-  @media (max-width: 430px) {
+  @media (max-width: 700px) {
     flex-wrap: wrap-reverse;
     gap: 2.5rem;
   }
@@ -16,8 +16,8 @@ $className: 'slider-demo';
     width: 100%;
     max-width: 20rem;
 
-    @media (max-width: 430px) {
-      max-width: initial;
+    @media (max-width: 700px) {
+      max-width: 25rem;
     }
   }
 
