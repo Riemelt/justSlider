@@ -246,7 +246,7 @@ EventManager is a mutual class that provides possibility to subscribe on slider 
 
 Presenter has instances of Model, View and EventManager. It initializes both model and view, registers events and creates user input handlers for View, using its API.
 
-For example, View has `addCreateHandleHandlers`. Presenter provides a callback to view, which will be called with slider changes when user interacts with slider. That callback, in turn, will update Model, where all the validations and logic are happening. Eventually Model updates slider's state and dispatches events via EventManager.
+For example, View has `addCreateHandleHandlers` method. Presenter provides a callback to view, which will be called with slider changes when user interacts with slider. That callback, in turn, will update Model, where all the validations and logic are happening. Eventually Model updates slider's state and dispatches events via EventManager. In the end, these events will call View update methods and user will see the result.
 
 Presenter also adds event listeners to the manager. Events trigger View to update visual part of the slider when new Model state is set and trigger `onUpdate` callback provived with slider options.
 
