@@ -262,4 +262,6 @@ Each Subview class is also independent and provides methods like `update` and `s
 
 ## UML diagram
 
-![uml](/uml/uml.png)
+![uml](/uml/uml-simplified.png)
+
+[Click](/uml/uml.png) to see full version.
