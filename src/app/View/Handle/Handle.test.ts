@@ -4,6 +4,7 @@ import Handle from "./Handle";
 import Tooltip from "./Tooltip/Tooltip";
 
 import * as Utilities from "../utilities/utilities";
+import { HandleType } from "../../Model/types";
 
 describe("Handle", () => {
   let handle: Handle;

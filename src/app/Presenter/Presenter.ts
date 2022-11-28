@@ -2,6 +2,7 @@ import Model        from "../Model/Model";
 import View         from "../View/View";
 import EventManager from "../EventManager/EventManager";
 import { JustSliderOptions, Options, State }  from "../types";
+import { HandleType } from "../Model/types";
 
 class Presenter {
   private eventManager: EventManager;

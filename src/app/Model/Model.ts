@@ -1,7 +1,8 @@
 import EventManager from "../EventManager/EventManager";
 import { SliderEvent } from "../EventManager/types";
-import { Options, State } from "../types";
+import { Direction, Options, Orientation, State } from "../types";
 import { ScaleOptions, Segment } from "../View/Scale/types";
+import { HandleType, Update } from "./types";
 
 class Model {
   private eventManager: EventManager;
@@ -45,120 +46,35 @@ class Model {
   }
 
   public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar, scale, precision }: Options) {
-    let shouldUpdateScale = false;
     const handlesToUpdate:  Set<HandleType>  = new Set();
     const eventsToDispatch: Set<SliderEvent> = new Set();
+    let shouldUpdateScale = false;
 
-    if (min !== undefined || max !== undefined) {
-      this.setMinMax(min, max);
-      this.setStep(this.state.step);
+    const updates: Array<Update | null> = [
+      this.getMinMaxUpdate(min, max),
+      this.getStepUpdate(step),
+      this.getRangeUpdate(range),
+      this.getDirectionUpdate(direction),
+      this.getOrientationUpdate(orientation),
+      this.getProgressBarUpdate(progressBar),
+      this.getTooltipsUpdate(tooltips),
+      this.getHandleUpdate(to, "to"),
+      this.getHandleUpdate(from, "from"),
+      this.getScaleUpdate(scale),
+      this.getPrecisionUpdate(precision),
+    ];
 
-      shouldUpdateScale = true;
+    updates.forEach(update => {
+      if (update === null) return;
 
-      handlesToUpdate
-        .add("from")
-        .add("to");
-      eventsToDispatch
-        .add("HandleFromMove")
-        .add("HandleToMove")
-        .add("ProgressBarUpdate")
-        .add("ScaleUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (step !== undefined) {
-      this.setStep(step);
-      shouldUpdateScale = true;
-      handlesToUpdate
-        .add("from")
-        .add("to");
-      eventsToDispatch
-        .add("HandleFromMove")
-        .add("HandleToMove")
-        .add("ProgressBarUpdate")
-        .add("ScaleUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (range !== undefined) {
-      this.state.range = range;
-      handlesToUpdate
-        .add("to");
-      eventsToDispatch
-        .add("HandleToMove")
-        .add("ProgressBarUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (direction !== undefined) {
-      this.state.direction = direction;
-      eventsToDispatch
-        .add("HandleFromMove")
-        .add("HandleToMove")
-        .add("ProgressBarUpdate")
-        .add("ScaleUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (orientation !== undefined) {
-      this.state.orientation = orientation;
-      eventsToDispatch
-        .add("OrientationUpdate")
-        .add("HandleFromMove")
-        .add("HandleToMove")
-        .add("ProgressBarUpdate")
-        .add("ScaleUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (progressBar !== undefined) {
-      this.state.progressBar = progressBar;
-      eventsToDispatch
-        .add("ProgressBarUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (tooltips !== undefined) {
-      this.state.tooltips = tooltips;
-      eventsToDispatch
-        .add("TooltipsUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (to !== undefined) {
-      handlesToUpdate
-        .add("to");
-      eventsToDispatch
-        .add("HandleToMove")
-        .add("ProgressBarUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (from !== undefined) {
-      handlesToUpdate
-        .add("from");
-      eventsToDispatch
-        .add("HandleFromMove")
-        .add("ProgressBarUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (scale !== undefined) {
-      shouldUpdateScale = true;
-      eventsToDispatch
-        .add("ScaleUpdate")
-        .add("SliderUpdate");
-    }
-
-    if (precision !== undefined) {
-      if (precision <= 0) precision = 0;
-      this.state.precision = precision;
-      shouldUpdateScale = true;
-      eventsToDispatch
-        .add("TooltipsUpdate")
-        .add("ScaleUpdate")
-        .add("SliderUpdate");
-    }
+      const { events, handles, scale } = update;
+      events.forEach(event => eventsToDispatch.add(event));
+      handles.forEach(handle => handlesToUpdate.add(handle));
+      
+      if (scale) {
+        shouldUpdateScale = true;
+      }
+    });
 
     handlesToUpdate.forEach(type => {
       let value: number;
@@ -182,8 +98,157 @@ class Model {
   public updateHandle(value: number, type: HandleType) {
     this.setHandle(value, type);
 
+    const update = this.getHandleUpdate(value, type);
+    this.eventManager.dispatchEvents(update.events);
+  }
+
+  private getHandleUpdate(value: number, type: HandleType): Update | null {
+    if (value === undefined) return null;
+
     const event = type === "from" ? "HandleFromMove" : "HandleToMove";
-    this.eventManager.dispatchEvents([event, "ProgressBarUpdate", "SliderUpdate"]);
+    return {
+      events: [event, "ProgressBarUpdate", "SliderUpdate"],
+      handles: [type],
+      scale: false,
+    }
+  }
+
+  private setHandle(value: number, type: HandleType) {
+    const { step, precision } = this.state;
+
+    const newValue       = this.adjustHandle(value, step, type);
+    const validatedValue = this.validateHandle(value, type);
+    const valueToSet     = value !== validatedValue ? validatedValue : newValue;
+    
+    this.state[type] = Model.adjustFloat(valueToSet, precision);
+  }
+
+  private adjustHandle(value: number, step: number, type: HandleType): number {
+    const { min } = this.state;
+    const relativeValue = value + (min * (-1));
+
+    const adjusted = (Math.round(relativeValue / step) * step) + min;
+    const validated = this.validateHandle(adjusted, type);
+    return validated;
+  }
+
+  private validateHandle(value: number, type: HandleType): number {
+    const { to, max, min, from, range } = this.state;
+
+    value = this.validateHandleOnCollision(value, type, from, to, range);
+    value = this.validateHandleOnMinMax(value, min, max);
+
+    return value;
+  }
+
+  private validateHandleOnMinMax(value: number, min: number, max: number): number {
+    if (value > max) {
+      value = max;
+    }
+
+    if (value < min) {
+      value = min;
+    }
+
+    return value;
+  }
+
+  private validateHandleOnCollision(value: number, type: HandleType, from: number, to: number, range: boolean): number {
+    if (!range) {
+      return value;
+    }
+
+    if (type === "from") {
+      value = value > to ? to : value;
+    } else {
+      value = value < from ? from : value;
+    }
+
+    return value;
+  }
+
+  private getPrecisionUpdate(precision: number): Update | null {
+    if (precision === undefined) return null;
+    this.setPrecision(precision);
+
+    return {
+      events: ["TooltipsUpdate", "ScaleUpdate", "SliderUpdate"],
+      handles: [],
+      scale: true,
+    };
+  }
+
+  private setPrecision(precision: number) {
+    this.state.precision = this.validatePrecision(precision);
+  }
+
+  private validatePrecision(precision: number): number {
+    return (precision <= 0) ? 0 : precision;
+  }
+
+  private getTooltipsUpdate(tooltips: boolean): Update | null {
+    if (tooltips === undefined) return null;
+    this.state.tooltips = tooltips;
+
+    return {
+      events: ["TooltipsUpdate", "SliderUpdate"],
+      handles: [],
+      scale: false,
+    };
+  }
+
+  private getProgressBarUpdate(progressBar: boolean): Update | null {
+    if (progressBar === undefined) return null;
+    this.state.progressBar = progressBar;
+
+    return {
+      events: ["ProgressBarUpdate", "SliderUpdate"],
+      handles: [],
+      scale: false,
+    };
+  }
+
+  private getDirectionUpdate(direction: Direction): Update | null {
+    if (direction === undefined) return null;
+    this.state.direction = direction;
+
+    return {
+      events: ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      handles: [],
+      scale: false,
+    };
+  }
+
+  private getOrientationUpdate(orientation: Orientation): Update | null {
+    if (orientation === undefined) return null;
+    this.state.orientation = orientation;
+
+    return {
+      events: ["OrientationUpdate", "HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      handles: [],
+      scale: false,
+    };
+  }
+
+  private getRangeUpdate(range: boolean): Update | null {
+    if (range === undefined) return null;
+    this.state.range = range;
+
+    return {
+      events: ["HandleToMove", "ProgressBarUpdate", "SliderUpdate"],
+      handles: ["to"],
+      scale: false,
+    };
+  }
+
+  private getScaleUpdate(scale: ScaleOptions): Update | null {
+    if (scale === undefined) return null;
+
+    return {
+      events: ["ScaleUpdate", "SliderUpdate"],
+      handles: [],
+      scale: true,
+    };
   }
 
   private setScale(scale: ScaleOptions) {
@@ -342,58 +407,16 @@ class Model {
     return density;
   }
 
-  private setHandle(value: number, type: HandleType) {
-    const { step, precision } = this.state;
+  private getMinMaxUpdate(min: number, max: number): Update | null {
+    if (min === undefined && max === undefined) return null;
+    this.setMinMax(min, max);
+    this.setStep(this.state.step);
 
-    const newValue       = this.adjustHandle(value, step, type);
-    const validatedValue = this.validateHandle(value, type);
-    const valueToSet     = value !== validatedValue ? validatedValue : newValue;
-    
-    this.state[type] = Model.adjustFloat(valueToSet, precision);
-  }
-
-  private adjustHandle(value: number, step: number, type: HandleType): number {
-    const { min } = this.state;
-    const relativeValue = value + (min * (-1));
-
-    const adjusted = (Math.round(relativeValue / step) * step) + min;
-    const validated = this.validateHandle(adjusted, type);
-    return validated;
-  }
-
-  private validateHandle(value: number, type: HandleType): number {
-    const { to, max, min, from, range } = this.state;
-
-    value = this.validateHandleOnCollision(value, type, from, to, range);
-    value = this.validateHandleOnMinMax(value, min, max);
-
-    return value;
-  }
-
-  private validateHandleOnMinMax(value: number, min: number, max: number): number {
-    if (value > max) {
-      value = max;
-    }
-
-    if (value < min) {
-      value = min;
-    }
-
-    return value;
-  }
-
-  private validateHandleOnCollision(value: number, type: HandleType, from: number, to: number, range: boolean): number {
-    if (!range) {
-      return value;
-    }
-
-    if (type === "from") {
-      value = value > to ? to : value;
-    } else {
-      value = value < from ? from : value;
-    }
-
-    return value;
+    return {
+      events: ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      handles: ["from", "to"],
+      scale: true,
+    };
   }
 
   private validateMinMax(min: number, max: number): [number, number] {
@@ -405,6 +428,17 @@ class Model {
     const newMax = max !== undefined ? max : this.state.max;
 
     [this.state.min, this.state.max] = this.validateMinMax(newMin, newMax);
+  }
+
+  private getStepUpdate(step: number): Update | null {
+    if (step === undefined) return null
+    this.setStep(step);
+
+    return {
+      events: ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      handles: ["from", "to"],
+      scale: true,
+    };
   }
 
   private validateStep(step: number, length: number) {

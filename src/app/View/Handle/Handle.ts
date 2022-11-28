@@ -1,4 +1,5 @@
 import EventManager from "../../EventManager/EventManager";
+import { HandleType } from "../../Model/types";
 import {
   Direction,
   State,

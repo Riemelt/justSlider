@@ -9,6 +9,7 @@ import {
 } from "../types";
 
 import { convertViewPositionToModel } from "./utilities/utilities";
+import { HandleType } from "../Model/types";
 
 class View {
   private eventManager: EventManager;
