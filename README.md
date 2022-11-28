@@ -9,7 +9,7 @@ Compatible with
 
 ## [Demo](https://riemelt.github.io/justSlider/index.html)
 
-You can try slider out on the [Demo](https://riemelt.github.io/justSlider/index.html) page. It has 4 different configarations with control panels to test and change sliders with different options.
+You can try slider out on the [Demo](https://riemelt.github.io/justSlider/index.html) page. It has 4 different configurations with control panels to test and change sliders with different options.
 
 ## Installation
 
