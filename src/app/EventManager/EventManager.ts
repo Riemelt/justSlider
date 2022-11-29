@@ -27,7 +27,7 @@ class EventManager {
   }
 
   public addEventListener(eventName: SliderEvent, observer: () => void): void {
-    this.eventsSubjects[eventName].subscribe(observer);
+    this.eventsSubjects[eventName]?.subscribe(observer);
   }
 }
 

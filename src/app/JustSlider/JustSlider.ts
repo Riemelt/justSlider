@@ -1,3 +1,4 @@
+import { HandleType } from "../Model/types";
 import Presenter from "../Presenter/Presenter";
 import { JustSliderOptions, State } from "../types";
 
@@ -17,7 +18,7 @@ class JustSlider {
   }
 
   public get(): number | Array<number> {
-    const { from, to, range } = this.presenter.getState();
+    const { from = 0, to = 0, range } = this.presenter.getState();
     return range ? [from, to] : from;
   }
 
@@ -26,8 +27,9 @@ class JustSlider {
   }
 
   public reset(): void {
-    this.presenter.updateHandle("to", this.options.to);
-    this.presenter.updateHandle("from", this.options.from);
+    const { from = 0, to = 0 } = this.options;
+    this.presenter.updateHandle("to", to);
+    this.presenter.updateHandle("from", from);
   }
 
   public update(type: HandleType, value: number) {

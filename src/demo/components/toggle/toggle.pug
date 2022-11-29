@@ -9,10 +9,10 @@ mixin toggle(vars)
 
   div(class=classNames)
     label(class=`${className}__label`)
-      div(class=`${className}__title`)= title
+      span(class=`${className}__title`)= title
       input(
         class=`${className}__switch-input js-${className}__switch-input`
         type="checkbox"
         checked=checked
       )
-      div(class=`${className}__switch`)
+      span(class=`${className}__switch`)

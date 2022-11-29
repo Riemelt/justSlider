@@ -11,7 +11,7 @@ mixin input-field(vars)
 
   div(class=classNames)
     label(class=`${className}__label`)
-      div(class=`${className}__title`)= title
+      span(class=`${className}__title`)= title
       input(class=`${className}__input js-${className}__input`
             type=type
             value=value

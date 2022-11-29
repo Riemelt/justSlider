@@ -15,6 +15,7 @@ class Model {
 
   constructor(eventManager: EventManager) {
     this.eventManager = eventManager;
+    this.state = {};
   }
 
   public init({
@@ -36,8 +37,8 @@ class Model {
 
     this.setMinMax(min, max);
     this.setStep(step);
-    this.setHandle(from, "from");
-    this.setHandle(to, "to");
+    this.setHandle("from", from);
+    this.setHandle("to", to);
     this.setScale(scale);
   }
 
@@ -58,8 +59,8 @@ class Model {
       this.getOrientationUpdate(orientation),
       this.getProgressBarUpdate(progressBar),
       this.getTooltipsUpdate(tooltips),
-      this.getHandleUpdate(to, "to"),
-      this.getHandleUpdate(from, "from"),
+      this.getHandleUpdate("to", to),
+      this.getHandleUpdate("from", from),
       this.getScaleUpdate(scale),
       this.getPrecisionUpdate(precision),
     ];
@@ -77,14 +78,15 @@ class Model {
     });
 
     handlesToUpdate.forEach(type => {
-      let value: number;
+      let value: number | undefined;
+
       if (type === "from") {
         value = from !== undefined ? from : this.state.from;
       } else {
         value = to !== undefined ? to : this.state.to;
       }
 
-      this.setHandle(value, type);
+      this.setHandle(type, value);
     });
 
     if (shouldUpdateScale) {
@@ -96,13 +98,16 @@ class Model {
   }
 
   public updateHandle(value: number, type: HandleType) {
-    this.setHandle(value, type);
+    this.setHandle(type, value);
 
-    const update = this.getHandleUpdate(value, type);
-    this.eventManager.dispatchEvents(update.events);
+    const update = this.getHandleUpdate(type, value);
+
+    if (update !== null) {
+      this.eventManager.dispatchEvents(update.events);
+    }
   }
 
-  private getHandleUpdate(value: number, type: HandleType): Update | null {
+  private getHandleUpdate(type: HandleType, value?: number, ): Update | null {
     if (value === undefined) return null;
 
     const event = type === "from" ? "HandleFromMove" : "HandleToMove";
@@ -113,7 +118,7 @@ class Model {
     }
   }
 
-  private setHandle(value: number, type: HandleType) {
+  private setHandle(type: HandleType, value?: number) {
     const { step, precision } = this.state;
 
     const newValue       = this.adjustHandle(value, step, type);
@@ -123,8 +128,8 @@ class Model {
     this.state[type] = Model.adjustFloat(valueToSet, precision);
   }
 
-  private adjustHandle(value: number, step: number, type: HandleType): number {
-    const { min } = this.state;
+  private adjustHandle(value = 0, step: number, type: HandleType): number {
+    const { min = 0 } = this.state;
     const relativeValue = value + (min * (-1));
 
     const adjusted = (Math.round(relativeValue / step) * step) + min;
@@ -133,7 +138,7 @@ class Model {
   }
 
   private validateHandle(value: number, type: HandleType): number {
-    const { to, max, min, from, range } = this.state;
+    const { to = 0, max = 0, min = 0, from = 0, range = false } = this.state;
 
     value = this.validateHandleOnCollision(value, type, from, to, range);
     value = this.validateHandleOnMinMax(value, min, max);
@@ -167,7 +172,7 @@ class Model {
     return value;
   }
 
-  private getPrecisionUpdate(precision: number): Update | null {
+  private getPrecisionUpdate(precision?: number): Update | null {
     if (precision === undefined) return null;
     this.setPrecision(precision);
 
@@ -186,7 +191,7 @@ class Model {
     return (precision <= 0) ? 0 : precision;
   }
 
-  private getTooltipsUpdate(tooltips: boolean): Update | null {
+  private getTooltipsUpdate(tooltips?: boolean): Update | null {
     if (tooltips === undefined) return null;
     this.state.tooltips = tooltips;
 
@@ -197,7 +202,7 @@ class Model {
     };
   }
 
-  private getProgressBarUpdate(progressBar: boolean): Update | null {
+  private getProgressBarUpdate(progressBar?: boolean): Update | null {
     if (progressBar === undefined) return null;
     this.state.progressBar = progressBar;
 
@@ -208,7 +213,7 @@ class Model {
     };
   }
 
-  private getDirectionUpdate(direction: Direction): Update | null {
+  private getDirectionUpdate(direction?: Direction): Update | null {
     if (direction === undefined) return null;
     this.state.direction = direction;
 
@@ -219,7 +224,7 @@ class Model {
     };
   }
 
-  private getOrientationUpdate(orientation: Orientation): Update | null {
+  private getOrientationUpdate(orientation?: Orientation): Update | null {
     if (orientation === undefined) return null;
     this.state.orientation = orientation;
 
@@ -230,7 +235,7 @@ class Model {
     };
   }
 
-  private getRangeUpdate(range: boolean): Update | null {
+  private getRangeUpdate(range?: boolean): Update | null {
     if (range === undefined) return null;
     this.state.range = range;
 
@@ -241,7 +246,7 @@ class Model {
     };
   }
 
-  private getScaleUpdate(scale: ScaleOptions): Update | null {
+  private getScaleUpdate(scale?: ScaleOptions | null): Update | null {
     if (scale === undefined) return null;
 
     return {
@@ -251,7 +256,7 @@ class Model {
     };
   }
 
-  private setScale(scale: ScaleOptions) {
+  private setScale(scale: ScaleOptions | null = null) {
     if (scale === null) {
       this.state.scale = null;
       return;
@@ -407,7 +412,7 @@ class Model {
     return density;
   }
 
-  private getMinMaxUpdate(min: number, max: number): Update | null {
+  private getMinMaxUpdate(min?: number, max?: number): Update | null {
     if (min === undefined && max === undefined) return null;
     this.setMinMax(min, max);
     this.setStep(this.state.step);
@@ -419,18 +424,18 @@ class Model {
     };
   }
 
-  private validateMinMax(min: number, max: number): [number, number] {
+  private validateMinMax(min = 0, max = 0): [number, number] {
     return [min, max] = min > max ? [max, min] : [min, max];
   }
 
-  private setMinMax(min: number, max: number) {
+  private setMinMax(min?: number, max?: number) {
     const newMin = min !== undefined ? min : this.state.min;
     const newMax = max !== undefined ? max : this.state.max;
 
     [this.state.min, this.state.max] = this.validateMinMax(newMin, newMax);
   }
 
-  private getStepUpdate(step: number): Update | null {
+  private getStepUpdate(step?: number): Update | null {
     if (step === undefined) return null
     this.setStep(step);
 
@@ -452,7 +457,8 @@ class Model {
   }
 
   private setStep(step: number) {
-    this.state.step = this.validateStep(step, this.state.max - this.state.min);
+    const { min = 0, max = 0 } = this.state;
+    this.state.step = this.validateStep(step, max - min);
   }
 }
 
