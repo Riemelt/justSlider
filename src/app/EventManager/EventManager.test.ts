@@ -29,7 +29,7 @@ describe("EventManager", () => {
     eventManager.registerEvent(events[0]);
     eventManager.addEventListener(events[0], observers[0]);
     const eventSubjects = eventManager.getEventSubjects();
-    expect(eventSubjects[events[0]].subscribe).toHaveBeenCalledTimes(1);
+    expect(eventSubjects[events[0]]?.subscribe).toHaveBeenCalledTimes(1);
     
     mock.mockRestore();
   });

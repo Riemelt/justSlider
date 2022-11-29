@@ -3,9 +3,9 @@ import { SliderEvent } from "../EventManager/types";
 type HandleType = "from" | "to";
 
 interface Update {
-  events: Array<SliderEvent>;
+  events:  Array<SliderEvent>;
   handles: Array<HandleType>;
-  scale: boolean;
+  scale:   boolean;
 }
 
 export {

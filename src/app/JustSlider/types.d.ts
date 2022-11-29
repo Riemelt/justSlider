@@ -1,6 +1,9 @@
-import { HandleType } from "../Model/types";
 import Presenter from "../Presenter/Presenter";
-import { JustSliderOptions, State } from "../types";
+import { HandleType } from "../Model/types";
+import {
+  JustSliderOptions,
+  State,
+} from "../types";
 
 declare class JustSlider {
   private presenter: Presenter;

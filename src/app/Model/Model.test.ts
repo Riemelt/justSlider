@@ -277,7 +277,10 @@ describe("Model", () => {
       model.init({ min: 0, max: 100, from: 20, to: 50, step: 10, range: true });
       model.updateOptions({ step: 3 });
 
-      const { from, to } = model.getState();
+      const {
+        from = 0,
+        to   = 0,
+      } = model.getState();
 
       expect(from % 3).toBe(0);
       expect(to % 3).toBe(0);
@@ -330,13 +333,16 @@ describe("Model", () => {
     test("Adjust value depending on step property (no remainder when divided by step)", () => {
       model.init({ ...options, step: 3, from: 10 });
 
-      const { from } = model.getState();
+      const { from = 0 } = model.getState();
       expect(from % 3).toBe(0);
     });
 
     test("HandleFrom cannot be greater than HandleTo", () => {
       model.init({ ...options, range: true, from: 10, to: 5 });
-      const { from, to } = model.getState();
+      const {
+        from,
+        to = -99999,
+      } = model.getState();
 
       expect(from).toBeLessThanOrEqual(to);
     });
@@ -395,15 +401,20 @@ describe("Model", () => {
 
   describe("Scale", () => {
     test("Init with default values", () => {
-      model.init({ scale: {}});
+      model.init({ scale: {} });
 
       const { scale } = model.getState();
 
-      expect(scale.density).toBeDefined();
-      expect(scale.type).toBeDefined();
-      expect(scale.set).toBeDefined();
-      expect(scale.numbers).toBeDefined();
-      expect(scale.lines).toBeDefined();
+      if (scale === null) {
+        expect(scale).not.toBeNull();
+        return;
+      }
+
+      expect(scale?.density).toBeDefined();
+      expect(scale?.type).toBeDefined();
+      expect(scale?.set).toBeDefined();
+      expect(scale?.numbers).toBeDefined();
+      expect(scale?.lines).toBeDefined();
     });
 
     test("Updates scale", () => {
@@ -412,7 +423,7 @@ describe("Model", () => {
 
       const state = model.getState();
 
-      expect(state.scale.type).toBe("set");
+      expect(state?.scale?.type).toBe("set");
     });
 
     test("Dispatches events on update", () => {
@@ -435,7 +446,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state.scale.density).toBeGreaterThanOrEqual(0);
+      expect(state?.scale?.density).toBeGreaterThanOrEqual(0);
     });
 
     test("Density cannot be greater than 100", () => {
@@ -444,7 +455,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state.scale.density).toBeLessThanOrEqual(100);
+      expect(state?.scale?.density).toBeLessThanOrEqual(100);
     });
 
     test("Set should contain 0 and 100 in the beginning and in the end respectively", () => {
@@ -453,7 +464,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state.scale.set).toEqual([0, 50, 100]);
+      expect(state?.scale?.set).toEqual([0, 50, 100]);
     });
 
     test("Set values cannot be greater than 100 or less than 0", () => {
@@ -462,6 +473,11 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
+      if (state?.scale?.set === undefined) {
+        expect(state?.scale?.set).toBeDefined();
+        return;
+      }
+
       state.scale.set.forEach(value => {
         expect(value).toBeLessThanOrEqual(100);
         expect(value).toBeGreaterThanOrEqual(0);
@@ -474,7 +490,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state.scale.set).toEqual([0, 10, 20, 100]);
+      expect(state?.scale?.set).toEqual([0, 10, 20, 100]);
     });
 
     test("Set values are sorted", () => {
@@ -483,7 +499,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state.scale.set).toEqual([0, 10, 15, 20, 100]);
+      expect(state?.scale?.set).toEqual([0, 10, 15, 20, 100]);
     });
 
     test("Generates segments, steps mode", () => {
@@ -497,7 +513,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state.scale.segments).toEqual([
+      expect(state?.scale?.segments).toEqual([
         {
           type: "number",
           value: 0,
@@ -549,7 +565,8 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state.scale.segments).toEqual([
+
+      expect(state?.scale?.segments).toEqual([
         {
           type: "number",
           value: 0,

@@ -1,6 +1,9 @@
-import { HandleType } from "../Model/types";
 import Presenter from "../Presenter/Presenter";
-import { JustSliderOptions, State } from "../types";
+import { HandleType } from "../Model/types";
+import {
+  JustSliderOptions,
+  State,
+} from "../types";
 
 class JustSlider {
   private presenter:        Presenter;
@@ -18,7 +21,12 @@ class JustSlider {
   }
 
   public get(): number | Array<number> {
-    const { from = 0, to = 0, range } = this.presenter.getState();
+    const {
+      range,
+      from = 0,
+      to   = 0,
+    } = this.presenter.getState();
+    
     return range ? [from, to] : from;
   }
 
@@ -27,7 +35,11 @@ class JustSlider {
   }
 
   public reset(): void {
-    const { from = 0, to = 0 } = this.options;
+    const {
+      from = 0,
+      to   = 0,
+    } = this.options;
+
     this.presenter.updateHandle("to", to);
     this.presenter.updateHandle("from", from);
   }

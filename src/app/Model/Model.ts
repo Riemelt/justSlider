@@ -1,8 +1,19 @@
 import EventManager from "../EventManager/EventManager";
 import { SliderEvent } from "../EventManager/types";
-import { Direction, Options, Orientation, State } from "../types";
-import { ScaleOptions, Segment } from "../View/Scale/types";
-import { HandleType, Update } from "./types";
+import {
+  Direction,
+  Options,
+  Orientation,
+  State,
+} from "../types";
+import {
+  ScaleOptions,
+  Segment,
+} from "../View/Scale/types";
+import {
+  HandleType,
+  Update,
+} from "./types";
 
 class Model {
   private eventManager: EventManager;
@@ -112,14 +123,17 @@ class Model {
 
     const event = type === "from" ? "HandleFromMove" : "HandleToMove";
     return {
-      events: [event, "ProgressBarUpdate", "SliderUpdate"],
+      events:  [event, "ProgressBarUpdate", "SliderUpdate"],
       handles: [type],
-      scale: false,
+      scale:   false,
     }
   }
 
   private setHandle(type: HandleType, value?: number) {
-    const { step, precision } = this.state;
+    const {
+      step      = 1,
+      precision = 0,
+    } = this.state;
 
     const newValue       = this.adjustHandle(value, step, type);
     const validatedValue = this.validateHandle(value, type);
@@ -137,8 +151,14 @@ class Model {
     return validated;
   }
 
-  private validateHandle(value: number, type: HandleType): number {
-    const { to = 0, max = 0, min = 0, from = 0, range = false } = this.state;
+  private validateHandle(value = 0, type: HandleType): number {
+    const {
+      to    = 0,
+      max   = 0,
+      min   = 0,
+      from  = 0,
+      range = false,
+    } = this.state;
 
     value = this.validateHandleOnCollision(value, type, from, to, range);
     value = this.validateHandleOnMinMax(value, min, max);
@@ -177,9 +197,9 @@ class Model {
     this.setPrecision(precision);
 
     return {
-      events: ["TooltipsUpdate", "ScaleUpdate", "SliderUpdate"],
+      events:  ["TooltipsUpdate", "ScaleUpdate", "SliderUpdate"],
       handles: [],
-      scale: true,
+      scale:   true,
     };
   }
 
@@ -196,9 +216,9 @@ class Model {
     this.state.tooltips = tooltips;
 
     return {
-      events: ["TooltipsUpdate", "SliderUpdate"],
+      events:  ["TooltipsUpdate", "SliderUpdate"],
       handles: [],
-      scale: false,
+      scale:   false,
     };
   }
 
@@ -207,9 +227,9 @@ class Model {
     this.state.progressBar = progressBar;
 
     return {
-      events: ["ProgressBarUpdate", "SliderUpdate"],
+      events:  ["ProgressBarUpdate", "SliderUpdate"],
       handles: [],
-      scale: false,
+      scale:   false,
     };
   }
 
@@ -218,9 +238,9 @@ class Model {
     this.state.direction = direction;
 
     return {
-      events: ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      events:  ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
       handles: [],
-      scale: false,
+      scale:   false,
     };
   }
 
@@ -229,9 +249,9 @@ class Model {
     this.state.orientation = orientation;
 
     return {
-      events: ["OrientationUpdate", "HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      events:  ["OrientationUpdate", "HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
       handles: [],
-      scale: false,
+      scale:   false,
     };
   }
 
@@ -240,9 +260,9 @@ class Model {
     this.state.range = range;
 
     return {
-      events: ["HandleToMove", "ProgressBarUpdate", "SliderUpdate"],
+      events:  ["HandleToMove", "ProgressBarUpdate", "SliderUpdate"],
       handles: ["to"],
-      scale: false,
+      scale:   false,
     };
   }
 
@@ -250,9 +270,9 @@ class Model {
     if (scale === undefined) return null;
 
     return {
-      events: ["ScaleUpdate", "SliderUpdate"],
+      events:  ["ScaleUpdate", "SliderUpdate"],
       handles: [],
-      scale: true,
+      scale:   true,
     };
   }
 
@@ -287,8 +307,15 @@ class Model {
   }
 
   private generateScaleSegmentsStepsMode() {
-    const { density } = this.state.scale;
-    const { min, max, step, precision }     = this.state;
+    if (this.state.scale === undefined || this.state.scale === null) return;
+
+    const { density = 1 } = this.state.scale;
+    const {
+      min       = 0,
+      max       = 0,
+      step      = 1,
+      precision = 0,
+    } = this.state;
 
     const lineStep = (max - min) * density / 100;
 
@@ -331,8 +358,16 @@ class Model {
   }
   
   private generateScaleSegmentsSetMode() {
-    const { density, set } = this.state.scale;
-    const { min, max }     = this.state;
+    if (this.state.scale === undefined || this.state.scale === null) return;
+
+    const {
+      density = 1,
+      set     = [],
+    } = this.state.scale;
+    const {
+      min = 0,
+      max = 0,
+    } = this.state;
 
     for (let i = 0; i < set.length - 1; i++) {
       const value = this.getValueFromPercentage(set[i], min, max);
@@ -378,6 +413,8 @@ class Model {
   }
 
   private setScaleSet(set: Array<number>) {
+    if (this.state.scale === undefined || this.state.scale === null) return;
+
     const validated = this.validateScaleSet(set);
 
     validated.sort((a, b) => a - b);
@@ -395,6 +432,8 @@ class Model {
   }
 
   private setScaleDensity(density: number) {
+    if (this.state.scale === undefined || this.state.scale === null) return;
+    
     const validated = this.validateScaleDensity(density);
 
     this.state.scale.density = validated;
@@ -414,13 +453,15 @@ class Model {
 
   private getMinMaxUpdate(min?: number, max?: number): Update | null {
     if (min === undefined && max === undefined) return null;
+
     this.setMinMax(min, max);
-    this.setStep(this.state.step);
+    const { step = 1 } = this.state;
+    this.setStep(step);
 
     return {
-      events: ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      events:  ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
       handles: ["from", "to"],
-      scale: true,
+      scale:   true,
     };
   }
 
@@ -436,13 +477,13 @@ class Model {
   }
 
   private getStepUpdate(step?: number): Update | null {
-    if (step === undefined) return null
+    if (step === undefined) return null;
     this.setStep(step);
 
     return {
-      events: ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
+      events:  ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"],
       handles: ["from", "to"],
-      scale: true,
+      scale:   true,
     };
   }
 
@@ -457,7 +498,11 @@ class Model {
   }
 
   private setStep(step: number) {
-    const { min = 0, max = 0 } = this.state;
+    const {
+      min = 0,
+      max = 0,
+    } = this.state;
+    
     this.state.step = this.validateStep(step, max - min);
   }
 }

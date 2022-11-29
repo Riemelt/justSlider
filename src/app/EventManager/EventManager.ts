@@ -1,5 +1,8 @@
 import Subject from "./Subject/Subject";
-import { EventSubjects, SliderEvent } from "./types";
+import {
+  EventSubjects,
+  SliderEvent,
+} from "./types";
 
 class EventManager {
   private eventsSubjects: EventSubjects;
