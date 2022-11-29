@@ -1,6 +1,7 @@
-import Demo from "./Demo";
+import "../demo/assets/favicons";
 import "../app";
 import "./styles/demo.scss";
+import Demo from "./Demo";
 
 (function($) {
   const className = "demo";

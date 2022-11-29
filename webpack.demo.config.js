@@ -3,7 +3,7 @@ const MiniCssExtractPlugin  = require("mini-css-extract-plugin");
 const PugPlugin             = require("pug-plugin");
 const webpack               = require("webpack");
 
-const path    = require('path');
+const path    = require("path");
 const srcPath = path.resolve(__dirname, "./src");
 const output  = path.resolve(__dirname, "./demo");
 
@@ -27,7 +27,7 @@ module.exports = {
       jQuery: "jquery",
       "window.jQuery": "jquery",
     }),
-    require('autoprefixer'),
+    require("autoprefixer"),
     new HtmlWebpackPlugin({
       template: "./demo/index.pug",
       filename: "./index.html",
@@ -43,6 +43,9 @@ module.exports = {
   devtool: (mode === "development") ? "eval-source-map" : false,
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      "@favicons": path.resolve(__dirname, "./src/demo/assets/favicons/"),
+    }
   },
   module: {
     rules: [
@@ -55,8 +58,16 @@ module.exports = {
         loader: PugPlugin.loader,
         exclude: /(node_modules|bower_components)/,
         options: {
-            basedir: path.resolve(__dirname, './src')
+            basedir: path.resolve(__dirname, "./src")
         }
+      },
+      {
+        test: /\.(svg|png|ico|xml|json|webmanifest)$/i,
+        include: /favicons/,
+        type: "asset/resource",
+        generator: {
+          filename: "assets/favicons/[name][hash][ext][query]",
+        },
       },
       {
         test: /\.(js|jsx|ts|tsx)$/,
@@ -91,7 +102,7 @@ module.exports = {
           },
           "sass-loader",
           {
-            loader: 'sass-resources-loader',
+            loader: "sass-resources-loader",
             options: {
               resources: path.resolve(__dirname, "./src/styles/variables.scss")
             }
