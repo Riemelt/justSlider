@@ -1,15 +1,35 @@
-import Model        from "../Model/Model";
+import Model from "../Model/Model";
+import {
+  FROM,
+  TO,
+} from "../Model/constants";
+import {
+  HandleType,
+} from "../Model/types";
 import View         from "../View/View";
 import EventManager from "../EventManager/EventManager";
-import { JustSliderOptions, Options, State }  from "../types";
-import { HandleType } from "../Model/types";
+import {
+  HANDLE_FROM_MOVE,
+  HANDLE_TO_MOVE,
+  ORIENTATION_UPDATE,
+  PROGRESS_BAR_UPDATE,
+  SCALE_UPDATE,
+  SLIDER_CLICK_DISABLE,
+  SLIDER_CLICK_ENABLE,
+  SLIDER_UPDATE,
+  TOOLTIPS_UPDATE,
+} from "../EventManager/constants";
+import {
+  JustSliderOptions,
+  State,
+}  from "../types";
 
 class Presenter {
   private eventManager: EventManager;
   private view:         View;
   private model:        Model;
 
-  private onUpdate: (options: Options) => void;
+  private onUpdate: (state: State) => void = () => { return; };
 
   constructor(view: View, model: Model, eventManager: EventManager) {
     this.view         = view;
@@ -20,12 +40,11 @@ class Presenter {
   public init({
     onUpdate,
     ...options
-  }: JustSliderOptions) {
+  }: JustSliderOptions = {}): void {
     this.model.init(options);
 
-    const data = this.model.getState();
-
-    this.view.init(data);
+    const state = this.model.getState();
+    this.view.init(state);
 
     this.setOnUpdate(onUpdate);
 
@@ -35,14 +54,14 @@ class Presenter {
 
     this.view.initComponents();
     this.eventManager.dispatchEvents([
-      "HandleFromMove",
-      "HandleToMove",
-      "ProgressBarUpdate",
-      "OrientationUpdate",
-      "TooltipsUpdate",
-      "ScaleUpdate",
-      "SliderClickEnable",
-      "SliderUpdate",
+      HANDLE_FROM_MOVE,
+      HANDLE_TO_MOVE,
+      PROGRESS_BAR_UPDATE,
+      ORIENTATION_UPDATE,
+      TOOLTIPS_UPDATE,
+      SCALE_UPDATE,
+      SLIDER_CLICK_ENABLE,
+      SLIDER_UPDATE,
     ]);
   }
 
@@ -54,7 +73,7 @@ class Presenter {
     return this.view.getHtml();
   }
 
-  public updateHandle(type: HandleType, value: number) {
+  public updateHandle(type: HandleType, value: number): void {
     this.model.updateHandle(value, type);
   }
 
@@ -66,13 +85,13 @@ class Presenter {
     this.setOnUpdate(onUpdate);
   }
 
-  private setOnUpdate(onUpdate?: (state: State) => void) {
+  private setOnUpdate(onUpdate?: (state: State) => void): void {
     if (onUpdate) {
       this.onUpdate = onUpdate;
     }
   }
 
-  private createHandlers() {
+  private createHandlers(): void {
     this.view.addCreateHandleHandlers((value: number, handle: HandleType) => {
       this.model.updateHandle(value, handle);
     });
@@ -86,58 +105,58 @@ class Presenter {
     });
   }
 
-  private registerEvents() {
-    this.eventManager.registerEvent("HandleFromMove");
-    this.eventManager.registerEvent("HandleToMove");
-    this.eventManager.registerEvent("SliderUpdate");
-    this.eventManager.registerEvent("OrientationUpdate");
-    this.eventManager.registerEvent("TooltipsUpdate");
-    this.eventManager.registerEvent("ProgressBarUpdate");
-    this.eventManager.registerEvent("ScaleUpdate");
-    this.eventManager.registerEvent("SliderClickDisable");
-    this.eventManager.registerEvent("SliderClickEnable");
+  private registerEvents(): void {
+    this.eventManager.registerEvent(HANDLE_FROM_MOVE);
+    this.eventManager.registerEvent(HANDLE_TO_MOVE);
+    this.eventManager.registerEvent(SLIDER_UPDATE);
+    this.eventManager.registerEvent(ORIENTATION_UPDATE);
+    this.eventManager.registerEvent(TOOLTIPS_UPDATE);
+    this.eventManager.registerEvent(PROGRESS_BAR_UPDATE);
+    this.eventManager.registerEvent(SCALE_UPDATE);
+    this.eventManager.registerEvent(SLIDER_CLICK_DISABLE);
+    this.eventManager.registerEvent(SLIDER_CLICK_ENABLE);
   }
 
-  private addEventListeners() {
-    this.eventManager.addEventListener("HandleFromMove", () => {
+  private addEventListeners(): void {
+    this.eventManager.addEventListener(HANDLE_FROM_MOVE, () => {
       const state = this.model.getState();
-      this.view.updateHandle(state, "from");
+      this.view.updateHandle(state, FROM);
     });
 
-    this.eventManager.addEventListener("HandleToMove", () => {
+    this.eventManager.addEventListener(HANDLE_TO_MOVE, () => {
       const state = this.model.getState();
-      this.view.updateHandle(state, "to");
+      this.view.updateHandle(state, TO);
     });
 
-    this.eventManager.addEventListener("ProgressBarUpdate", () => {
+    this.eventManager.addEventListener(PROGRESS_BAR_UPDATE, () => {
       const state = this.model.getState();
       this.view.updateProgressBar(state);
     });
 
-    this.eventManager.addEventListener("OrientationUpdate", () => {
+    this.eventManager.addEventListener(ORIENTATION_UPDATE, () => {
       const state = this.model.getState();
       this.view.setOrientation(state.orientation);
     });
 
-    this.eventManager.addEventListener("TooltipsUpdate", () => {
+    this.eventManager.addEventListener(TOOLTIPS_UPDATE, () => {
       const state = this.model.getState();
       this.view.updateTooltips(state);
     });
     
-    this.eventManager.addEventListener("ScaleUpdate", () => {
+    this.eventManager.addEventListener(SCALE_UPDATE, () => {
       const state = this.model.getState();
       this.view.updateScale(state);
     });
 
-    this.eventManager.addEventListener("SliderClickDisable", () => {
+    this.eventManager.addEventListener(SLIDER_CLICK_DISABLE, () => {
       this.view.removeSliderClickHandler();
     });
 
-    this.eventManager.addEventListener("SliderClickEnable", () => {
+    this.eventManager.addEventListener(SLIDER_CLICK_ENABLE, () => {
       this.view.setSliderClickHandler();
     });
 
-    this.eventManager.addEventListener("SliderUpdate", () => {
+    this.eventManager.addEventListener(SLIDER_UPDATE, () => {
       const state = this.model.getState();
       this.onUpdate?.(state);
     });

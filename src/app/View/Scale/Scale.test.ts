@@ -1,11 +1,21 @@
-import Scale from "./Scale";
+import {
+  FORWARD,
+  HORIZONTAL,
+} from "../../Model/constants";
+import {
+  State,
+} from "../../types";
 import * as Utilities from "../utilities/utilities";
-
+import {
+  LINE,
+  NUMBER,
+} from "./constants";
+import Scale          from "./Scale";
 import {
   Segment,
   ScaleState,
 } from "./types";
-import { State } from "../../types";
+
 
 describe("Scale", () => {
   let $parent: JQuery<HTMLElement>;
@@ -16,14 +26,12 @@ describe("Scale", () => {
   const lineClass   = ".just-slider__scale-line";
 
   const segments: Array<Segment> = [
-    { value: 0, type: "number" },
-    { value: 25, type: "line" },
-    { value: 50, type: "number" },
-    { value: 75, type: "line" },
-    { value: 100, type: "number" },
+    { value: 0, type: NUMBER },
+    { value: 25, type: LINE },
+    { value: 50, type: NUMBER },
+    { value: 75, type: LINE },
+    { value: 100, type: NUMBER },
   ];
-
-  const numbers: Array<Segment> = segments.filter(segment => segment.type === "number");
 
   const state: ScaleState = {
     segments,
@@ -37,8 +45,8 @@ describe("Scale", () => {
     from:        200,
     to:          250,
     range:       false,
-    orientation: "horizontal",
-    direction:   "forward",
+    orientation: HORIZONTAL,
+    direction:   FORWARD,
     scale:       state,
   };
 
@@ -106,13 +114,15 @@ describe("Scale", () => {
       })
 
       test("Only lines", () => {
-        scale.update({
+        const newState: State = {
           ...modelState,
           scale: { 
-            ...modelState.scale,
+            ...state,
             numbers: false,
           }
-        });
+        };
+
+        scale.update(newState);
   
         const $scale = $parent.find(scaleClass);
         const $lines = $scale.find(lineClass);
@@ -126,8 +136,8 @@ describe("Scale", () => {
       test("Only numbers", () => {
         scale.update({
           ...modelState,
-          scale: { 
-            ...modelState.scale,
+          scale: {
+            ...state,
             lines: false,
           }
         });
@@ -142,11 +152,11 @@ describe("Scale", () => {
       })
     });
 
-    test("Sets style modificator if lines are disabled", () => {
+    test("Sets style modifier if lines are disabled", () => {
       scale.update({
         ...modelState,
         scale: { 
-          ...modelState.scale,
+          ...state,
           lines: false,
         }
       });
@@ -155,7 +165,7 @@ describe("Scale", () => {
       expect($scale.hasClass("just-slider__scale_without-lines")).toBe(true);
     });
 
-    test("Sets style modificators for first and last number values", () => {
+    test("Sets style modifier for first and last number values", () => {
       scale.update(modelState);
 
       const $scale = $parent.find(scaleClass);
@@ -165,7 +175,7 @@ describe("Scale", () => {
       expect($numbers.last().hasClass("just-slider__scale-number_big")).toBe(true);
     });
 
-    test("Sets style modificators for line segments", () => {
+    test("Sets style modifier for line segments", () => {
       scale.update(modelState);
 
       const $scale = $parent.find(scaleClass);
@@ -181,12 +191,12 @@ describe("Scale", () => {
 
       scale.update(modelState);
 
-      const segmentPoints: Array<Segment> = segments.reduce((acc, value) => {
+      const segmentPoints: Array<Segment> = segments.reduce((acc: Array<Segment>, value: Segment) => {
         acc.push(value);
-        if (value.type === "number") {
+        if (value.type === NUMBER) {
           acc.push({
             value: value.value,
-            type: "line",
+            type: LINE,
           });
         }
 

@@ -1,10 +1,24 @@
 import EventManager from "../../EventManager/EventManager";
-import { State } from "../../types";
-import Handle from "./Handle";
-import Tooltip from "./Tooltip/Tooltip";
-
+import {
+  SLIDER_CLICK_DISABLE,
+  SLIDER_CLICK_ENABLE,
+} from "../../EventManager/constants";
+import {
+  State,
+} from "../../types";
 import * as Utilities from "../utilities/utilities";
-import { HandleType } from "../../Model/types";
+import {
+  HandleType,
+} from "../../Model/types";
+import {
+  FORWARD,
+  FROM,
+  HORIZONTAL,
+  TO,
+  VERTICAL,
+} from "../../Model/constants";
+import Handle  from "./Handle";
+import Tooltip from "./Tooltip/Tooltip";
 
 describe("Handle", () => {
   let handle: Handle;
@@ -19,10 +33,13 @@ describe("Handle", () => {
     step:        10,
     min:         -100,
     max:         300,
-    orientation: "horizontal",
-    direction:   "forward",
+    orientation: HORIZONTAL,
+    direction:   FORWARD,
     range:       true,
     tooltips:    false,
+    progressBar: false,
+    scale:       null,
+    precision:   0,
   };
 
   function generateHandle(type: HandleType) {
@@ -34,6 +51,7 @@ describe("Handle", () => {
       eventManager,
       $parent,
       type,
+      state,
     });
   }
 
@@ -43,14 +61,14 @@ describe("Handle", () => {
 
   describe("Creates html node and appends to the parent", () => {
     test("Point node", () => {
-      generateHandle("from");
+      generateHandle(FROM);
 
       const $point = $parent.find(pointClass);
       expect($point.length).toBe(1);
     });
 
     test("Handle node", () => {
-      generateHandle("from");
+      generateHandle(FROM);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
       expect($handle.length).toBe(1);
@@ -58,7 +76,7 @@ describe("Handle", () => {
   });
   
   test("Deletes html node from parent", () => {
-    generateHandle("from");
+    generateHandle(FROM);
 
     handle.delete();
     const $point = $parent.find(pointClass);
@@ -67,7 +85,7 @@ describe("Handle", () => {
   });
 
   test("Updates tooltip", () => {
-    generateHandle("from");
+    generateHandle(FROM);
 
     const mockedUpdate = jest.spyOn(Tooltip.prototype, "update");
 
@@ -78,7 +96,7 @@ describe("Handle", () => {
   });
 
   test("Deletes tooltip", () => {
-    generateHandle("from");
+    generateHandle(FROM);
 
     const mockedDelete = jest.spyOn(Tooltip.prototype, "delete");
 
@@ -94,7 +112,7 @@ describe("Handle", () => {
     const focusedClass = "just-slider__point_focused";
 
     test("Sets focus", () => {
-      generateHandle("to");
+      generateHandle(TO);
 
       handle.update({ ...state, from: -80, to: -50, });
       const $point = $parent.find(pointClass);
@@ -104,7 +122,7 @@ describe("Handle", () => {
     });
 
     test("Unsets focus", () => {
-      generateHandle("to");
+      generateHandle(TO);
 
       handle.update(state);
       const $point = $parent.find(pointClass);
@@ -117,7 +135,7 @@ describe("Handle", () => {
   test("Updates transform styles", () => {
     const mockedTransform = jest.spyOn(Utilities, "getTransformStyles");
 
-    generateHandle("from");
+    generateHandle(FROM);
     handle.update(state);
 
     expect(mockedTransform).toBeCalledWith({
@@ -137,7 +155,7 @@ describe("Handle", () => {
   });
 
   test("Sets PointerMove handler", () => {
-    generateHandle("from");
+    generateHandle(FROM);
     const handler = jest.fn(() => undefined);
     handle.setHandlePointermoveHandler(handler);
     handle.update(state);
@@ -156,14 +174,14 @@ describe("Handle", () => {
         key: "ArrowRight",
       });
 
-      generateHandle("from");
+      generateHandle(FROM);
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
       const $handle = handle.getHandleHTML();
       $handle.trigger(eventKeydown);
 
-      expect(handler).toBeCalledWith(210, "from", true);
+      expect(handler).toBeCalledWith(210, FROM, true);
     });
 
     test("Moves backward by step when left arrow is pressed", () => {
@@ -172,42 +190,42 @@ describe("Handle", () => {
         key: "ArrowLeft",
       });
 
-      generateHandle("from");
+      generateHandle(FROM);
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
       const $handle = handle.getHandleHTML();
       $handle.trigger(eventKeydown);
 
-      expect(handler).toBeCalledWith(190, "from", true);
+      expect(handler).toBeCalledWith(190, FROM, true);
     });
   });
 
   describe("Drag'n'drop", () => {
     test("Disables slider click on pointerdown", () => {
       const mockedDispatchEvent = jest.spyOn(EventManager.prototype, "dispatchEvent");
-      generateHandle("from");
+      generateHandle(FROM);
       handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
       $handle.trigger("pointerdown");
       $(document).trigger("pointerup");
 
-      expect(mockedDispatchEvent).toBeCalledWith("SliderClickDisable");
+      expect(mockedDispatchEvent).toBeCalledWith(SLIDER_CLICK_DISABLE);
 
       mockedDispatchEvent.mockRestore();
     });
 
     test("Enables slider click on pointerup", () => {
       const mockedDispatchEvent = jest.spyOn(EventManager.prototype, "dispatchEvent");
-      generateHandle("from");
+      generateHandle(FROM);
       handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
       $handle.trigger("pointerdown");
       $(document).trigger("pointerup");
 
-      expect(mockedDispatchEvent).toBeCalledWith("SliderClickEnable");
+      expect(mockedDispatchEvent).toBeCalledWith(SLIDER_CLICK_ENABLE);
 
       mockedDispatchEvent.mockRestore();
     });
@@ -222,7 +240,7 @@ describe("Handle", () => {
         pageX: 300,
       });
 
-      generateHandle("from");
+      generateHandle(FROM);
 
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
@@ -239,7 +257,7 @@ describe("Handle", () => {
       $(document).trigger(eventPointermove);
       $(document).trigger("pointerup");
 
-      expect(handler).toBeCalledWith(270, "from");
+      expect(handler).toBeCalledWith(270, FROM);
 
       mockedHandleOffset.mockRestore();
     });
@@ -253,10 +271,10 @@ describe("Handle", () => {
         pageY: 500,
       });
 
-      generateHandle("from");
+      generateHandle(FROM);
 
       handle.setHandlePointermoveHandler(handler);
-      handle.update({ ...state, orientation: "vertical", });
+      handle.update({ ...state, orientation: VERTICAL, });
 
       const $handle = handle.getHandleHTML();
 
@@ -270,7 +288,7 @@ describe("Handle", () => {
       $(document).trigger(eventPointermove);
       $(document).trigger("pointerup");
 
-      expect(handler).toBeCalledWith(480, "from");
+      expect(handler).toBeCalledWith(480, FROM);
 
       mockedHandleOffset.mockRestore();
     });

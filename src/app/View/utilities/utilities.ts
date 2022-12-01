@@ -1,4 +1,13 @@
-import { Direction, Orientation } from "../../types";
+import {
+  Orientation,
+  Direction,
+} from "../../types";
+import {
+  BACKWARD,
+  FORWARD,
+  HORIZONTAL,
+  VERTICAL,
+} from "../../Model/constants";
 
 function convertViewPositionToModel(options: {
   position:    number,
@@ -15,11 +24,15 @@ function convertViewPositionToModel(options: {
   const realPosition = position - shift;
   const converted    = realPosition * ratio + min;
 
-  if ((direction === "forward" && orientation === "horizontal") || (direction === "backward" && orientation === "vertical")) {
-    return converted;
+  if (shouldFlip(direction, orientation)) {
+    return min + max - converted;
   }
 
-  return min + max - converted;
+  return converted;
+}
+
+function shouldFlip(direction: Direction, orientation: Orientation): boolean {
+  return (direction === BACKWARD && orientation === HORIZONTAL) || (direction === FORWARD && orientation === VERTICAL);
 }
 
 function getPositionStyles(options: {
@@ -37,7 +50,7 @@ function getPositionStyles(options: {
   const positionValue = getPositionValue(shift, min, max, direction);
   const style = `${positionValue}%`;
 
-  const property = orientation === "horizontal" ? "left" : "bottom";
+  const property = orientation === HORIZONTAL ? "left" : "bottom";
 
   return {
     property,
@@ -79,7 +92,7 @@ function getTransformStyles(options: {
 function getPositionValue(shift: number, min: number, max: number, direction: Direction): number {
   const percentage = getPercentage(shift, min, max);
 
-  if (direction === "backward") {
+  if (direction === BACKWARD) {
     return (100 - percentage);
   }
 
@@ -87,7 +100,7 @@ function getPositionValue(shift: number, min: number, max: number, direction: Di
 }
 
 function getAxis(orientation: Orientation): string {
-  return orientation === "horizontal" ? "X" : "Y";
+  return orientation === HORIZONTAL ? "X" : "Y";
 }
 
 function getPercentage(value: number, min: number, max: number): number {
@@ -103,10 +116,10 @@ function getTranslateStyle(translateValue: number, axis: string): string {
 }
 
 function getTranslateValue(shift: number, min: number, max: number, orientation: Orientation, direction: Direction): number {
-  const sign = orientation === "horizontal" ? (-1) : 1;
+  const sign = orientation === HORIZONTAL ? (-1) : 1;
   const percentage = getPercentage(shift, min, max);
 
-  if (direction === "forward") {
+  if (direction === FORWARD) {
     return (100 - percentage) * sign;
   }
 

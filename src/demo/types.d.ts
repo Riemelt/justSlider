@@ -1,4 +1,6 @@
-import { SliderDemoOptions } from "./components/slider-demo/types";
+import {
+  SliderDemoOptions,
+} from "./components/slider-demo/types";
 
 interface DemoOptions {
   demos: {

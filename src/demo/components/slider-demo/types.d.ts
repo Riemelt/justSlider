@@ -1,4 +1,6 @@
-import { JustSliderOptions } from "../../../app/types";
+import {
+  JustSliderOptions,
+} from "../../../app/types";
 
 interface SliderDemoOptions {
   slider:             JustSliderOptions;

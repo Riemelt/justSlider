@@ -9,7 +9,8 @@ describe("JustSlider jQuery plugin", () => {
   });
 
   test("Returns JustSlider instance", () => {
-    const justSlider = $slider.justSlider({});
+    $slider.justSlider();
+    const justSlider = $slider.data("just-slider");
 
     expect(justSlider).toBeInstanceOf(JustSlider);
   });

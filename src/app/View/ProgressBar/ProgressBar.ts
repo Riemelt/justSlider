@@ -1,25 +1,31 @@
 import {
+  FORWARD,
+} from "../../Model/constants";
+import {
   Direction,
   State,
   Orientation
 } from "../../types";
-
-import { getTransformStyles } from "../utilities/utilities";
+import {
+  getTransformStyles,
+} from "../utilities/utilities";
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;
   private $bar:       JQuery<HTMLElement>;
 
   constructor($parent: JQuery<HTMLElement>) {
+    this.$component = this.initHtml();
+    this.$bar       = this.$component.find(".just-slider__progress-bar");
     this.init($parent);
   }
 
   public update(state: State): void {
-    const { min, max, from, to, range, orientation, direction } = state;
+    const { range, min, max, from, to, orientation, direction } = state;
 
     const start = range ? from : min;
     const end   = range ? to : from;
-    const shift = direction === "forward" ? end : start;
+    const shift = direction === FORWARD ? end : start;
 
     const sliderLength = max - min;
     const barLength    = end - start;
@@ -57,15 +63,13 @@ class ProgressBar {
     $parent.append(this.$component);
   }
 
-  private initHtml(): void {
-    this.$component = $(`
+  private initHtml(): JQuery<HTMLElement> {
+    return $(`
       <div class="just-slider__progress-bar-wrapper">
         <div class="just-slider__progress-bar">
         </div>
       </div>
     `);
-
-    this.$bar = this.$component.find(".just-slider__progress-bar");
   }
 }
 

@@ -1,4 +1,4 @@
-mixin input-field(vars)
+mixin input-field(vars = {})
   -
     const {
       title = "",
@@ -7,7 +7,7 @@ mixin input-field(vars)
     } = vars
 
     const className = "input-field"
-    let classNames = className + ` js-${className}`
+    let classNames  = className + ` js-${className}`
 
   div(class=classNames)
     label(class=`${className}__label`)

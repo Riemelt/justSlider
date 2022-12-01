@@ -1,33 +1,53 @@
+import {
+  SLIDER_CLICK_DISABLE,
+  SLIDER_CLICK_ENABLE,
+} from "../../EventManager/constants";
 import EventManager from "../../EventManager/EventManager";
-import { HandleType } from "../../Model/types";
+import {
+  FORWARD,
+  FROM,
+  HORIZONTAL,
+  TO,
+} from "../../Model/constants";
+import {
+  HandleType,
+} from "../../Model/types";
 import {
   Direction,
   State,
   Orientation,
 } from "../../types";
-
 import {
   getTransformStyles,
 } from "../utilities/utilities";
-
 import Tooltip from "./Tooltip/Tooltip";
-import { HandleOptions } from "./types";
+import {
+  HandleOptions,
+} from "./types";
+
+const ARROW_UP    = "ArrowUp";
+const ARROW_DOWN  = "ArrowDown";
+const ARROW_RIGHT = "ArrowRight";
+const ARROW_LEFT  = "ArrowLeft";
 
 class Handle {
   private eventManager:    EventManager;
   private $component:      JQuery<HTMLElement>;
   private $handle:         JQuery<HTMLElement>;
-  private shiftFromCenter: number;
+  private shiftFromCenter = 0;
 
-  private handleHandlePointermove: (position: number, type: HandleType, isConverted?: boolean) => void;
+  private handleHandlePointermove: (position: number, type: HandleType, isConverted?: boolean) => void = () => { return; };
 
-  private type:  HandleType;
+  private type:  HandleType = FROM;
   private state: State;
 
-  private tooltip: Tooltip;
+  private tooltip?: Tooltip;
 
   constructor(handleOptions: HandleOptions) {
     this.eventManager = handleOptions.eventManager;
+    this.$component   = this.initHtml();
+    this.$handle      = this.$component.find(".just-slider__handle");
+    this.state        = handleOptions.state;
     this.init(handleOptions);
   }
 
@@ -45,7 +65,7 @@ class Handle {
   }
 
   public update(state: State): void {
-    this.state = state;
+    this.state  = state;
     const value = state[this.type];
     const { min, max, orientation, direction } = state;
 
@@ -85,7 +105,7 @@ class Handle {
   }
 
   private updateFocus(value: number, min: number, max: number, type: HandleType): void {
-    if (type !== "to") {
+    if (type !== TO) {
       return;
     }
 
@@ -114,16 +134,12 @@ class Handle {
 
   private init({ $parent, type }: HandleOptions): void {
     this.type = type;
-
-    this.initHtml();
-    this.$handle = this.$component.find(".just-slider__handle");
-
     this.setHandlers();
     $parent.append(this.$component);
   }
 
-  private initHtml(): void {
-    this.$component = $(`
+  private initHtml(): JQuery<HTMLElement> {
+    return $(`
       <div class="just-slider__point">
         <div class="just-slider__handle" tabindex="0">
         </div>
@@ -141,19 +157,19 @@ class Handle {
     this.$handle.off("keydown.handle");
   }
 
-  private handleKeydown(event: KeyboardEvent): void {
-    const { key }             = event;
-    const value               = this.state[this.type];
+  private handleKeydown(event: JQuery.Event): void {
+    const { key } = event;
+    const value   = this.state[this.type];
     const { step, direction } = this.state;
 
-    if (key === "ArrowRight" || key === "ArrowUp") {
+    if (key === ARROW_RIGHT || key === ARROW_UP) {
       event.preventDefault();
       const newValue = this.moveByStep({ value, direction, step });
       this.handleHandlePointermove?.(newValue, this.type, true);
       return;
     }
 
-    if (key === "ArrowLeft" || key === "ArrowDown") {
+    if (key === ARROW_LEFT || key === ARROW_DOWN) {
       event.preventDefault();
       const newValue = this.moveByStep({ value, direction, step: -step });
       this.handleHandlePointermove?.(newValue, this.type, true);
@@ -167,26 +183,36 @@ class Handle {
     direction: Direction,
   }): number {
     const { value, step, direction } = options;
-    const sign = direction === "forward" ? 1 : -1;
+    const sign = direction === FORWARD ? 1 : -1;
     return value + sign * step;
   }
 
-  private handlePointerdown(event: PointerEvent): void {
-    event.preventDefault();
-    this.eventManager.dispatchEvent("SliderClickDisable");
+  private handlePointerdown(event: JQuery.Event): void {
+    const {
+      pageX = 0,
+      pageY = 0,
+    } = event;
 
-    const offset = this.state.orientation === "horizontal" ? this.$handle.offset().left : this.$handle.offset().top;
-    const length = this.$handle.outerWidth();
+    event.preventDefault();
+    this.eventManager.dispatchEvent(SLIDER_CLICK_DISABLE);
+
+    const offset = (this.state.orientation === HORIZONTAL ? this.$handle.offset()?.left : this.$handle.offset()?.top) ?? 0;
+    const length = this.$handle.outerWidth() ?? 0;
 
     const center         = offset + (length / 2);
-    this.shiftFromCenter = this.state.orientation === "horizontal" ? event.pageX - center : event.pageY - center;
+    this.shiftFromCenter = this.state.orientation === HORIZONTAL ? pageX - center : pageY - center;
 
     $(document).on("pointermove.handle", this.handleDocumentPointermove.bind(this));
     $(document).on("pointerup.handle", this.handleDocumentPointerup.bind(this));
   }
   
-  private handleDocumentPointermove(event: PointerEvent): void {
-    const position = this.state.orientation === "horizontal" ? event.pageX - this.shiftFromCenter : event.pageY - this.shiftFromCenter;
+  private handleDocumentPointermove(event: JQuery.Event): void {
+    const {
+      pageX = 0,
+      pageY = 0,
+    } = event;
+
+    const position = this.state.orientation === HORIZONTAL ? pageX - this.shiftFromCenter : pageY - this.shiftFromCenter;
     this.handleHandlePointermove?.(position, this.type);
   }
 
@@ -194,7 +220,7 @@ class Handle {
     $(document).off("pointerup.handle");
     $(document).off("pointermove.handle");
 
-    this.eventManager.dispatchEvent("SliderClickEnable");
+    this.eventManager.dispatchEvent(SLIDER_CLICK_ENABLE);
   }
 }
 

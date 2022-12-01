@@ -4,8 +4,8 @@ import "./styles/demo.scss";
 import Demo from "./Demo";
 
 (function($) {
-  const className = "demo";
-  const data = require("./data.json");
+  const className  = "demo";
+  const data       = require("./data.json");
   const $component = $(`.js-${className}`);
 
   new Demo($component, data);

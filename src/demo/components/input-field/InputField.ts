@@ -1,21 +1,23 @@
 class InputField {
-  private className: string;
+  private className:  string;
   private $component: JQuery<HTMLElement>;
-  private $input: JQuery<HTMLElement>;
-  private options: InputFieldOptions;
+  private $input:     JQuery<HTMLElement>;
+  private options:    InputFieldOptions;
 
-  constructor($parent: JQuery<HTMLElement>, options: InputFieldOptions) {
-    this.className = "input-field";
-    this.init($parent, options);
+  constructor($parent: JQuery<HTMLElement>, options: InputFieldOptions = {}) {
+    this.className  = "input-field";
+    this.options    = options;
+    this.$component = $parent.find(`.js-${this.className}`);
+    this.$input     = this.$component.find(`.js-${this.className}__input`);
     this.render();
   }
 
-  public disable() {
+  public disable(): void {
     this.$component.addClass(`${this.className}_disabled`);
     this.$input.prop("disabled", true);
   }
 
-  public enable() {
+  public enable(): void {
     this.$component.removeClass(`${this.className}_disabled`);
     this.$input.prop("disabled", false);
   }
@@ -24,7 +26,7 @@ class InputField {
     value,
     step,
     min,
-  }: InputUpdate) {
+  }: InputUpdate): void {
     this.$input.val(value);
 
     if (step !== undefined) {
@@ -36,21 +38,15 @@ class InputField {
     }
   }
 
-  private init($parent: JQuery<HTMLElement>, options: InputFieldOptions) {
-    this.options = options;
-    this.$component = $parent.find(`.js-${this.className}`);
-    this.$input     = this.$component.find(`.js-${this.className}__input`);
-  }
-
-  private render() {
+  private render(): void {
     this.setHandlers();
   }
 
-  private setHandlers() {
+  private setHandlers(): void {
     this.$input.on("change.input-field", this.handleInputChange.bind(this));
   }
 
-  private handleInputChange(event: Event) {
+  private handleInputChange(event: Event): void {
     if (event.currentTarget instanceof HTMLInputElement) {
       const value = Number(event.currentTarget.value);
       const { handleInputChange } = this.options;

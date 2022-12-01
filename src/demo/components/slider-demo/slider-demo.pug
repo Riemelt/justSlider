@@ -1,13 +1,13 @@
 include ../configuration-panel/configuration-panel
 
-mixin slider-demo(vars)
+mixin slider-demo(vars = {})
   -
     const {
       configurationPanel = {},
     } = vars
 
     const className = "slider-demo"
-    let classNames = className + ` js-${className}`
+    let classNames  = className + ` js-${className}`
 
   div(class=classNames)
     div(class=`${className}__configuration-panel js-${className}__configuration-panel`)

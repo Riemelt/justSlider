@@ -1,5 +1,17 @@
-type SegmentType = "line" | "number";
-type ScaleType = "steps" | "set";
+import {
+  BIG,
+  LARGE,
+  LINE,
+  NORMAL,
+  NUMBER,
+  SET,
+  STEPS,
+} from "./constants";
+
+type SegmentType = typeof LINE  | typeof NUMBER;
+type ScaleType   = typeof STEPS | typeof SET;
+
+type LineSegmentSize = typeof NORMAL | typeof BIG | typeof LARGE;
 
 interface Segment {
   type: SegmentType;
@@ -14,11 +26,13 @@ interface ScaleOptions {
   numbers?: boolean;
 }
 
-interface ScaleState extends ScaleOptions {
+type ScaleState = Required<ScaleOptions> & {
   segments: Array<Segment>;
 }
 
+
 export {
+  LineSegmentSize,
   Segment,
   ScaleType,
   ScaleOptions,

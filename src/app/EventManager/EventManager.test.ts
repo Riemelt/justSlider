@@ -1,10 +1,16 @@
+import {
+  HANDLE_FROM_MOVE,
+  SLIDER_UPDATE,
+} from "./constants";
+import {
+  SliderEvent,
+} from "./types";
 import EventManager from "./EventManager";
-import Subject from "./Subject/Subject";
-import { SliderEvent } from "./types";
+import Subject      from "./Subject/Subject";
 
 describe("EventManager", () => {
   let eventManager: EventManager;
-  const events: Array<SliderEvent> = ["SliderUpdate", "HandleFromMove"];
+  const events: Array<SliderEvent> = [SLIDER_UPDATE, HANDLE_FROM_MOVE];
   const observers: Array<() => void> = [() => undefined, () => undefined];
 
   beforeEach(() => {

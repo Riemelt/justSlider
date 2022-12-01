@@ -1,13 +1,20 @@
-import JustSlider   from "./JustSlider";
 import Presenter    from "../Presenter/Presenter";
 import EventManager from "../EventManager/EventManager";
-import Model        from "../Model/Model";
 import View         from "../View/View";
-import { JustSliderOptions } from "../types";
+import Model        from "../Model/Model";
+import {
+  FORWARD,
+  FROM,
+  HORIZONTAL,
+} from "../Model/constants";
+import {
+  JustSliderOptions,
+} from "../types";
+import JustSlider from "./JustSlider";
 
 describe("JustSlider", () => {
   let justSlider: JustSlider;
-  let $parent: JQuery<HTMLElement>;
+  let $parent:    JQuery<HTMLElement>;
 
   let eventManager: EventManager;
   let model:        Model;
@@ -22,8 +29,8 @@ describe("JustSlider", () => {
     min:         0,
     max:         100,
     step:        10,
-    orientation: "horizontal",
-    direction:   "forward",
+    orientation: HORIZONTAL,
+    direction:   FORWARD,
     range:       false,
     tooltips:    false,
     progressBar: false,
@@ -39,7 +46,8 @@ describe("JustSlider", () => {
     $parent = $(`<div class="slider"></div>`);
     eventManager = new EventManager();
     model        = new Model(eventManager);
-    view         = new View(eventManager);
+    const state  = model.getState();
+    view         = new View(eventManager, state);
     presenter    = new Presenter(view, model, eventManager);
   });
 
@@ -61,9 +69,9 @@ describe("JustSlider", () => {
     test("update", () => {
       initSlider(options);
       const mockedUpdate = jest.spyOn(presenter, "updateHandle");
-      justSlider.update("from", 100);
+      justSlider.update(FROM, 100);
 
-      expect(mockedUpdate).toBeCalledWith("from", 100);
+      expect(mockedUpdate).toBeCalledWith(FROM, 100);
     });
 
     test("updateOptions", () => {
@@ -122,7 +130,7 @@ describe("JustSlider", () => {
     test("reset", () => {
       initSlider(options);
 
-      justSlider.update("from", 50);
+      justSlider.update(FROM, 50);
       justSlider.reset();
       const from = justSlider.get();
 

@@ -1,22 +1,23 @@
 import "./styles/demo.scss";
 
 import SliderDemo from "./components/slider-demo";
-import { DemoOptions } from "./types";
+import {
+  DemoOptions,
+} from "./types";
 
 class Demo {
-  private className: string;
-  private options: DemoOptions;
+  private className:  string;
+  private options:    DemoOptions;
   private $component: JQuery<HTMLElement>;
 
   constructor($element: JQuery<HTMLElement>, options: DemoOptions) {
-    this.className = "demo";
-    this.init($element, options);
+    this.className  = "demo";
+    this.$component = $element;
+    this.options    = options;
+    this.init();
   }
 
-  private init($element: JQuery<HTMLElement>, options: DemoOptions) {
-    this.$component = $element;
-    this.options = options;
-
+  private init() {
     const $sliderDemoPrimary = this.$component.find(`.js-${this.className}__slider-demo-primary`);
     new SliderDemo($sliderDemoPrimary, this.options.demos.primary);
 

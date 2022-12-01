@@ -1,44 +1,40 @@
 class Toggle {
-  private className: string;
+  private className:  string;
   private $component: JQuery<HTMLElement>;
-  private $input: JQuery<HTMLElement>;
-  private options: ToggleOptions;
+  private $input:     JQuery<HTMLElement>;
+  private options:    ToggleOptions;
 
-  constructor($parent: JQuery<HTMLElement>, options: ToggleOptions) {
-    this.className = "toggle";
-    this.init($parent, options);
+  constructor($parent: JQuery<HTMLElement>, options: ToggleOptions = {}) {
+    this.className  = "toggle";
+    this.options    = options;
+    this.$component = $parent.find(`.js-${this.className}`);
+    this.$input     = this.$component.find(`.js-${this.className}__switch-input`);
     this.render();
   }
 
-  public disable() {
+  public disable(): void {
     this.$component.addClass(`${this.className}_disabled`);
     this.$input.prop("disabled", true);
   }
 
-  public enable() {
+  public enable(): void {
     this.$component.removeClass(`${this.className}_disabled`);
     this.$input.prop("disabled", false);
   }
 
-  public update(checked: boolean) {
+  public update(checked: boolean): void {
     this.$input.prop("checked", checked);
   }
 
-  private init($parent: JQuery<HTMLElement>, options: ToggleOptions) {
-    this.options = options;
-    this.$component = $parent.find(`.js-${this.className}`);
-    this.$input     = this.$component.find(`.js-${this.className}__switch-input`);
-  }
-
-  private render() {
+  private render(): void {
     this.setHandlers();
   }
 
-  private setHandlers() {
+  private setHandlers(): void {
     this.$input.on("change.toggle", this.handleToggleChange.bind(this));
   }
 
-  private handleToggleChange(event: Event) {
+  private handleToggleChange(event: Event): void {
     if (event.currentTarget instanceof HTMLInputElement) {
       const { checked } = event.currentTarget;
       const { handleToggleChange } = this.options;

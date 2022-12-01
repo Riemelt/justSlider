@@ -1,4 +1,4 @@
-import Tooltip from "./Tooltip";
+import Tooltip        from "./Tooltip";
 import * as Utilities from "../../utilities/utilities";
 
 describe("Tooltip", () => {
@@ -28,7 +28,7 @@ describe("Tooltip", () => {
   test("Updates value in the html node", () => {
     const mocked = jest.spyOn(Utilities, "getValueBasedOnPrecision");
 
-    const value = 5;
+    const value     = 5;
     const precision = 0;
 
     tooltip.update(value, precision);

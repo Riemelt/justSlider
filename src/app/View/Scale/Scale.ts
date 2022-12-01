@@ -1,19 +1,32 @@
 import {
+  Direction,
+  Orientation,
+  State,
+} from "../../types";
+import {
   getPositionStyles,
   getValueBasedOnPrecision,
 } from "../utilities/utilities";
-
-import { Direction, Orientation, State } from "../../types";
+import {
+  BIG,
+  LARGE,
+  LINE,
+  NORMAL,
+} from "./constants";
+import {
+  LineSegmentSize,
+} from "./types";
 
 class Scale {
   private $component: JQuery<HTMLElement>;
 
-  private numberClass = "just-slider__scale-number";
-  private lineClass   = "just-slider__scale-line";
+  private handleNumberClick: (position: number) => void = () => { return; };
 
-  private handleNumberClick: (position: number) => void;
+  static readonly NUMBER_CLASS = "just-slider__scale-number";
+  static readonly LINE_CLASS   = "just-slider__scale-line";
 
   constructor($parent: JQuery<HTMLElement>) {
+    this.$component = this.initHtml();
     this.init($parent);
   }
 
@@ -22,7 +35,7 @@ class Scale {
   }
 
   public delete(): void {
-    const $numberSegments = this.$component.find(`.${this.numberClass}`);
+    const $numberSegments = this.$component.find(`.${Scale.NUMBER_CLASS}`);
     $numberSegments.off("click.scale");
     
     this.$component.remove();
@@ -30,11 +43,12 @@ class Scale {
 
   public update(state: State): void {
     this.$component.empty();
+    if (state.scale === null) return;
 
     const { min, max, orientation, direction, precision } = state;
     const { segments, numbers, lines } = state.scale;
 
-    this.setStyleModificator(lines);
+    this.setStyleModifier(lines);
 
     segments.forEach((segment, index) => {
       const { type, value } = segment;
@@ -49,7 +63,7 @@ class Scale {
 
       const isBig = this.isFirstOrLast(index, segments.length);
       
-      if (type === "line") {
+      if (type === LINE) {
         if (lines) {
           const $segment = this.createLineSegment();
           this.updatePosition({
@@ -62,7 +76,7 @@ class Scale {
       }
 
       if (lines) {
-        const lineSegmentSize = isBig ? "large" : "big";
+        const lineSegmentSize = isBig ? LARGE : BIG;
         const $lineSegment    = this.createLineSegment(lineSegmentSize);
         this.updatePosition({
           ...updatePositionOptions,
@@ -71,7 +85,7 @@ class Scale {
       }
 
       if (numbers) {
-        const $numberSegment = this.createNumberSegment(value, isBig, precision);
+        const $numberSegment = this.createNumberSegment(value, precision, isBig);
         this.updatePosition({
           ...updatePositionOptions,
           $element: $numberSegment,
@@ -98,7 +112,7 @@ class Scale {
     return index === 0 || index === length - 1;
   }
 
-  private setStyleModificator(lines: boolean): void {
+  private setStyleModifier(lines: boolean): void {
     if (lines) {
       this.$component.removeClass("just-slider__scale_without-lines");
     } else {
@@ -106,10 +120,10 @@ class Scale {
     }
   }
 
-  private createNumberSegment(value: number, isBig = false, precision: number): JQuery<HTMLElement> {
+  private createNumberSegment(value: number, precision: number, isBig = false): JQuery<HTMLElement> {
     const converted = getValueBasedOnPrecision(value, precision);
-    const $segment = $(`<div class="${this.numberClass}">${converted}</div>`);
-    $segment.on("click.scale", () => this.handleNumberClick(value));
+    const $segment  = $(`<div class="${Scale.NUMBER_CLASS}">${converted}</div>`);
+    $segment.on("click.scale", this.handleScaleNumberClick.bind(this, value));
 
     if (isBig) {
       $segment.addClass("just-slider__scale-number_big");
@@ -120,14 +134,18 @@ class Scale {
     return $segment;
   }
 
-  private createLineSegment(size: "normal" | "big" | "large" = "normal"): JQuery<HTMLElement> {
-    const $segment = $(`<div class="${this.lineClass}"></div>`);
+  private handleScaleNumberClick(value: number) {
+    this.handleNumberClick(value);
+  }
 
-    if (size === "big") {
+  private createLineSegment(size: LineSegmentSize = NORMAL): JQuery<HTMLElement> {
+    const $segment = $(`<div class="${Scale.LINE_CLASS}"></div>`);
+
+    if (size === BIG) {
       $segment.addClass("just-slider__scale-line_big");
     }
 
-    if (size === "large") {
+    if (size === LARGE) {
       $segment.addClass("just-slider__scale-line_large");
     }
 
@@ -137,13 +155,14 @@ class Scale {
   }
 
   private init($parent: JQuery<HTMLElement>): void {
-    this.initHtml();
-
     $parent.append(this.$component);
   }
 
-  private initHtml(): void {
-    this.$component = $(`<div class="just-slider__scale"></div>`);
+  private initHtml(): JQuery<HTMLElement> {
+    return $(`
+      <div class="just-slider__scale">
+      </div>
+    `);
   }
 }
 

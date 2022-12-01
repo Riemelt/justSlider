@@ -1,5 +1,7 @@
 import Presenter from "../Presenter/Presenter";
-import { HandleType } from "../Model/types";
+import {
+  HandleType,
+} from "../Model/types";
 import {
   JustSliderOptions,
   State,

@@ -1,11 +1,15 @@
 import {
+  BACKWARD,
+  FORWARD,
+  HORIZONTAL,
+} from "../../Model/constants";
+import {
   Direction,
   State,
   Orientation
 } from "../../types";
-
-import ProgressBar from "./ProgressBar";
 import * as Utilities from "../utilities/utilities";
+import ProgressBar    from "./ProgressBar";
 
 describe("ProgressBar", () => {
   let $parent:     JQuery<HTMLElement>;
@@ -37,9 +41,14 @@ describe("ProgressBar", () => {
       max:         300,
       from:        200,
       to:          250,
+      step:        10,
       range:       false,
-      orientation: "horizontal",
-      direction:   "forward",
+      orientation: HORIZONTAL,
+      direction:   FORWARD,
+      scale:       null,
+      precision:   0,
+      tooltips:    false,
+      progressBar: false,
     };
     let mockedTransform: jest.SpyInstance<{ property: string; style: string; }, [options: { shift: number; min: number; max: number; orientation: Orientation; direction: Direction; scale?: number; }]>;
 
@@ -84,12 +93,12 @@ describe("ProgressBar", () => {
     });
 
     test("Direction is backward", () => {
-      progressBar.update({ ...state, direction: "backward", });
+      progressBar.update({ ...state, direction: BACKWARD, });
       expect(mockedTransform).toBeCalledWith({
         min:         state.min,
         max:         state.max,
         orientation: state.orientation,
-        direction:   "backward",
+        direction:   BACKWARD,
         shift:       state.min,
         scale:       0.75,
       });

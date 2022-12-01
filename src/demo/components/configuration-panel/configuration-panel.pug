@@ -1,7 +1,7 @@
 include ../input-field/input-field
 include ../toggle/toggle
 
-mixin configuration-panel(vars)
+mixin configuration-panel(vars = {})
   -
     const {
       inputMin       = {},
@@ -25,7 +25,7 @@ mixin configuration-panel(vars)
     } = vars
 
     const className = "configuration-panel"
-    let classNames = className + ` js-${className}`
+    let classNames  = className + ` js-${className}`
 
   ul(class=classNames)
     li(class=`${className}__item`)

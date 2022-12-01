@@ -1,5 +1,13 @@
-import { Orientation, Direction } from "../../types";
-
+import {
+  BACKWARD,
+  FORWARD,
+  HORIZONTAL,
+  VERTICAL,
+} from "../../Model/constants";
+import {
+  Orientation,
+  Direction,
+} from "../../types";
 import {
   getTransformStyles,
   getPositionStyles,
@@ -24,7 +32,7 @@ describe("View utilities", () => {
       case: string,
     }> = [
       {
-        options: { shift: 99, min: 0, max: 100, orientation: "horizontal", direction: "forward" },
+        options: { shift: 99, min: 0, max: 100, orientation: HORIZONTAL, direction: FORWARD },
         expected: {
           property: "left",
           style: "99%"
@@ -32,7 +40,7 @@ describe("View utilities", () => {
         case: "horizontal and forward, range is from 0 to 100, shift is 99",
       },
       {
-        options: { shift: 100, min: -100, max: 300, orientation: "horizontal", direction: "forward" },
+        options: { shift: 100, min: -100, max: 300, orientation: HORIZONTAL, direction: FORWARD },
         expected: {
           property: "left",
           style: "50%"
@@ -40,7 +48,7 @@ describe("View utilities", () => {
         case: "horizontal and forward, range is from -100 to 300, shift is 100",
       },
       {
-        options: { shift: 200, min: -100, max: 300, orientation: "horizontal", direction: "backward" },
+        options: { shift: 200, min: -100, max: 300, orientation: HORIZONTAL, direction: BACKWARD },
         expected: {
           property: "left",
           style: "25%"
@@ -48,7 +56,7 @@ describe("View utilities", () => {
         case: "horizontal and backward, range is from -100 to 300, shift is 200",
       },
       {
-        options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "backward" },
+        options: { shift: 200, min: -100, max: 300, orientation: VERTICAL, direction: BACKWARD },
         expected: {
           property: "bottom",
           style: "25%"
@@ -56,7 +64,7 @@ describe("View utilities", () => {
         case: "vertical and backward, range is from -100 to 300, shift is 200",
       },
       {
-        options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "forward" },
+        options: { shift: 200, min: -100, max: 300, orientation: VERTICAL, direction: FORWARD },
         expected: {
           property: "bottom",
           style: "75%"
@@ -87,7 +95,7 @@ describe("View utilities", () => {
       case: string,
     }> = [
       {
-        options: { shift: 99, min: 0, max: 100, orientation: "horizontal", direction: "forward" },
+        options: { shift: 99, min: 0, max: 100, orientation: HORIZONTAL, direction: FORWARD },
         expected: {
           property: "transform",
           style: "translateX(-1%)"
@@ -95,7 +103,7 @@ describe("View utilities", () => {
         case: "horizontal and forward, range is from 0 to 100, shift is 99, no scale",
       },
       {
-        options: { shift: 100, min: -100, max: 300, orientation: "horizontal", direction: "forward" },
+        options: { shift: 100, min: -100, max: 300, orientation: HORIZONTAL, direction: FORWARD },
         expected: {
           property: "transform",
           style: "translateX(-50%)"
@@ -103,7 +111,7 @@ describe("View utilities", () => {
         case: "horizontal and forward, range is from -100 to 300, shift is 100, no scale",
       },
       {
-        options: { shift: 100, min: -100, max: 300, orientation: "horizontal", direction: "forward", scale: 0.4 },
+        options: { shift: 100, min: -100, max: 300, orientation: HORIZONTAL, direction: FORWARD, scale: 0.4 },
         expected: {
           property: "transform",
           style: "translateX(-50%) scaleX(0.4)"
@@ -111,7 +119,7 @@ describe("View utilities", () => {
         case: "horizontal and forward, range is from -100 to 300, shift is 100, scale is 0.4",
       },
       {
-        options: { shift: 200, min: -100, max: 300, orientation: "horizontal", direction: "backward", scale: 0.4 },
+        options: { shift: 200, min: -100, max: 300, orientation: HORIZONTAL, direction: BACKWARD, scale: 0.4 },
         expected: {
           property: "transform",
           style: "translateX(-75%) scaleX(0.4)"
@@ -119,7 +127,7 @@ describe("View utilities", () => {
         case: "horizontal and backward, range is from -100 to 300, shift is 200, scale is 0.4",
       },
       {
-        options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "backward", scale: 0.4 },
+        options: { shift: 200, min: -100, max: 300, orientation: VERTICAL, direction: BACKWARD, scale: 0.4 },
         expected: {
           property: "transform",
           style: "translateY(75%) scaleY(0.4)"
@@ -127,7 +135,7 @@ describe("View utilities", () => {
         case: "vertical and backward, range is from -100 to 300, shift is 200, scale is 0.4",
       },
       {
-        options: { shift: 200, min: -100, max: 300, orientation: "vertical", direction: "forward", scale: 0.4 },
+        options: { shift: 200, min: -100, max: 300, orientation: VERTICAL, direction: FORWARD, scale: 0.4 },
         expected: {
           property: "transform",
           style: "translateY(25%) scaleY(0.4)"
@@ -156,22 +164,22 @@ describe("View utilities", () => {
       case: string,
     }> = [
       {
-        options: { min: -100, max: 300, orientation: "horizontal", direction: "forward", length: 500, shift: 100, position: 200 },
+        options: { min: -100, max: 300, orientation: HORIZONTAL, direction: FORWARD, length: 500, shift: 100, position: 200 },
         expected: -20,
         case: "horizontal and forward, range is from -100 to 300, shift is 100, length is 500, position is 200",
       },
       {
-        options: { min: -100, max: 300, orientation: "horizontal", direction: "backward", length: 500, shift: 100, position: 200 },
+        options: { min: -100, max: 300, orientation: HORIZONTAL, direction: BACKWARD, length: 500, shift: 100, position: 200 },
         expected: 220,
         case: "horizontal and backward, range is from -100 to 300, shift is 100, length is 500, position is 200",
       },
       {
-        options: { min: -100, max: 300, orientation: "vertical", direction: "backward", length: 500, shift: 100, position: 200 },
+        options: { min: -100, max: 300, orientation: VERTICAL, direction: BACKWARD, length: 500, shift: 100, position: 200 },
         expected: -20,
         case: "vertical and backward, range is from -100 to 300, shift is 100, length is 500, position is 200",
       },
       {
-        options: { min: -100, max: 300, orientation: "vertical", direction: "forward", length: 500, shift: 100, position: 200 },
+        options: { min: -100, max: 300, orientation: VERTICAL, direction: FORWARD, length: 500, shift: 100, position: 200 },
         expected: 220,
         case: "vertical and forward, range is from -100 to 300, shift is 100, length is 500, position is 200",
       },

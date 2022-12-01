@@ -3,21 +3,25 @@ import Presenter             from "./Presenter/Presenter";
 import View                  from "./View/View";
 import JustSlider            from "./JustSlider/JustSlider";
 import EventManager          from "./EventManager/EventManager";
-import { JustSliderOptions } from "./types";
+import {
+  JustSliderOptions,
+} from "./types";
 
 (function($) {
-  $.fn.extend({
-    justSlider(options: JustSliderOptions) {
-      const eventManager = new EventManager;
-      const model        = new Model(eventManager);
-      const view         = new View(eventManager);
-      const presenter    = new Presenter(view, model, eventManager);
+  $.fn.justSlider = function makeSlider(options: JustSliderOptions = {}) {
+    const sliderName = "just-slider";
 
-      presenter.init(options);
+    const eventManager = new EventManager;
+    const model        = new Model(eventManager);
+    const state        = model.getState();
+    const view         = new View(eventManager, state);
+    const presenter    = new Presenter(view, model, eventManager);
 
-      const slider = new JustSlider(this, presenter, options);
+    presenter.init(options);
 
-      return slider;
-    }
-  });
-}(jQuery));
+    const slider = new JustSlider(this, presenter, options);
+    this.data(sliderName, slider);
+
+    return this;
+  };
+})(jQuery);

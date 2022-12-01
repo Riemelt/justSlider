@@ -1,15 +1,43 @@
+import {
+  HANDLE_FROM_MOVE,
+  HANDLE_TO_MOVE,
+  ORIENTATION_UPDATE,
+  PROGRESS_BAR_UPDATE,
+  SCALE_UPDATE,
+  SLIDER_UPDATE,
+  TOOLTIPS_UPDATE,
+} from "../EventManager/constants";
 import EventManager from "../EventManager/EventManager";
-import { SliderEvent } from "../EventManager/types";
-import { Options } from "../types";
+import {
+  SliderEvent,
+} from "../EventManager/types";
+import {
+  Options,
+} from "../types";
+import {
+  LINE,
+  NUMBER,
+  SET,
+  STEPS,
+} from "../View/Scale/constants";
+import {
+  BACKWARD,
+  FORWARD,
+  FROM,
+  HORIZONTAL,
+  TO,
+  VERTICAL,
+} from "./constants";
 import Model from "./Model";
+
 
 describe("Model", () => {
   let model: Model;
   let eventManager: EventManager;
-
+  
   beforeEach(() => {
     eventManager = new EventManager();
-    model        = new Model(eventManager)  
+    model        = new Model(eventManager);
   });
 
   test("Returns state", () => {
@@ -19,8 +47,8 @@ describe("Model", () => {
       step:        10,
       min:         -100,
       max:         300,
-      orientation: "horizontal",
-      direction:   "forward",
+      orientation: HORIZONTAL,
+      direction:   FORWARD,
       range:       true,
       tooltips:    false,
       progressBar: true,
@@ -62,7 +90,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["TooltipsUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [TOOLTIPS_UPDATE, SLIDER_UPDATE];
 
       model.init({ tooltips: false });
       model.updateOptions({ tooltips: true });
@@ -87,7 +115,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["ProgressBarUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
 
       model.init({ progressBar: false });
       model.updateOptions({ progressBar: true });
@@ -102,20 +130,20 @@ describe("Model", () => {
 
   describe("Direction", () => {
     test("Updates direction", () => {
-      model.init({ direction: "forward" });
-      model.updateOptions({ direction: "backward" });
+      model.init({ direction: FORWARD });
+      model.updateOptions({ direction: BACKWARD });
 
       const state = model.getState();
 
-      expect(state.direction).toBe("backward");
+      expect(state.direction).toBe(BACKWARD);
     });
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
 
-      model.init({ direction: "forward" });
-      model.updateOptions({ direction: "backward" });
+      model.init({ direction: FORWARD });
+      model.updateOptions({ direction: BACKWARD });
 
       events.forEach(event => {
         expect(mockedDispatcher).toBeCalledWith(event);
@@ -127,20 +155,20 @@ describe("Model", () => {
 
   describe("Orientation", () => {
     test("Updates orientation", () => {
-      model.init({ orientation: "horizontal" });
-      model.updateOptions({ orientation: "vertical" });
+      model.init({ orientation: HORIZONTAL });
+      model.updateOptions({ orientation: VERTICAL });
 
       const state = model.getState();
 
-      expect(state.orientation).toBe("vertical");
+      expect(state.orientation).toBe(VERTICAL);
     });
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["OrientationUpdate", "HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [ORIENTATION_UPDATE, HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
 
-      model.init({ orientation: "horizontal" });
-      model.updateOptions({ orientation: "vertical" });
+      model.init({ orientation: HORIZONTAL });
+      model.updateOptions({ orientation: VERTICAL });
 
       events.forEach(event => {
         expect(mockedDispatcher).toBeCalledWith(event);
@@ -162,7 +190,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleToMove", "ProgressBarUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
 
       model.init({ range: false });
       model.updateOptions({ range: true });
@@ -184,7 +212,7 @@ describe("Model", () => {
       };
 
       model.init(initOptions);
-      model.updateHandle(80, "from");
+      model.updateHandle(80, FROM);
 
       model.updateOptions({ range: true });
       const state = model.getState();
@@ -222,10 +250,18 @@ describe("Model", () => {
     })
 
     test("Updates min", () => {
+      const stateBefore = model.getState();
+      console.log(stateBefore);
+
       model.init({ min: 20 });
+
+      const stateAfterInit = model.getState();
+      console.log(stateAfterInit);
+
       model.updateOptions({ min: 50 });
 
       const state = model.getState();
+      console.log(state);
 
       expect(state.min).toBe(50);
     });
@@ -241,7 +277,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
 
       model.init({ min: 20 });
       model.updateOptions({ min: 50 });
@@ -277,10 +313,7 @@ describe("Model", () => {
       model.init({ min: 0, max: 100, from: 20, to: 50, step: 10, range: true });
       model.updateOptions({ step: 3 });
 
-      const {
-        from = 0,
-        to   = 0,
-      } = model.getState();
+      const { from, to } = model.getState();
 
       expect(from % 3).toBe(0);
       expect(to % 3).toBe(0);
@@ -297,7 +330,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "ScaleUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
 
       model.init({ step: 10 });
       model.updateOptions({ step: 8 });
@@ -333,16 +366,13 @@ describe("Model", () => {
     test("Adjust value depending on step property (no remainder when divided by step)", () => {
       model.init({ ...options, step: 3, from: 10 });
 
-      const { from = 0 } = model.getState();
+      const { from } = model.getState();
       expect(from % 3).toBe(0);
     });
 
     test("HandleFrom cannot be greater than HandleTo", () => {
       model.init({ ...options, range: true, from: 10, to: 5 });
-      const {
-        from,
-        to = -99999,
-      } = model.getState();
+      const { from, to } = model.getState();
 
       expect(from).toBeLessThanOrEqual(to);
     });
@@ -357,7 +387,7 @@ describe("Model", () => {
 
     test("Updates HandleFrom", () => {
       model.init({ ...options, from: 10 });
-      model.updateHandle(20, "from");
+      model.updateHandle(20, FROM);
 
       const state = model.getState();
 
@@ -366,7 +396,7 @@ describe("Model", () => {
 
     test("Updates HandleTo", () => {
       model.init({ ...options, range: true, from: 0, to: 10 });
-      model.updateHandle(50, "to");
+      model.updateHandle(50, TO);
 
       const state = model.getState();
 
@@ -385,11 +415,11 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["HandleFromMove", "HandleToMove", "ProgressBarUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
 
       model.init({ ...options, range: true, from: 0, to: 10 });
-      model.updateHandle(25, "from");
-      model.updateHandle(50, "to");
+      model.updateHandle(25, FROM);
+      model.updateHandle(50, TO);
 
       events.forEach(event => {
         expect(mockedDispatcher).toBeCalledWith(event);
@@ -405,11 +435,6 @@ describe("Model", () => {
 
       const { scale } = model.getState();
 
-      if (scale === null) {
-        expect(scale).not.toBeNull();
-        return;
-      }
-
       expect(scale?.density).toBeDefined();
       expect(scale?.type).toBeDefined();
       expect(scale?.set).toBeDefined();
@@ -418,20 +443,20 @@ describe("Model", () => {
     });
 
     test("Updates scale", () => {
-      model.init({ scale: { type: "steps" } });
-      model.updateOptions({ scale: { type: "set" } });
+      model.init({ scale: { type: STEPS } });
+      model.updateOptions({ scale: { type: SET } });
 
       const state = model.getState();
 
-      expect(state?.scale?.type).toBe("set");
+      expect(state.scale?.type).toBe(SET);
     });
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["ScaleUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [SCALE_UPDATE, SLIDER_UPDATE];
 
-      model.init({ scale: { type: "steps" } });
-      model.updateOptions({ scale: { type: "set" } });
+      model.init({ scale: { type: STEPS } });
+      model.updateOptions({ scale: { type: SET } });
 
       events.forEach(event => {
         expect(mockedDispatcher).toBeCalledWith(event);
@@ -446,7 +471,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state?.scale?.density).toBeGreaterThanOrEqual(0);
+      expect(state.scale?.density).toBeGreaterThanOrEqual(0);
     });
 
     test("Density cannot be greater than 100", () => {
@@ -455,7 +480,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state?.scale?.density).toBeLessThanOrEqual(100);
+      expect(state.scale?.density).toBeLessThanOrEqual(100);
     });
 
     test("Set should contain 0 and 100 in the beginning and in the end respectively", () => {
@@ -464,7 +489,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state?.scale?.set).toEqual([0, 50, 100]);
+      expect(state.scale?.set).toEqual([0, 50, 100]);
     });
 
     test("Set values cannot be greater than 100 or less than 0", () => {
@@ -473,12 +498,9 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      if (state?.scale?.set === undefined) {
-        expect(state?.scale?.set).toBeDefined();
-        return;
-      }
 
-      state.scale.set.forEach(value => {
+      expect(state.scale?.set.length).toBeGreaterThan(0);
+      state.scale?.set.forEach(value => {
         expect(value).toBeLessThanOrEqual(100);
         expect(value).toBeGreaterThanOrEqual(0);
       });
@@ -490,7 +512,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state?.scale?.set).toEqual([0, 10, 20, 100]);
+      expect(state.scale?.set).toEqual([0, 10, 20, 100]);
     });
 
     test("Set values are sorted", () => {
@@ -499,7 +521,7 @@ describe("Model", () => {
       }});
 
       const state = model.getState();
-      expect(state?.scale?.set).toEqual([0, 10, 15, 20, 100]);
+      expect(state.scale?.set).toEqual([0, 10, 15, 20, 100]);
     });
 
     test("Generates segments, steps mode", () => {
@@ -508,46 +530,46 @@ describe("Model", () => {
         max: 20,
         step: 10,
         scale: {
-          type: "steps",
+          type: STEPS,
           density: 15,
       }});
 
       const state = model.getState();
-      expect(state?.scale?.segments).toEqual([
+      expect(state.scale?.segments).toEqual([
         {
-          type: "number",
+          type: NUMBER,
           value: 0,
         },
         {
-          type: "line",
+          type: LINE,
           value: 2.5,
         },
         {
-          type: "line",
+          type: LINE,
           value: 5,
         },
         {
-          type: "line",
+          type: LINE,
           value: 7.5,
         },
         {
-          type: "number",
+          type: NUMBER,
           value: 10,
         },
         {
-          type: "line",
+          type: LINE,
           value: 12.5,
         },
         {
-          type: "line",
+          type: LINE,
           value: 15,
         },
         {
-          type: "line",
+          type: LINE,
           value: 17.5,
         },
         {
-          type: "number",
+          type: NUMBER,
           value: 20,
         },
       ]);
@@ -559,48 +581,48 @@ describe("Model", () => {
         max: 100,
         step: 10,
         scale: {
-          type: "set",
+          type: SET,
           density: 15,
           set: [0, 20, 80, 100],
       }});
 
       const state = model.getState();
 
-      expect(state?.scale?.segments).toEqual([
+      expect(state.scale?.segments).toEqual([
         {
-          type: "number",
+          type: NUMBER,
           value: 0,
         },
         {
-          type: "line",
+          type: LINE,
           value: 10,
         },
         {
-          type: "number",
+          type: NUMBER,
           value: 20,
         },
         {
-          type: "line",
+          type: LINE,
           value: 35,
         },
         {
-          type: "line",
+          type: LINE,
           value: 50,
         },
         {
-          type: "line",
+          type: LINE,
           value: 65,
         },
         {
-          type: "number",
+          type: NUMBER,
           value: 80,
         },
         {
-          type: "line",
+          type: LINE,
           value: 90,
         },
         {
-          type: "number",
+          type: NUMBER,
           value: 100,
         },
       ]);
@@ -619,7 +641,7 @@ describe("Model", () => {
 
     test("Dispatches events on update", () => {
       const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = ["TooltipsUpdate", "ScaleUpdate", "SliderUpdate"];
+      const events: Array<SliderEvent> = [TOOLTIPS_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
 
       model.init({ precision: 1 });
       model.updateOptions({ precision: 2 });

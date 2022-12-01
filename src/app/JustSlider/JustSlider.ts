@@ -1,5 +1,11 @@
 import Presenter from "../Presenter/Presenter";
-import { HandleType } from "../Model/types";
+import {
+  HandleType,
+} from "../Model/types";
+import {
+  FROM,
+  TO,
+} from "../Model/constants";
 import {
   JustSliderOptions,
   State,
@@ -9,7 +15,7 @@ class JustSlider {
   private presenter:        Presenter;
   private readonly options: JustSliderOptions;
 
-  constructor($parent: JQuery<HTMLElement>, presenter: Presenter, options: JustSliderOptions) {
+  constructor($parent: JQuery<HTMLElement>, presenter: Presenter, options: JustSliderOptions = {}) {
     this.options   = options;
     this.presenter = presenter;
     const $slider  = this.presenter.$getSlider();
@@ -21,12 +27,7 @@ class JustSlider {
   }
 
   public get(): number | Array<number> {
-    const {
-      range,
-      from = 0,
-      to   = 0,
-    } = this.presenter.getState();
-    
+    const { range, from, to } = this.presenter.getState();
     return range ? [from, to] : from;
   }
 
@@ -40,8 +41,8 @@ class JustSlider {
       to   = 0,
     } = this.options;
 
-    this.presenter.updateHandle("to", to);
-    this.presenter.updateHandle("from", from);
+    this.presenter.updateHandle(TO, to);
+    this.presenter.updateHandle(FROM, from);
   }
 
   public update(type: HandleType, value: number) {

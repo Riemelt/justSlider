@@ -1,15 +1,23 @@
 import EventManager from "../EventManager/EventManager";
-import Handle       from "./Handle/Handle";
-import ProgressBar  from "./ProgressBar/ProgressBar";
-import Scale        from "./Scale/Scale";
-
 import {
   State,
   Orientation,
 } from "../types";
-
-import { convertViewPositionToModel } from "./utilities/utilities";
-import { HandleType } from "../Model/types";
+import {
+  HandleType,
+} from "../Model/types";
+import {
+  FROM,
+  HORIZONTAL,
+  TO,
+  VERTICAL,
+} from "../Model/constants";
+import {
+  convertViewPositionToModel,
+} from "./utilities/utilities";
+import Handle       from "./Handle/Handle";
+import ProgressBar  from "./ProgressBar/ProgressBar";
+import Scale        from "./Scale/Scale";
 
 class View {
   private eventManager: EventManager;
@@ -17,20 +25,23 @@ class View {
   private $component:   JQuery<HTMLElement>;
   private $justSlider:  JQuery<HTMLElement>;
 
-  private handleHandlePointermove: (position: number, type: HandleType, isConverted?: boolean) => void;
-  private sliderClickHandler:      (position: number, type: HandleType) => void;
-  private scaleClickHandler:       (position: number, type: HandleType) => void;
+  private handleHandlePointermove: (position: number, type: HandleType, isConverted?: boolean) => void = () => { return; };
+  private sliderClickHandler:      (position: number, type: HandleType) => void = () => { return; };
+  private scaleClickHandler:       (position: number) => void = () => { return; };
 
   private handles: {
-    from: Handle,
-    to:   Handle,
-  };
+    from?: Handle,
+    to?:   Handle,
+  } = {};
 
-  private progressBar: ProgressBar;
-  private scale:       Scale;
+  private progressBar?: ProgressBar;
+  private scale?:       Scale;
 
-  constructor(eventManager: EventManager) {
+  constructor(eventManager: EventManager, state: State) {
     this.eventManager = eventManager;
+    this.state        = state;
+    this.$component   = this.initHtml();
+    this.$justSlider  = this.$component.find(".just-slider__main");
   }
 
   public getHtml(): JQuery<HTMLElement> {
@@ -38,13 +49,11 @@ class View {
   }
 
   public init(state: State): void {
-    this.state   = state;
-    this.handles = { from: undefined, to: undefined };
-    this.initHtml();
+    this.state = state;
   }
 
   public setOrientation(orientation: Orientation): void {
-    if (orientation === "vertical") {
+    if (orientation === VERTICAL) {
       this.$component.addClass("just-slider_vertical");
       return;
     }
@@ -53,11 +62,11 @@ class View {
   }
 
   public initComponents(): void {
-    this.initHandle("from");
+    this.initHandle(FROM);
   }
 
   public updateHandle(state: State, type: HandleType): void {
-    const update = type === "from" ? this.updateHandleFrom.bind(this) : this.updateHandleTo.bind(this);
+    const update = type === FROM ? this.updateHandleFrom.bind(this) : this.updateHandleTo.bind(this);
     update(state);
   }
 
@@ -145,7 +154,7 @@ class View {
   }
 
   private updateHandleFrom(state: State): void {
-    this.handles.from.update(state);
+    this.handles.from?.update(state);
   }
 
   private updateHandleTo(state: State): void {
@@ -153,16 +162,16 @@ class View {
 
     if (range) {
       if (!this.handles.to) {
-        this.initHandle("to");
+        this.initHandle(TO);
       }
 
-      this.handles.to.update(state);
+      this.handles.to?.update(state);
       return;
     }
 
     if (!this.handles.to) return;
     
-    this.deleteHandle("to");
+    this.deleteHandle(TO);
   }
 
   private initHandle(type: HandleType): void {
@@ -170,13 +179,19 @@ class View {
       type,
       $parent:      this.$justSlider,
       eventManager: this.eventManager,
+      state:        this.state,
     });
 
-    this.handles[type].setHandlePointermoveHandler(this.handleHandlePointermove.bind(this));
+    this.handles[type]?.setHandlePointermoveHandler(this.handleHandlePointermove.bind(this));
   }
 
-  private handleSliderClick(event: PointerEvent): void {
-    const position = this.state.orientation === "horizontal" ? event.pageX : event.pageY;
+  private handleSliderClick(event: JQuery.Event): void {
+    const {
+      pageX = 0,
+      pageY = 0,
+    } = event;
+
+    const position = this.state.orientation === HORIZONTAL ? pageX : pageY;
 
     const converted     = this.getConvertedPosition(position);
     const closestHandle = this.getClosestHandle(converted);
@@ -189,7 +204,7 @@ class View {
 
     const distanceToTo   = Math.abs(to - position);
     const distanceToFrom = Math.abs(from - position);
-    const type           = distanceToTo > distanceToFrom || !range ? "from" : "to";
+    const type           = distanceToTo > distanceToFrom || !range ? FROM : TO;
 
     return type;
   }
@@ -197,8 +212,8 @@ class View {
   private getConvertedPosition(position: number): number {
     const { min, max, orientation, direction } = this.state;
 
-    const length = orientation === "horizontal" ? this.$justSlider.width() : this.$justSlider.height();
-    const shift  = orientation === "horizontal" ? this.$justSlider.offset().left : this.$justSlider.offset().top;
+    const length = (orientation === HORIZONTAL ? this.$justSlider.width() : this.$justSlider.height()) ?? 0;
+    const shift  = (orientation === HORIZONTAL ? this.$justSlider.offset()?.left : this.$justSlider.offset()?.top) ?? 0;
 
     const converted = convertViewPositionToModel({
       position,
@@ -213,15 +228,13 @@ class View {
     return converted;
   }
 
-  private initHtml(): void {
-    this.$component = $(`
+  private initHtml(): JQuery<HTMLElement> {
+    return $(`
       <div class="just-slider">
         <div class="just-slider__main">
         </div>
       </div>
     `);
-
-    this.$justSlider = this.$component.find(".just-slider__main");
   }
 }
 

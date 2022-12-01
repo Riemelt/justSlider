@@ -1,7 +1,9 @@
-import { JustSlider, JustSliderOptions } from "./types";
+import {
+  JustSliderOptions,
+} from "./types";
 
 declare global {
   interface JQuery {
-    justSlider: (options: JustSliderOptions) => JustSlider;
+    justSlider(options?: JustSliderOptions): JQuery;
   }
 }

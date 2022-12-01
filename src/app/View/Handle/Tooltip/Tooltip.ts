@@ -1,9 +1,12 @@
-import { getValueBasedOnPrecision } from "../../utilities/utilities";
+import {
+  getValueBasedOnPrecision,
+} from "../../utilities/utilities";
 
 class Tooltip {
   private $component: JQuery<HTMLElement>;
 
   constructor($parent: JQuery<HTMLElement>) {
+    this.$component = this.initHtml();
     this.init($parent);
   }
 
@@ -17,16 +20,14 @@ class Tooltip {
   }
 
   private init($parent: JQuery<HTMLElement>): void {
-    this.initHtml();
-
     $parent.append(this.$component);
   }
 
-  private initHtml(): void {
-    this.$component = $(`
+  private initHtml(): JQuery<HTMLElement> {
+    return $(`
       <div class="just-slider__tooltip">
       </div>
-  `);
+    `);
   }
 }
 

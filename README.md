@@ -125,10 +125,11 @@ $("div.container").justSlider(options);
 
 ### API
 
-When justSlider is created, it returns an instance with methods to get and set different data.
+When justSlider is created, you can get an instance with methods to get and set different data.
 
 ```javascript
-const justSlider = $("div.container").justSlider(options);
+$("div.container").justSlider(options);
+const justSlider = $("div.container").data("just-slider");
 
 justSlider.updateOptions({
   from: 1000,
@@ -172,7 +173,7 @@ function callback(state) {
   // code
 }
 
-const justSlider = $("div.container").justSlider({
+$("div.container").justSlider({
   ...options,
   onUpdate: callback,
 });
@@ -249,9 +250,9 @@ Presenter has instances of Model, View and EventManager. It initializes both mod
 
 For example, View has `addCreateHandleHandlers` method. Presenter provides a callback to View, which will be called with slider changes when user interacts with slider's handles. That callback, in turn, will update Model, where all the validations and logic are happening. Eventually Model updates slider's state and dispatches events via EventManager. In the end, these events will call View update methods and user will see the result.
 
-Presenter also adds event listeners (observers) to the manager. Events trigger View to update visual part of the slider when new Model state is set and trigger `onUpdate` callback provived with slider options.
+Presenter also adds event listeners (observers) to the manager. Events trigger View to update visual part of the slider when new Model state is set and trigger `onUpdate` callback provided with slider options.
 
-Model class is responsible for all the buisness logic, validating and operating with data and slider's options. It recieves data, updates slider's state and dispatches events. Presenter is the only class that calls Model methods.
+Model class is responsible for all the business logic, validating and operating with data and slider's options. It receives data, updates slider's state and dispatches events. Presenter is the only class that calls Model methods.
 
 View generates all the HTML nodes and updates visual part of the application, applying corresponding styles. It gets updated whenever events from EventManager are triggered. Some of View calculation helpers are stored at `View/utilities.ts` and shared among different subviews.
 
