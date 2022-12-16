@@ -61,6 +61,17 @@ class Model {
     return Math.round(value * decimals) / decimals;
   }
 
+  static getNumberOfDecimals(value: number): number {
+    const convertedToString = value.toString();
+    const hasDecimals = convertedToString.includes(".") ? true : false;
+  
+    if (!hasDecimals) {
+      return 0;
+    }
+  
+    return convertedToString.split(".").pop()?.length ?? 0;
+  }
+
   constructor(eventManager: EventManager) {
     this.eventManager = eventManager;
     this.state        = this.DEFAULT_STATE;
@@ -144,8 +155,8 @@ class Model {
     this.eventManager.dispatchEvents(Array.from(eventsToDispatch));
   }
 
-  public updateHandle(value: number, type: HandleType): void {
-    this.setHandle(type, value);
+  public updateHandle(value: number, type: HandleType, shouldAdjust = true): void {
+    this.setHandle(type, value, shouldAdjust);
 
     const update = this.getHandleUpdate(type, value);
 
@@ -154,7 +165,7 @@ class Model {
     }
   }
 
-  private getHandleUpdate(type: HandleType, value?: number, ): Update | null {
+  private getHandleUpdate(type: HandleType, value?: number): Update | null {
     if (value === undefined) return null;
 
     const event = type === FROM ? HANDLE_FROM_MOVE : HANDLE_TO_MOVE;
@@ -165,23 +176,29 @@ class Model {
     }
   }
 
-  private setHandle(type: HandleType, value: number): void {
-    const { step, precision } = this.state;
+  private setHandle(type: HandleType, value: number, shouldAdjust = true): void {
+    const { step } = this.state;
 
-    const newValue       = this.adjustHandle(value, step, type);
+    const newValue       = shouldAdjust ? this.adjustHandle(value, step, type) : value;
     const validatedValue = this.validateHandle(value, type);
     const valueToSet     = value !== validatedValue ? validatedValue : newValue;
+    const precision      = shouldAdjust ? Model.getNumberOfDecimals(step) : Model.getNumberOfDecimals(value);
     
     this.state[type] = Model.adjustFloat(valueToSet, precision);
   }
 
   private adjustHandle(value: number, step: number, type: HandleType): number {
+    const adjusted  = this.adjustWithStep(value, step);
+    const validated = this.validateHandle(adjusted, type);
+    return validated;
+  }
+
+  private adjustWithStep(value: number, step: number): number {
     const { min } = this.state;
     const relativeValue = value + (min * (-1));
 
-    const adjusted  = (Math.round(relativeValue / step) * step) + min;
-    const validated = this.validateHandle(adjusted, type);
-    return validated;
+    const adjusted = (Math.round(relativeValue / step) * step) + min;
+    return adjusted;
   }
 
   private validateHandle(value: number, type: HandleType): number {
@@ -338,11 +355,12 @@ class Model {
     if (this.state.scale === null) return;
 
     const { density } = this.state.scale;
-    const { min, max, step, precision } = this.state;
+    const { min, max, step } = this.state;
 
     const lineStep = (max - min) * density / 100;
+    const stepPrecision = Model.getNumberOfDecimals(step);
 
-    for (let value = min; value < max; value = Model.adjustFloat(value + step, precision)) {
+    for (let value = min; value < max; value = Model.adjustFloat(value + step, stepPrecision)) {
       const numberSegment: Segment = {
         value,
         type: NUMBER,
@@ -350,9 +368,9 @@ class Model {
 
       this.state.scale.segments.push(numberSegment);
 
-      let nextValue             = Model.adjustFloat(value + step, precision);
+      let nextValue             = value + step;
       nextValue                 = nextValue >= max ? max : nextValue;
-      const distanceToNextValue = nextValue - value;
+      const distanceToNextValue = Model.adjustFloat(nextValue - value, stepPrecision);
 
       let linesPerStep: number;
       if (lineStep === 0) {

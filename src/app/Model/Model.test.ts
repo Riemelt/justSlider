@@ -370,6 +370,14 @@ describe("Model", () => {
       expect(from % 3).toBe(0);
     });
 
+    test("Doesn't adjust value on update if it's not needed", () => {
+      model.init({ ...options, step: 3 });
+      model.updateHandle(10, FROM, false);
+
+      const { from } = model.getState();
+      expect(from).toBe(10);
+    });
+
     test("HandleFrom cannot be greater than HandleTo", () => {
       model.init({ ...options, range: true, from: 10, to: 5 });
       const { from, to } = model.getState();

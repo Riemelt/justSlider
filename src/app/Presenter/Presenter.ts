@@ -101,7 +101,7 @@ class Presenter {
     });
 
     this.view.addCreateScaleClickHandler((value: number, handle: HandleType) => {
-      this.model.updateHandle(value, handle);
+      this.model.updateHandle(value, handle, false);
     });
   }
 
