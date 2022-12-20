@@ -1,13 +1,13 @@
-import Model from "../Model/Model";
+import Model from '../Model/Model';
 import {
   FROM,
   TO,
-} from "../Model/constants";
+} from '../Model/constants';
 import {
   HandleType,
-} from "../Model/types";
-import View         from "../View/View";
-import EventManager from "../EventManager/EventManager";
+} from '../Model/types';
+import View from '../View/View';
+import EventManager from '../EventManager/EventManager';
 import {
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
@@ -18,22 +18,22 @@ import {
   SLIDER_CLICK_ENABLE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
-} from "../EventManager/constants";
+} from '../EventManager/constants';
 import {
   JustSliderOptions,
   State,
-}  from "../types";
+} from '../types';
 
 class Presenter {
   private eventManager: EventManager;
-  private view:         View;
-  private model:        Model;
+  private view: View;
+  private model: Model;
 
-  private onUpdate: (state: State) => void = () => { return; };
+  private onUpdate?: (state: State) => void;
 
   constructor(view: View, model: Model, eventManager: EventManager) {
-    this.view         = view;
-    this.model        = model;
+    this.view = view;
+    this.model = model;
     this.eventManager = eventManager;
   }
 
@@ -92,15 +92,24 @@ class Presenter {
   }
 
   private createHandlers(): void {
-    this.view.addCreateHandleHandlers((value: number, handle: HandleType) => {
+    this.view.addCreateHandleHandlers((
+      value: number,
+      handle: HandleType
+    ) => {
       this.model.updateHandle(value, handle);
     });
 
-    this.view.addCreateSliderClickHandler((value: number, handle: HandleType) => {
+    this.view.addCreateSliderClickHandler((
+      value: number,
+      handle: HandleType
+    ) => {
       this.model.updateHandle(value, handle);
     });
 
-    this.view.addCreateScaleClickHandler((value: number, handle: HandleType) => {
+    this.view.addCreateScaleClickHandler((
+      value: number,
+      handle: HandleType
+    ) => {
       this.model.updateHandle(value, handle, false);
     });
   }
@@ -142,7 +151,7 @@ class Presenter {
       const state = this.model.getState();
       this.view.updateTooltips(state);
     });
-    
+
     this.eventManager.addEventListener(SCALE_UPDATE, () => {
       const state = this.model.getState();
       this.view.updateScale(state);

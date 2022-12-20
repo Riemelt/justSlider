@@ -2,31 +2,62 @@ import {
   Direction,
   Orientation,
   State,
-} from "../../types";
+} from '../../types';
 import {
   getPositionStyles,
   getValueBasedOnPrecision,
-} from "../utilities/utilities";
+} from '../utilities/utilities';
 import {
   BIG,
   LARGE,
   LINE,
   NORMAL,
-} from "./constants";
+} from './constants';
 import {
-  LineSegmentSize,
-} from "./types";
+  LineSize,
+} from './types';
 
 class Scale {
   private $component: JQuery<HTMLElement>;
 
-  private handleNumberClick: (position: number) => void = () => { return; };
+  private handleNumberClick?: (position: number) => void;
 
-  static readonly NUMBER_CLASS = "just-slider__scale-number";
-  static readonly LINE_CLASS   = "just-slider__scale-line";
+  static readonly NUMBER_CLASS = 'just-slider__scale-number';
+  static readonly LINE_CLASS = 'just-slider__scale-line';
+
+  static initHtml(): JQuery<HTMLElement> {
+    return $(`
+      <div class="just-slider__scale">
+      </div>
+    `);
+  }
+
+  static isFirstOrLast(index: number, length: number): boolean {
+    return index === 0 || index === length - 1;
+  }
+
+  static updatePosition(options: {
+    $element: JQuery<HTMLElement>,
+    shift: number,
+    min: number,
+    max: number,
+    direction: Direction,
+    orientation: Orientation,
+  }): void {
+    const { $element, shift, min, max, direction, orientation } = options;
+    const { property, style } = getPositionStyles({
+      shift,
+      min,
+      max,
+      direction,
+      orientation,
+    });
+
+    $element.css(property, style);
+  }
 
   constructor($parent: JQuery<HTMLElement>) {
-    this.$component = this.initHtml();
+    this.$component = Scale.initHtml();
     this.init($parent);
   }
 
@@ -36,8 +67,8 @@ class Scale {
 
   public delete(): void {
     const $numberSegments = this.$component.find(`.${Scale.NUMBER_CLASS}`);
-    $numberSegments.off("click.scale");
-    
+    $numberSegments.off('click.scale');
+
     this.$component.remove();
   }
 
@@ -59,14 +90,14 @@ class Scale {
         direction,
         orientation,
         shift: value,
-      }
+      };
 
-      const isBig = this.isFirstOrLast(index, segments.length);
-      
+      const isBig = Scale.isFirstOrLast(index, segments.length);
+
       if (type === LINE) {
         if (lines) {
           const $segment = this.createLineSegment();
-          this.updatePosition({
+          Scale.updatePosition({
             ...updatePositionOptions,
             $element: $segment,
           });
@@ -77,16 +108,21 @@ class Scale {
 
       if (lines) {
         const lineSegmentSize = isBig ? LARGE : BIG;
-        const $lineSegment    = this.createLineSegment(lineSegmentSize);
-        this.updatePosition({
+        const $lineSegment = this.createLineSegment(lineSegmentSize);
+        Scale.updatePosition({
           ...updatePositionOptions,
           $element: $lineSegment,
         });
       }
 
       if (numbers) {
-        const $numberSegment = this.createNumberSegment(value, precision, isBig);
-        this.updatePosition({
+        const $numberSegment = this.createNumberSegment(
+          value,
+          precision,
+          isBig
+        );
+
+        Scale.updatePosition({
           ...updatePositionOptions,
           $element: $numberSegment,
         });
@@ -94,39 +130,25 @@ class Scale {
     });
   }
 
-  private updatePosition(options: {
-    $element:    JQuery<HTMLElement>,
-    shift:       number,
-    min:         number,
-    max:         number,
-    direction:   Direction,
-    orientation: Orientation,
-  }): void {
-    const { $element, shift, min, max, direction, orientation } = options;
-    const { property, style } = getPositionStyles({ shift, min, max, direction, orientation });
-
-    $element.css(property, style);
-  }
-
-  private isFirstOrLast(index: number, length: number): boolean {
-    return index === 0 || index === length - 1;
-  }
-
   private setStyleModifier(lines: boolean): void {
     if (lines) {
-      this.$component.removeClass("just-slider__scale_without-lines");
+      this.$component.removeClass('just-slider__scale_without-lines');
     } else {
-      this.$component.addClass("just-slider__scale_without-lines");
+      this.$component.addClass('just-slider__scale_without-lines');
     }
   }
 
-  private createNumberSegment(value: number, precision: number, isBig = false): JQuery<HTMLElement> {
+  private createNumberSegment(
+    value: number,
+    precision: number,
+    isBig = false
+  ): JQuery<HTMLElement> {
     const converted = getValueBasedOnPrecision(value, precision);
-    const $segment  = $(`<div class="${Scale.NUMBER_CLASS}">${converted}</div>`);
-    $segment.on("click.scale", this.handleScaleNumberClick.bind(this, value));
+    const $segment = $(`<div class="${Scale.NUMBER_CLASS}">${converted}</div>`);
+    $segment.on('click.scale', this.handleScaleNumberClick.bind(this, value));
 
     if (isBig) {
-      $segment.addClass("just-slider__scale-number_big");
+      $segment.addClass('just-slider__scale-number_big');
     }
 
     this.$component.append($segment);
@@ -135,18 +157,18 @@ class Scale {
   }
 
   private handleScaleNumberClick(value: number) {
-    this.handleNumberClick(value);
+    this.handleNumberClick?.(value);
   }
 
-  private createLineSegment(size: LineSegmentSize = NORMAL): JQuery<HTMLElement> {
+  private createLineSegment(size: LineSize = NORMAL): JQuery<HTMLElement> {
     const $segment = $(`<div class="${Scale.LINE_CLASS}"></div>`);
 
     if (size === BIG) {
-      $segment.addClass("just-slider__scale-line_big");
+      $segment.addClass('just-slider__scale-line_big');
     }
 
     if (size === LARGE) {
-      $segment.addClass("just-slider__scale-line_large");
+      $segment.addClass('just-slider__scale-line_large');
     }
 
     this.$component.append($segment);
@@ -156,13 +178,6 @@ class Scale {
 
   private init($parent: JQuery<HTMLElement>): void {
     $parent.append(this.$component);
-  }
-
-  private initHtml(): JQuery<HTMLElement> {
-    return $(`
-      <div class="just-slider__scale">
-      </div>
-    `);
   }
 }
 

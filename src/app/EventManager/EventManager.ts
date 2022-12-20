@@ -1,8 +1,8 @@
-import Subject from "./Subject/Subject";
+import Subject from './Subject/Subject';
 import {
   EventSubjects,
   SliderEvent,
-} from "./types";
+} from './types';
 
 class EventManager {
   private eventsSubjects: EventSubjects;
@@ -20,11 +20,11 @@ class EventManager {
   }
 
   public dispatchEvent(eventName: SliderEvent): void {
-    this.eventsSubjects[eventName]?.observers.forEach(observer => observer());
+    this.eventsSubjects[eventName]?.observers.forEach((observer) => observer());
   }
 
   public dispatchEvents(eventNames: Array<SliderEvent>): void {
-    eventNames.forEach(eventName => {
+    eventNames.forEach((eventName) => {
       this.dispatchEvent(eventName);
     });
   }

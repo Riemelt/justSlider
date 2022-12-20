@@ -8,83 +8,83 @@ import {
   SLIDER_CLICK_ENABLE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
-} from "../EventManager/constants";
-import EventManager from "../EventManager/EventManager";
+} from '../EventManager/constants';
+import EventManager from '../EventManager/EventManager';
 import {
   SliderEvent,
-} from "../EventManager/types";
+} from '../EventManager/types';
 import {
   FORWARD,
   FROM,
   HORIZONTAL,
   TO,
-} from "../Model/constants";
-import Model from "../Model/Model";
+} from '../Model/constants';
+import Model from '../Model/Model';
 import {
   JustSliderOptions,
-} from "../types";
+} from '../types';
 import {
   STEPS,
-} from "../View/Scale/constants";
+} from '../View/Scale/constants';
 import {
   ScaleOptions,
-} from "../View/Scale/types";
-import View      from "../View/View";
-import Presenter from "./Presenter";
+} from '../View/Scale/types';
+import View from '../View/View';
+import Presenter from './Presenter';
 
-describe("Presenter", () => {
-  let presenter:    Presenter;
+describe('Presenter', () => {
+  let presenter: Presenter;
   let eventManager: EventManager;
-  let model:        Model;
-  let view:         View;
+  let model: Model;
+  let view: View;
 
   const onUpdate = jest.fn(() => undefined);
 
   const scale: ScaleOptions = {
-    type:    STEPS,
-    lines:   true,
+    type: STEPS,
+    lines: true,
     numbers: true,
   };
-  
+
   const options: JustSliderOptions = {
     scale,
     onUpdate,
-    from:        0,
-    to:          100,
-    min:         0,
-    max:         100,
-    step:        10,
+    from: 0,
+    to: 100,
+    min: 0,
+    max: 100,
+    step: 10,
     orientation: HORIZONTAL,
-    direction:   FORWARD,
-    range:       false,
-    tooltips:    false,
+    direction: FORWARD,
+    range: false,
+    tooltips: false,
     progressBar: false,
-  }
+  };
 
-  function buildPresenter() {
+  const buildPresenter = function buildPresenter() {
     eventManager = new EventManager();
-    model        = new Model(eventManager);
-    const        state = model.getState();
-    view         = new View(eventManager, state);
-    presenter    = new Presenter(view, model, eventManager);
-  }
+    model = new Model(eventManager);
+    const state = model.getState();
+    view = new View(eventManager, state);
+    presenter = new Presenter(view, model, eventManager);
+  };
 
   beforeEach(() => {
     buildPresenter();
     jest.restoreAllMocks();
   });
 
-  test("Init model", () => {
-    const mockedModelInit = jest.spyOn(model, "init");
+  test('Init model', () => {
+    const mockedModelInit = jest.spyOn(model, 'init');
 
     presenter.init(options);
 
     expect(mockedModelInit).toBeCalled();
   });
 
-  test("Init view", () => {
-    const mockedViewInit           = jest.spyOn(view, "init");
-    const mockedViewInitComponents = jest.spyOn(view, "initComponents");
+  test('Init view', () => {
+    const mockedViewInit = jest.spyOn(view, 'init');
+    const mockedViewInitComponents = jest.spyOn(view, 'initComponents');
 
     presenter.init(options);
 
@@ -92,10 +92,17 @@ describe("Presenter", () => {
     expect(mockedViewInitComponents).toBeCalled();
   });
 
-  test("Creates view handlers", () => {
-    const mockedViewHandleHandler      = jest.spyOn(view, "addCreateHandleHandlers");
-    const mockedViewSliderClickHandler = jest.spyOn(view, "addCreateSliderClickHandler");
-    const mockedViewScaleClickHandler  = jest.spyOn(view, "addCreateScaleClickHandler");
+  test('Creates view handlers', () => {
+    const mockedViewHandleHandler = jest.spyOn(view, 'addCreateHandleHandlers');
+    const mockedViewSliderClickHandler = jest.spyOn(
+      view,
+      'addCreateSliderClickHandler'
+    );
+
+    const mockedViewScaleClickHandler = jest.spyOn(
+      view,
+      'addCreateScaleClickHandler'
+    );
 
     presenter.init(options);
 
@@ -103,11 +110,11 @@ describe("Presenter", () => {
     expect(mockedViewSliderClickHandler).toBeCalled();
     expect(mockedViewScaleClickHandler).toBeCalled();
 
-    const mockedUpdate = jest.spyOn(model, "updateHandle");
+    const mockedUpdate = jest.spyOn(model, 'updateHandle');
 
-    const handleHandler      = mockedViewHandleHandler.mock.calls[0][0];
+    const handleHandler = mockedViewHandleHandler.mock.calls[0][0];
     const sliderClickHandler = mockedViewSliderClickHandler.mock.calls[0][0];
-    const scaleClickHandler  = mockedViewScaleClickHandler.mock.calls[0][0];
+    const scaleClickHandler = mockedViewScaleClickHandler.mock.calls[0][0];
 
     handleHandler(50, FROM);
     sliderClickHandler(50, FROM);
@@ -116,8 +123,8 @@ describe("Presenter", () => {
     expect(mockedUpdate).toBeCalledTimes(3);
   });
 
-  test("Registers events", () => {
-    const mockedRegister = jest.spyOn(eventManager, "registerEvent");
+  test('Registers events', () => {
+    const mockedRegister = jest.spyOn(eventManager, 'registerEvent');
     const events: Array<SliderEvent> = [
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
@@ -131,14 +138,14 @@ describe("Presenter", () => {
     ];
 
     presenter.init(options);
-    
-    events.forEach(event => {
+
+    events.forEach((event) => {
       expect(mockedRegister).toBeCalledWith(event);
     });
   });
 
-  test("Dispatches events on initialization", () => {
-    const mockedDispatch = jest.spyOn(eventManager, "dispatchEvent");
+  test('Dispatches events on initialization', () => {
+    const mockedDispatch = jest.spyOn(eventManager, 'dispatchEvent');
     const events: Array<SliderEvent> = [
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
@@ -152,16 +159,16 @@ describe("Presenter", () => {
 
     presenter.init(options);
 
-    events.forEach(event => {
+    events.forEach((event) => {
       expect(mockedDispatch).toBeCalledWith(event);
     });
   });
 
-  describe("Adds event listeners", () => {
+  describe('Adds event listeners', () => {
     test(HANDLE_FROM_MOVE, () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "updateHandle");
+      const mockedUpdate = jest.spyOn(view, 'updateHandle');
       eventManager.dispatchEvent(HANDLE_FROM_MOVE);
 
       const type = mockedUpdate.mock.calls[0][1];
@@ -172,7 +179,7 @@ describe("Presenter", () => {
     test(HANDLE_TO_MOVE, () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "updateHandle");
+      const mockedUpdate = jest.spyOn(view, 'updateHandle');
       eventManager.dispatchEvent(HANDLE_TO_MOVE);
 
       const type = mockedUpdate.mock.calls[0][1];
@@ -183,7 +190,7 @@ describe("Presenter", () => {
     test(PROGRESS_BAR_UPDATE, () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "updateProgressBar");
+      const mockedUpdate = jest.spyOn(view, 'updateProgressBar');
       eventManager.dispatchEvent(PROGRESS_BAR_UPDATE);
 
       expect(mockedUpdate).toBeCalledTimes(1);
@@ -192,7 +199,7 @@ describe("Presenter", () => {
     test(ORIENTATION_UPDATE, () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "setOrientation");
+      const mockedUpdate = jest.spyOn(view, 'setOrientation');
       eventManager.dispatchEvent(ORIENTATION_UPDATE);
 
       expect(mockedUpdate).toBeCalledTimes(1);
@@ -201,7 +208,7 @@ describe("Presenter", () => {
     test(TOOLTIPS_UPDATE, () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "updateTooltips");
+      const mockedUpdate = jest.spyOn(view, 'updateTooltips');
       eventManager.dispatchEvent(TOOLTIPS_UPDATE);
 
       expect(mockedUpdate).toBeCalledTimes(1);
@@ -210,7 +217,7 @@ describe("Presenter", () => {
     test(SLIDER_CLICK_ENABLE, () => {
       presenter.init(options);
 
-      const mockedHandlerSwitch = jest.spyOn(view, "setSliderClickHandler");
+      const mockedHandlerSwitch = jest.spyOn(view, 'setSliderClickHandler');
       eventManager.dispatchEvent(SLIDER_CLICK_ENABLE);
 
       expect(mockedHandlerSwitch).toBeCalledTimes(1);
@@ -219,7 +226,7 @@ describe("Presenter", () => {
     test(SLIDER_CLICK_DISABLE, () => {
       presenter.init(options);
 
-      const mockedHandlerSwitch = jest.spyOn(view, "removeSliderClickHandler");
+      const mockedHandlerSwitch = jest.spyOn(view, 'removeSliderClickHandler');
       eventManager.dispatchEvent(SLIDER_CLICK_DISABLE);
 
       expect(mockedHandlerSwitch).toBeCalledTimes(1);
@@ -237,15 +244,15 @@ describe("Presenter", () => {
     test(SCALE_UPDATE, () => {
       presenter.init(options);
 
-      const mockedUpdate = jest.spyOn(view, "updateScale");
+      const mockedUpdate = jest.spyOn(view, 'updateScale');
       eventManager.dispatchEvent(SCALE_UPDATE);
 
       expect(mockedUpdate).toBeCalledTimes(1);
     });
   });
 
-  test("Updates a handle", () => {
-    const mockedUpdate = jest.spyOn(model, "updateHandle");
+  test('Updates a handle', () => {
+    const mockedUpdate = jest.spyOn(model, 'updateHandle');
 
     presenter.init(options);
     presenter.updateHandle(FROM, 50);
@@ -253,8 +260,8 @@ describe("Presenter", () => {
     expect(mockedUpdate).toBeCalledWith(50, FROM);
   });
 
-  test("Updates options", () => {
-    const mockedUpdate = jest.spyOn(model, "updateOptions");
+  test('Updates options', () => {
+    const mockedUpdate = jest.spyOn(model, 'updateOptions');
     const newOptions = {
       min: 1000,
       max: 2000,
@@ -266,8 +273,8 @@ describe("Presenter", () => {
     expect(mockedUpdate).toBeCalledWith(newOptions);
   });
 
-  test("Returns slider's html node", () => {
-    const mockedGetHtml = jest.spyOn(view, "getHtml");
+  test('Returns slider\'s html node', () => {
+    const mockedGetHtml = jest.spyOn(view, 'getHtml');
 
     presenter.init(options);
     const $slider = presenter.$getSlider();
@@ -275,8 +282,8 @@ describe("Presenter", () => {
     expect($slider).toEqual(mockedGetHtml.mock.results[0].value);
   });
 
-  test("Returns slider's state", () => {
-    const mockedGetState = jest.spyOn(model, "getState");
+  test('Returns slider\'s state', () => {
+    const mockedGetState = jest.spyOn(model, 'getState');
 
     presenter.init(options);
     const state = presenter.getState();

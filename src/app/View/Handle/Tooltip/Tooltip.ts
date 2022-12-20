@@ -1,12 +1,19 @@
 import {
   getValueBasedOnPrecision,
-} from "../../utilities/utilities";
+} from '../../utilities/utilities';
 
 class Tooltip {
   private $component: JQuery<HTMLElement>;
 
+  static initHtml(): JQuery<HTMLElement> {
+    return $(`
+      <div class="just-slider__tooltip">
+      </div>
+    `);
+  }
+
   constructor($parent: JQuery<HTMLElement>) {
-    this.$component = this.initHtml();
+    this.$component = Tooltip.initHtml();
     this.init($parent);
   }
 
@@ -21,13 +28,6 @@ class Tooltip {
 
   private init($parent: JQuery<HTMLElement>): void {
     $parent.append(this.$component);
-  }
-
-  private initHtml(): JQuery<HTMLElement> {
-    return $(`
-      <div class="just-slider__tooltip">
-      </div>
-    `);
   }
 }
 

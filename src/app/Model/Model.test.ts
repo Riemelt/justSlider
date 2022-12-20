@@ -6,20 +6,20 @@ import {
   SCALE_UPDATE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
-} from "../EventManager/constants";
-import EventManager from "../EventManager/EventManager";
+} from '../EventManager/constants';
+import EventManager from '../EventManager/EventManager';
 import {
   SliderEvent,
-} from "../EventManager/types";
+} from '../EventManager/types';
 import {
   Options,
-} from "../types";
+} from '../types';
 import {
   LINE,
   NUMBER,
   SET,
   STEPS,
-} from "../View/Scale/constants";
+} from '../View/Scale/constants';
 import {
   BACKWARD,
   FORWARD,
@@ -27,30 +27,30 @@ import {
   HORIZONTAL,
   TO,
   VERTICAL,
-} from "./constants";
-import Model from "./Model";
+} from './constants';
+import Model from './Model';
 
 
-describe("Model", () => {
+describe('Model', () => {
   let model: Model;
   let eventManager: EventManager;
-  
+
   beforeEach(() => {
     eventManager = new EventManager();
-    model        = new Model(eventManager);
+    model = new Model(eventManager);
   });
 
-  test("Returns state", () => {
-    const options:    Options = {
-      from:        200,
-      to:          250,
-      step:        10,
-      min:         -100,
-      max:         300,
+  test('Returns state', () => {
+    const options: Options = {
+      from: 200,
+      to: 250,
+      step: 10,
+      min: -100,
+      max: 300,
       orientation: HORIZONTAL,
-      direction:   FORWARD,
-      range:       true,
-      tooltips:    false,
+      direction: FORWARD,
+      range: true,
+      tooltips: false,
       progressBar: true,
     };
 
@@ -59,8 +59,8 @@ describe("Model", () => {
 
     expect(state).toBeDefined();
   });
-  
-  test("Init with default values", () => {
+
+  test('Init with default values', () => {
     model.init();
     const state = model.getState();
 
@@ -78,8 +78,8 @@ describe("Model", () => {
     expect(state.precision).toBeDefined();
   });
 
-  describe("Tooltips", () => {
-    test("Updates tooltips", () => {
+  describe('Tooltips', () => {
+    test('Updates tooltips', () => {
       model.init({ tooltips: false });
       model.updateOptions({ tooltips: true });
 
@@ -88,14 +88,14 @@ describe("Model", () => {
       expect(state.tooltips).toBe(true);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
       const events: Array<SliderEvent> = [TOOLTIPS_UPDATE, SLIDER_UPDATE];
 
       model.init({ tooltips: false });
       model.updateOptions({ tooltips: true });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
@@ -103,8 +103,8 @@ describe("Model", () => {
     });
   });
 
-  describe("Progress bar", () => {
-    test("Updates progress bar", () => {
+  describe('Progress bar', () => {
+    test('Updates progress bar', () => {
       model.init({ progressBar: false });
       model.updateOptions({ progressBar: true });
 
@@ -113,14 +113,14 @@ describe("Model", () => {
       expect(state.progressBar).toBe(true);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
       const events: Array<SliderEvent> = [PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
 
       model.init({ progressBar: false });
       model.updateOptions({ progressBar: true });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
@@ -128,8 +128,8 @@ describe("Model", () => {
     });
   });
 
-  describe("Direction", () => {
-    test("Updates direction", () => {
+  describe('Direction', () => {
+    test('Updates direction', () => {
       model.init({ direction: FORWARD });
       model.updateOptions({ direction: BACKWARD });
 
@@ -138,14 +138,20 @@ describe("Model", () => {
       expect(state.direction).toBe(BACKWARD);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<SliderEvent> = [
+        HANDLE_FROM_MOVE,
+        HANDLE_TO_MOVE,
+        PROGRESS_BAR_UPDATE,
+        SCALE_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ direction: FORWARD });
       model.updateOptions({ direction: BACKWARD });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
@@ -153,8 +159,8 @@ describe("Model", () => {
     });
   });
 
-  describe("Orientation", () => {
-    test("Updates orientation", () => {
+  describe('Orientation', () => {
+    test('Updates orientation', () => {
       model.init({ orientation: HORIZONTAL });
       model.updateOptions({ orientation: VERTICAL });
 
@@ -163,14 +169,20 @@ describe("Model", () => {
       expect(state.orientation).toBe(VERTICAL);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = [ORIENTATION_UPDATE, HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<SliderEvent> = [
+        ORIENTATION_UPDATE,
+        HANDLE_FROM_MOVE,
+        HANDLE_TO_MOVE,
+        PROGRESS_BAR_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ orientation: HORIZONTAL });
       model.updateOptions({ orientation: VERTICAL });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
@@ -178,8 +190,8 @@ describe("Model", () => {
     });
   });
 
-  describe("Range", () => {
-    test("Updates range", () => {
+  describe('Range', () => {
+    test('Updates range', () => {
       model.init({ range: false });
       model.updateOptions({ range: true });
 
@@ -188,58 +200,65 @@ describe("Model", () => {
       expect(state.range).toBe(true);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = [HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<SliderEvent> = [
+        HANDLE_TO_MOVE,
+        PROGRESS_BAR_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ range: false });
       model.updateOptions({ range: true });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
       mockedDispatcher.mockRestore();
     });
 
-    test("Adjust HandleTo value when switching range to true, if it's not valid", () => {
-      const initOptions = {
-        from:  50,
-        to:    70,
-        min:   0,
-        max:   100,
-        range: false,
-      };
+    test(
+      'Adjust HandleTo value when switching range to true, if it\'s not valid',
+      () => {
+        const initOptions = {
+          from: 50,
+          to: 70,
+          min: 0,
+          max: 100,
+          range: false,
+        };
 
-      model.init(initOptions);
-      model.updateHandle(80, FROM);
+        model.init(initOptions);
+        model.updateHandle(80, FROM);
 
-      model.updateOptions({ range: true });
-      const state = model.getState();
+        model.updateOptions({ range: true });
+        const state = model.getState();
 
-      expect(state.to).toBeGreaterThanOrEqual(80);
-    });
+        expect(state.to).toBeGreaterThanOrEqual(80);
+      }
+    );
   });
 
-  describe("Min and max", () => {
-    test("Swaps values if min is greater than max", () => {
+  describe('Min and max', () => {
+    test('Swaps values if min is greater than max', () => {
       model.init({ min: 20, max: 0 });
       const state = model.getState();
 
       expect(state.min).toBe(0);
       expect(state.max).toBe(20);
-    })
+    });
 
-    test("Adjust step value on update, if it's not valid", () => {
-      model.init({ min: 0, max: 100 , step: 10});
+    test('Adjust step value on update, if it\'s not valid', () => {
+      model.init({ min: 0, max: 100, step: 10 });
       model.updateOptions({ max: 5 });
 
       const state = model.getState();
 
       expect(state.step).toBeLessThanOrEqual(5);
-    })
+    });
 
-    test("Adjust handle values on update, if they are not valid", () => {
+    test('Adjust handle values on update, if they are not valid', () => {
       model.init({ min: 0, max: 100, from: 20, to: 50, range: true });
       model.updateOptions({ min: 30, max: 40 });
 
@@ -247,26 +266,18 @@ describe("Model", () => {
 
       expect(state.from).toBeGreaterThanOrEqual(30);
       expect(state.to).toBeLessThanOrEqual(40);
-    })
+    });
 
-    test("Updates min", () => {
-      const stateBefore = model.getState();
-      console.log(stateBefore);
-
+    test('Updates min', () => {
       model.init({ min: 20 });
-
-      const stateAfterInit = model.getState();
-      console.log(stateAfterInit);
-
       model.updateOptions({ min: 50 });
 
       const state = model.getState();
-      console.log(state);
 
       expect(state.min).toBe(50);
     });
 
-    test("Updates max", () => {
+    test('Updates max', () => {
       model.init({ max: 120 });
       model.updateOptions({ max: 150 });
 
@@ -275,14 +286,20 @@ describe("Model", () => {
       expect(state.max).toBe(150);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<SliderEvent> = [
+        HANDLE_FROM_MOVE,
+        HANDLE_TO_MOVE,
+        PROGRESS_BAR_UPDATE,
+        SCALE_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ min: 20 });
       model.updateOptions({ min: 50 });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
@@ -290,15 +307,15 @@ describe("Model", () => {
     });
   });
 
-  describe("Step", () => {
-    test("Cannot be greater than slider range", () => {
+  describe('Step', () => {
+    test('Cannot be greater than slider range', () => {
       model.init({ min: 0, max: 10, step: 11 });
       const state = model.getState();
 
       expect(state.step).toBeLessThanOrEqual(10);
     });
 
-    test("Cannot be less than 0 or equal", () => {
+    test('Cannot be less than 0 or equal', () => {
       model.init({ min: 0, max: 10, step: 0 });
 
       let state = model.getState();
@@ -309,7 +326,7 @@ describe("Model", () => {
       expect(state.step).toBeGreaterThan(0);
     });
 
-    test("Adjust handle values on update, if they are not valid", () => {
+    test('Adjust handle values on update, if they are not valid', () => {
       model.init({ min: 0, max: 100, from: 20, to: 50, step: 10, range: true });
       model.updateOptions({ step: 3 });
 
@@ -319,7 +336,7 @@ describe("Model", () => {
       expect(to % 3).toBe(0);
     });
 
-    test("Updates step", () => {
+    test('Updates step', () => {
       model.init({ step: 10 });
       model.updateOptions({ step: 8 });
 
@@ -328,14 +345,20 @@ describe("Model", () => {
       expect(state.step).toBe(8);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<SliderEvent> = [
+        HANDLE_FROM_MOVE,
+        HANDLE_TO_MOVE,
+        PROGRESS_BAR_UPDATE,
+        SCALE_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ step: 10 });
       model.updateOptions({ step: 8 });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
@@ -343,7 +366,7 @@ describe("Model", () => {
     });
   });
 
-  describe("Handles", () => {
+  describe('Handles', () => {
     const options: Options = {
       min: 0,
       max: 100,
@@ -351,26 +374,26 @@ describe("Model", () => {
       range: false,
     };
 
-    test("Cannot be greater than max", () => {
+    test('Cannot be greater than max', () => {
       model.init({ ...options, from: 120 });
       const { from } = model.getState();
       expect(from).toBeLessThanOrEqual(100);
     });
 
-    test("Cannot be less than min", () => {
+    test('Cannot be less than min', () => {
       model.init({ ...options, from: -120 });
       const { from } = model.getState();
       expect(from).toBeGreaterThanOrEqual(0);
     });
 
-    test("Adjust value depending on step property (no remainder when divided by step)", () => {
+    test('Adjust value depending on step property (no remainder)', () => {
       model.init({ ...options, step: 3, from: 10 });
 
       const { from } = model.getState();
       expect(from % 3).toBe(0);
     });
 
-    test("Doesn't adjust value on update if it's not needed", () => {
+    test('Doesn\'t adjust value on update if it\'s not needed', () => {
       model.init({ ...options, step: 3 });
       model.updateHandle(10, FROM, false);
 
@@ -378,14 +401,14 @@ describe("Model", () => {
       expect(from).toBe(10);
     });
 
-    test("HandleFrom cannot be greater than HandleTo", () => {
+    test('HandleFrom cannot be greater than HandleTo', () => {
       model.init({ ...options, range: true, from: 10, to: 5 });
       const { from, to } = model.getState();
 
       expect(from).toBeLessThanOrEqual(to);
     });
 
-    test("If range is false, HandleFrom - HandleTo collision is disabled", () => {
+    test('If range is false, handles collision is disabled', () => {
       model.init({ ...options, range: false, from: 10, to: 5 });
       const { from, to } = model.getState();
 
@@ -393,7 +416,7 @@ describe("Model", () => {
       expect(from).toBe(10);
     });
 
-    test("Updates HandleFrom", () => {
+    test('Updates HandleFrom', () => {
       model.init({ ...options, from: 10 });
       model.updateHandle(20, FROM);
 
@@ -402,7 +425,7 @@ describe("Model", () => {
       expect(state.from).toBe(20);
     });
 
-    test("Updates HandleTo", () => {
+    test('Updates HandleTo', () => {
       model.init({ ...options, range: true, from: 0, to: 10 });
       model.updateHandle(50, TO);
 
@@ -411,7 +434,7 @@ describe("Model", () => {
       expect(state.to).toBe(50);
     });
 
-    test("Updates handles with universal update method", () => {
+    test('Updates handles with universal update method', () => {
       model.init({ ...options, range: true, from: 0, to: 10 });
       model.updateOptions({ from: 25, to: 50 });
 
@@ -421,15 +444,20 @@ describe("Model", () => {
       expect(state.to).toBe(50);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<SliderEvent> = [
+        HANDLE_FROM_MOVE,
+        HANDLE_TO_MOVE,
+        PROGRESS_BAR_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ ...options, range: true, from: 0, to: 10 });
       model.updateHandle(25, FROM);
       model.updateHandle(50, TO);
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
@@ -437,8 +465,8 @@ describe("Model", () => {
     });
   });
 
-  describe("Scale", () => {
-    test("Init with default values", () => {
+  describe('Scale', () => {
+    test('Init with default values', () => {
       model.init({ scale: {} });
 
       const { scale } = model.getState();
@@ -450,7 +478,7 @@ describe("Model", () => {
       expect(scale?.lines).toBeDefined();
     });
 
-    test("Updates scale", () => {
+    test('Updates scale', () => {
       model.init({ scale: { type: STEPS } });
       model.updateOptions({ scale: { type: SET } });
 
@@ -459,88 +487,87 @@ describe("Model", () => {
       expect(state.scale?.type).toBe(SET);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
       const events: Array<SliderEvent> = [SCALE_UPDATE, SLIDER_UPDATE];
 
       model.init({ scale: { type: STEPS } });
       model.updateOptions({ scale: { type: SET } });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 
       mockedDispatcher.mockRestore();
     });
 
-    test("Density cannot be less than 0", () => {
+    test('Density cannot be less than 0', () => {
       model.init({ scale: {
         density: -30,
-      }});
+      } });
 
       const state = model.getState();
       expect(state.scale?.density).toBeGreaterThanOrEqual(0);
     });
 
-    test("Density cannot be greater than 100", () => {
+    test('Density cannot be greater than 100', () => {
       model.init({ scale: {
         density: 200,
-      }});
+      } });
 
       const state = model.getState();
       expect(state.scale?.density).toBeLessThanOrEqual(100);
     });
 
-    test("Set should contain 0 and 100 in the beginning and in the end respectively", () => {
+    test('Set should contain 0 and 100 in the beginning and in the end', () => {
       model.init({ scale: {
         set: [50],
-      }});
+      } });
 
       const state = model.getState();
       expect(state.scale?.set).toEqual([0, 50, 100]);
     });
 
-    test("Set values cannot be greater than 100 or less than 0", () => {
+    test('Set values cannot be greater than 100 or less than 0', () => {
       model.init({ scale: {
         set: [-20, 50, 300],
-      }});
+      } });
 
       const state = model.getState();
 
       expect(state.scale?.set.length).toBeGreaterThan(0);
-      state.scale?.set.forEach(value => {
+      state.scale?.set.forEach((value) => {
         expect(value).toBeLessThanOrEqual(100);
         expect(value).toBeGreaterThanOrEqual(0);
       });
     });
 
-    test("Set values are unique", () => {
+    test('Set values are unique', () => {
       model.init({ scale: {
         set: [10, 20, 10],
-      }});
+      } });
 
       const state = model.getState();
       expect(state.scale?.set).toEqual([0, 10, 20, 100]);
     });
 
-    test("Set values are sorted", () => {
+    test('Set values are sorted', () => {
       model.init({ scale: {
         set: [10, 20, 15],
-      }});
+      } });
 
       const state = model.getState();
       expect(state.scale?.set).toEqual([0, 10, 15, 20, 100]);
     });
 
-    test("Generates segments, steps mode", () => {
-      model.init({
-        min: 0,
+    test('Generates segments, steps mode', () => {
+      model.init({ min: 0,
         max: 20,
         step: 10,
         scale: {
           type: STEPS,
           density: 15,
-      }});
+        } });
 
       const state = model.getState();
       expect(state.scale?.segments).toEqual([
@@ -583,16 +610,15 @@ describe("Model", () => {
       ]);
     });
 
-    test("Generates segments, set mode", () => {
-      model.init({
-        min: 0,
+    test('Generates segments, set mode', () => {
+      model.init({ min: 0,
         max: 100,
         step: 10,
         scale: {
           type: SET,
           density: 15,
           set: [0, 20, 80, 100],
-      }});
+        } });
 
       const state = model.getState();
 
@@ -637,8 +663,8 @@ describe("Model", () => {
     });
   });
 
-  describe("Precision", () => {
-    test("Updates precision", () => {
+  describe('Precision', () => {
+    test('Updates precision', () => {
       model.init({ precision: 1 });
       model.updateOptions({ precision: 2 });
 
@@ -647,14 +673,18 @@ describe("Model", () => {
       expect(state.precision).toBe(2);
     });
 
-    test("Dispatches events on update", () => {
-      const mockedDispatcher = jest.spyOn(eventManager, "dispatchEvent");
-      const events: Array<SliderEvent> = [TOOLTIPS_UPDATE, SCALE_UPDATE, SLIDER_UPDATE];
+    test('Dispatches events on update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<SliderEvent> = [
+        TOOLTIPS_UPDATE,
+        SCALE_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ precision: 1 });
       model.updateOptions({ precision: 2 });
 
-      events.forEach(event => {
+      events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
       });
 

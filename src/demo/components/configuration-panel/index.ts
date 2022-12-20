@@ -1,4 +1,4 @@
-import "./configuration-panel.scss";
+import './configuration-panel.scss';
 
-import ConfigurationPanel from "./ConfigurationPanel";
+import ConfigurationPanel from './ConfigurationPanel';
 export default ConfigurationPanel;

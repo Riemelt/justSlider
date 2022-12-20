@@ -1,25 +1,25 @@
 class InputField {
-  private className:  string;
+  private className: string;
   private $component: JQuery<HTMLElement>;
-  private $input:     JQuery<HTMLElement>;
-  private options:    InputFieldOptions;
+  private $input: JQuery<HTMLElement>;
+  private options: InputFieldOptions;
 
   constructor($parent: JQuery<HTMLElement>, options: InputFieldOptions = {}) {
-    this.className  = "input-field";
-    this.options    = options;
+    this.className = 'input-field';
+    this.options = options;
     this.$component = $parent.find(`.js-${this.className}`);
-    this.$input     = this.$component.find(`.js-${this.className}__input`);
+    this.$input = this.$component.find(`.js-${this.className}__input`);
     this.render();
   }
 
   public disable(): void {
     this.$component.addClass(`${this.className}_disabled`);
-    this.$input.prop("disabled", true);
+    this.$input.prop('disabled', true);
   }
 
   public enable(): void {
     this.$component.removeClass(`${this.className}_disabled`);
-    this.$input.prop("disabled", false);
+    this.$input.prop('disabled', false);
   }
 
   public update({
@@ -30,11 +30,11 @@ class InputField {
     this.$input.val(value);
 
     if (step !== undefined) {
-      this.$input.prop("step", step);
+      this.$input.prop('step', step);
     }
 
     if (min !== undefined) {
-      this.$input.prop("min", min);
+      this.$input.prop('min', min);
     }
   }
 
@@ -43,7 +43,7 @@ class InputField {
   }
 
   private setHandlers(): void {
-    this.$input.on("change.input-field", this.handleInputChange.bind(this));
+    this.$input.on('change.input-field', this.handleInputChange.bind(this));
   }
 
   private handleInputChange(event: Event): void {

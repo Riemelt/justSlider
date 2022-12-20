@@ -1,191 +1,201 @@
-import EventManager   from "../EventManager/EventManager";
+import EventManager from '../EventManager/EventManager';
 import {
   State,
-}      from "../types";
+} from '../types';
 import {
   FORWARD,
   FROM,
   HORIZONTAL,
   TO,
   VERTICAL,
-} from "../Model/constants";
-import View           from "./View";
-import Handle         from "./Handle/Handle";
-import ProgressBar    from "./ProgressBar/ProgressBar";
-import Scale          from "./Scale/Scale";
+} from '../Model/constants';
+import View from './View';
+import Handle from './Handle/Handle';
+import ProgressBar from './ProgressBar/ProgressBar';
+import Scale from './Scale/Scale';
 import {
   ScaleState,
-} from "./Scale/types";
+} from './Scale/types';
 import {
   STEPS,
-} from "./Scale/constants";
-import * as Utilities from "./utilities/utilities";
+} from './Scale/constants';
+import * as Utilities from './utilities/utilities';
 
-describe("View", () => {
+describe('View', () => {
   let eventManager: EventManager;
-  let view:         View;
+  let view: View;
 
   const scale: ScaleState = {
     segments: [],
-    lines:    true,
-    numbers:  true,
-    type:     STEPS,
-    set:      [],
-    density:  1,
+    lines: true,
+    numbers: true,
+    type: STEPS,
+    set: [],
+    density: 1,
   };
 
   const state: State = {
     scale,
-    from:        200,
-    to:          250,
-    step:        10,
-    min:         -100,
-    max:         300,
+    from: 200,
+    to: 250,
+    step: 10,
+    min: -100,
+    max: 300,
     orientation: HORIZONTAL,
-    direction:   FORWARD,
-    range:       true,
-    tooltips:    false,
+    direction: FORWARD,
+    range: true,
+    tooltips: false,
     progressBar: true,
-    precision:   0,
+    precision: 0,
   };
 
-  function generateView(state: State) {
+  const generateView = function generateView(state: State) {
     view = new View(eventManager, state);
-  }
+  };
 
   beforeEach(() => {
     eventManager = new EventManager();
   });
 
-  describe("On initialization", () => {
-    test("Generates html node", () => {
+  describe('On initialization', () => {
+    test('Generates html node', () => {
       generateView(state);
       const $component = view.getHtml();
-      expect($component.is(".just-slider"));
-  
-      const $main = $component.find(".just-slider__main");
+      expect($component.is('.just-slider'));
+
+      const $main = $component.find('.just-slider__main');
       expect($main.length).toBe(1);
     });
   });
 
-  test("Sets vertical orientation", () => {
+  test('Sets vertical orientation', () => {
     generateView(state);
     view.setOrientation(VERTICAL);
 
     const $component = view.getHtml();
-    expect($component.hasClass("just-slider_vertical")).toBe(true);
+    expect($component.hasClass('just-slider_vertical')).toBe(true);
   });
 
-  test("Unsets vertical orientation", () => {
+  test('Unsets vertical orientation', () => {
     generateView(state);
     view.setOrientation(VERTICAL);
     view.setOrientation(HORIZONTAL);
 
     const $component = view.getHtml();
-    expect($component.hasClass("just-slider_vertical")).toBe(false);
+    expect($component.hasClass('just-slider_vertical')).toBe(false);
   });
 
-  describe("Handles", () => {
-    describe("Updates HandleTo", () => {
-      test("Creates and updates HandleTo if range is true", () => {
+  describe('Handles', () => {
+    describe('Updates HandleTo', () => {
+      test('Creates and updates HandleTo if range is true', () => {
         generateView(state);
-        const mockedUpdate     = jest.spyOn(Handle.prototype, "update");
-        const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandlePointermoveHandler");
-  
+        const mockedUpdate = jest.spyOn(Handle.prototype, 'update');
+        const mockedSetHandler = jest.spyOn(
+          Handle.prototype,
+          'setHandlePointermoveHandler',
+        );
+
         view.addCreateHandleHandlers(() => undefined);
         view.updateHandle(state, TO);
-  
+
         expect(mockedSetHandler).toBeCalledTimes(1);
         expect(mockedUpdate).toBeCalledTimes(1);
-  
+
         mockedSetHandler.mockRestore();
         mockedUpdate.mockRestore();
       });
-  
-      test("Deletes HandleTo if range is false", () => {
+
+      test('Deletes HandleTo if range is false', () => {
         generateView(state);
-        const mockedHandleDelete = jest.spyOn(view, "deleteHandle");
-  
+        const mockedHandleDelete = jest.spyOn(view, 'deleteHandle');
+
         view.addCreateHandleHandlers(() => undefined);
         view.updateHandle(state, TO);
-        view.updateHandle({ ...state, range: false}, TO);
-  
+        view.updateHandle({ ...state, range: false }, TO);
+
         expect(mockedHandleDelete).toBeCalledTimes(1);
         expect(mockedHandleDelete).toBeCalledWith(TO);
-  
+
         mockedHandleDelete.mockRestore();
       });
     });
 
-    test("Creates handle mousemove handler", () => {
+    test('Creates handle mousemove handler', () => {
       generateView(state);
       const mockedHandler = jest.fn(() => undefined);
-      const mockedSetHandler = jest.spyOn(Handle.prototype, "setHandlePointermoveHandler");
-      const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
-  
+      const mockedSetHandler = jest.spyOn(
+        Handle.prototype,
+        'setHandlePointermoveHandler'
+      );
+
+      const mockedConvertPosition = jest.spyOn(
+        Utilities,
+        'convertViewPositionToModel'
+      );
+
       view.addCreateHandleHandlers(mockedHandler);
       view.initComponents();
 
       const $component = view.getHtml();
-      const $justSlider = $component.find(".just-slider__main");
+      const $justSlider = $component.find('.just-slider__main');
 
-      const mockedOffset = jest.spyOn(jQuery.fn, "offset").mockImplementation(() => {
-        return { left: 150, top: 250, };
-      });
+      const mockedOffset = jest
+        .spyOn(jQuery.fn, 'offset')
+        .mockImplementation(() => ({ left: 150, top: 250 }));
 
       $justSlider.width(1000);
-  
+
       const handler = mockedSetHandler.mock.calls[0][0];
       handler(250, FROM);
 
       expect(mockedConvertPosition).toBeCalledWith({
-        position:    250,
-        shift:       150,
-        length:      1000,
-        min:         state.min,
-        max:         state.max,
+        position: 250,
+        shift: 150,
+        length: 1000,
+        min: state.min,
+        max: state.max,
         orientation: state.orientation,
-        direction:   state.direction,
+        direction: state.direction,
       });
 
       const convertedPosition = mockedConvertPosition.mock.results[0].value;
-  
+
       expect(mockedHandler).toBeCalledWith(convertedPosition, FROM);
-  
+
       mockedOffset.mockRestore();
       mockedConvertPosition.mockRestore();
       mockedSetHandler.mockRestore();
     });
-  
-    test("Updates HandleFrom", () => {
+
+    test('Updates HandleFrom', () => {
       generateView(state);
-      const mockedUpdate = jest.spyOn(Handle.prototype, "update");
-  
+      const mockedUpdate = jest.spyOn(Handle.prototype, 'update');
+
       view.addCreateHandleHandlers(() => undefined);
       view.initComponents();
       view.updateHandle(state, FROM);
-  
+
       expect(mockedUpdate).toBeCalledTimes(1);
       mockedUpdate.mockRestore();
     });
 
-    test("Deletes a handle", () => { 
+    test('Deletes a handle', () => {
       generateView(state);
-      const mockedHandleDelete = jest.spyOn(Handle.prototype, "delete");
-  
+      const mockedHandleDelete = jest.spyOn(Handle.prototype, 'delete');
+
       view.addCreateHandleHandlers(() => undefined);
       view.initComponents();
       view.deleteHandle(FROM);
-  
+
       expect(mockedHandleDelete).toBeCalledTimes(1);
-  
+
       mockedHandleDelete.mockRestore();
     });
   });
 
-  test("Updates tooltips", () => {
+  test('Updates tooltips', () => {
     generateView(state);
-    const mockedUpdateTooltip = jest.spyOn(Handle.prototype, "updateTooltip");
+    const mockedUpdateTooltip = jest.spyOn(Handle.prototype, 'updateTooltip');
 
     view.addCreateHandleHandlers(() => undefined);
     view.initComponents();
@@ -198,47 +208,47 @@ describe("View", () => {
     mockedUpdateTooltip.mockRestore();
   });
 
-  describe("Progress bar", () => {
-    test("Deletes progress bar", () => {
+  describe('Progress bar', () => {
+    test('Deletes progress bar', () => {
       generateView(state);
-      const mockedDelete = jest.spyOn(ProgressBar.prototype, "delete");
+      const mockedDelete = jest.spyOn(ProgressBar.prototype, 'delete');
 
       view.updateProgressBar(state);
-      view.updateProgressBar({ ...state, progressBar: false, });
+      view.updateProgressBar({ ...state, progressBar: false });
 
       expect(mockedDelete).toBeCalledTimes(1);
 
       mockedDelete.mockRestore();
     });
 
-    test("Updates progress bar", () => {
+    test('Updates progress bar', () => {
       generateView(state);
-      const mockedUpdate = jest.spyOn(ProgressBar.prototype, "update");
+      const mockedUpdate = jest.spyOn(ProgressBar.prototype, 'update');
 
       view.updateProgressBar(state);
 
       expect(mockedUpdate).toBeCalledTimes(1);
 
       mockedUpdate.mockRestore();
-    })
+    });
   });
 
-  describe("Scale", () => {
-    test("Deletes scale", () => {
+  describe('Scale', () => {
+    test('Deletes scale', () => {
       generateView(state);
-      const mockedDelete = jest.spyOn(Scale.prototype, "delete");
+      const mockedDelete = jest.spyOn(Scale.prototype, 'delete');
 
       view.updateScale(state);
-      view.updateScale({ ...state, scale: null, });
+      view.updateScale({ ...state, scale: null });
 
       expect(mockedDelete).toBeCalledTimes(1);
 
       mockedDelete.mockRestore();
     });
 
-    test("Updates scale", () => {
+    test('Updates scale', () => {
       generateView(state);
-      const mockedUpdate = jest.spyOn(Scale.prototype, "update");
+      const mockedUpdate = jest.spyOn(Scale.prototype, 'update');
 
       view.updateScale(state);
 
@@ -247,10 +257,13 @@ describe("View", () => {
       mockedUpdate.mockRestore();
     });
 
-    test("Creates click handler", () => {
+    test('Creates click handler', () => {
       generateView(state);
-      const mockedHandler    = jest.fn(() => undefined);
-      const mockedSetHandler = jest.spyOn(Scale.prototype, "setNumberClickHandler");
+      const mockedHandler = jest.fn(() => undefined);
+      const mockedSetHandler = jest.spyOn(
+        Scale.prototype,
+        'setNumberClickHandler'
+      );
 
       view.addCreateScaleClickHandler(mockedHandler);
       view.updateScale(state);
@@ -264,23 +277,23 @@ describe("View", () => {
     });
   });
 
-  describe("Slider click", () => {
-    test("Enables slider click handler and adds animation", () => {
+  describe('Slider click', () => {
+    test('Enables slider click handler and adds animation', () => {
       generateView(state);
       const handler = jest.fn(() => undefined);
       view.addCreateSliderClickHandler(handler);
       view.setSliderClickHandler();
 
       const $component = view.getHtml();
-      const $justSlider = $component.find(".just-slider__main");
-  
-      $justSlider.trigger("pointerdown");
+      const $justSlider = $component.find('.just-slider__main');
 
-      expect($component.hasClass("just-slider_animated")).toBe(true);
+      $justSlider.trigger('pointerdown');
+
+      expect($component.hasClass('just-slider_animated')).toBe(true);
       expect(handler).toBeCalledTimes(1);
     });
 
-    test("Disables slider click handler and removes animation", () => {
+    test('Disables slider click handler and removes animation', () => {
       generateView(state);
       const handler = jest.fn(() => undefined);
       view.addCreateSliderClickHandler(handler);
@@ -289,98 +302,110 @@ describe("View", () => {
       view.removeSliderClickHandler();
 
       const $component = view.getHtml();
-      const $justSlider = $component.find(".just-slider__main");
-  
-      $justSlider.trigger("pointerdown");
+      const $justSlider = $component.find('.just-slider__main');
 
-      expect($component.hasClass("just-slider_animated")).toBe(false);
+      $justSlider.trigger('pointerdown');
+
+      expect($component.hasClass('just-slider_animated')).toBe(false);
       expect(handler).toBeCalledTimes(0);
     });
 
-    test("Handles click in horizontal mode, HandleFrom is closer to click coordinates", () => {
-      generateView(state);
-      const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
-      const handler = jest.fn(() => undefined);
+    test(
+      'Handles click in horizontal mode, HandleFrom is closer to click pos',
+      () => {
+        generateView(state);
+        const mockedConvertPosition = jest.spyOn(
+          Utilities,
+          'convertViewPositionToModel'
+        );
+        const handler = jest.fn(() => undefined);
 
-      const eventPointerdown = new jQuery.Event("pointerdown", {
-        pageX: 280,
-      });
+        const eventPointerdown = new jQuery.Event('pointerdown', {
+          pageX: 280,
+        });
 
-      view.addCreateSliderClickHandler(handler);
-      view.setSliderClickHandler();
+        view.addCreateSliderClickHandler(handler);
+        view.setSliderClickHandler();
 
-      const $component = view.getHtml();
-      const $justSlider = $component.find(".just-slider__main");
+        const $component = view.getHtml();
+        const $justSlider = $component.find('.just-slider__main');
 
-      const mockedOffset = jest.spyOn(jQuery.fn, "offset").mockImplementation(() => {
-        return { left: 150, top: 250, };
-      });
+        const mockedOffset = jest
+          .spyOn(jQuery.fn, 'offset')
+          .mockImplementation(() => ({ left: 150, top: 250 }));
 
-      $justSlider.width(1000);
-  
-      $justSlider.trigger(eventPointerdown);
+        $justSlider.width(1000);
 
-      expect(mockedConvertPosition).toBeCalledWith({
-        position:    280,
-        shift:       150,
-        length:      1000,
-        min:         state.min,
-        max:         state.max,
-        orientation: state.orientation,
-        direction:   state.direction,
-      });
+        $justSlider.trigger(eventPointerdown);
 
-      const convertedPosition = mockedConvertPosition.mock.results[0].value;
+        expect(mockedConvertPosition).toBeCalledWith({
+          position: 280,
+          shift: 150,
+          length: 1000,
+          min: state.min,
+          max: state.max,
+          orientation: state.orientation,
+          direction: state.direction,
+        });
 
-      expect(handler).toBeCalledWith(convertedPosition, FROM);
+        const convertedPosition = mockedConvertPosition.mock.results[0].value;
 
-      mockedOffset.mockRestore();
-      mockedConvertPosition.mockRestore();
-    });
+        expect(handler).toBeCalledWith(convertedPosition, FROM);
 
-    test("Handles click in vertical mode, HandleTo is closer to click coordinates", () => {
-      const mockedConvertPosition = jest.spyOn(Utilities, "convertViewPositionToModel");
-      const handler = jest.fn(() => undefined);
+        mockedOffset.mockRestore();
+        mockedConvertPosition.mockRestore();
+      }
+    );
 
-      const eventPointerdown = new jQuery.Event("pointerdown", {
-        pageY: 280,
-      });
+    test(
+      'Handles click in vertical mode, HandleTo is closer to click pos',
+      () => {
+        const mockedConvertPosition = jest.spyOn(
+          Utilities,
+          'convertViewPositionToModel'
+        );
+        const handler = jest.fn(() => undefined);
 
-      generateView({
-        ...state,
-        orientation: VERTICAL,
-        from: 0,
-      });
-      view.addCreateSliderClickHandler(handler);
-      view.setSliderClickHandler();
+        const eventPointerdown = new jQuery.Event('pointerdown', {
+          pageY: 280,
+        });
 
-      const $component = view.getHtml();
-      const $justSlider = $component.find(".just-slider__main");
+        generateView({
+          ...state,
+          orientation: VERTICAL,
+          from: 0,
+        });
+        view.addCreateSliderClickHandler(handler);
+        view.setSliderClickHandler();
 
-      const mockedOffset = jest.spyOn(jQuery.fn, "offset").mockImplementation(() => {
-        return { left: 150, top: 250, };
-      });
+        const $component = view.getHtml();
+        const $justSlider = $component.find('.just-slider__main');
 
-      $justSlider.height(1000);
-  
-      $justSlider.trigger(eventPointerdown);
+        const mockedOffset = jest
+          .spyOn(jQuery.fn, 'offset')
+          .mockImplementation(() => ({ left: 150, top: 250 }));
 
-      expect(mockedConvertPosition).toBeCalledWith({
-        position:    280,
-        shift:       250,
-        length:      1000,
-        min:         state.min,
-        max:         state.max,
-        orientation: VERTICAL,
-        direction:   state.direction,
-      });
+        $justSlider.height(1000);
 
-      const convertedPosition = mockedConvertPosition.mock.results[0].value;
+        $justSlider.trigger(eventPointerdown);
 
-      expect(handler).toBeCalledWith(convertedPosition, TO);
+        expect(mockedConvertPosition).toBeCalledWith({
+          position: 280,
+          shift: 250,
+          length: 1000,
+          min: state.min,
+          max: state.max,
+          orientation: VERTICAL,
+          direction: state.direction,
+        });
 
-      mockedOffset.mockRestore();
-      mockedConvertPosition.mockRestore();
-    });
+        const convertedPosition = mockedConvertPosition.mock.results[0].value;
+
+        expect(handler).toBeCalledWith(convertedPosition, TO);
+
+        mockedOffset.mockRestore();
+        mockedConvertPosition.mockRestore();
+      }
+    );
   });
 });

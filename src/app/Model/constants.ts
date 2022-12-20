@@ -1,10 +1,10 @@
-const VERTICAL   = "vertical";
-const HORIZONTAL = "horizontal";
-const FORWARD    = "forward";
-const BACKWARD   = "backward";
+const VERTICAL = 'vertical';
+const HORIZONTAL = 'horizontal';
+const FORWARD = 'forward';
+const BACKWARD = 'backward';
 
-const FROM = "from";
-const TO   = "to";
+const FROM = 'from';
+const TO = 'to';
 
 export {
   VERTICAL,
@@ -13,4 +13,4 @@ export {
   BACKWARD,
   FROM,
   TO,
-}
+};

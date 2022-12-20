@@ -1,13 +1,13 @@
 import {
   JustSliderOptions,
-} from "../../../app/types";
+} from '../../../app/types';
 
 interface SliderDemoOptions {
-  slider:             JustSliderOptions;
+  slider: JustSliderOptions;
   configurationPanel: ConfigurationPanelOptions;
 }
 
 export {
   SliderDemoOptions,
   JustSliderOptions,
-}
+};

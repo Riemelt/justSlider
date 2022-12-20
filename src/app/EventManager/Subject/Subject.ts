@@ -10,7 +10,7 @@ class Subject {
   }
 
   public unsubscribe(observer: () => void): void {
-    this.observers = this.observers.filter(obs => obs !== observer);
+    this.observers = this.observers.filter((obs) => obs !== observer);
   }
 }
 

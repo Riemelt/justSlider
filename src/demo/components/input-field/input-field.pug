@@ -7,12 +7,13 @@ mixin input-field(vars = {})
     } = vars
 
     const className = "input-field"
-    let classNames  = className + ` js-${className}`
+    let classNames = className + ` js-${className}`
 
   div(class=classNames)
     label(class=`${className}__label`)
       span(class=`${className}__title`)= title
-      input(class=`${className}__input js-${className}__input`
-            type=type
-            value=value
-            )
+      input(
+        class=`${className}__input js-${className}__input`
+        type=type
+        value=value
+      )

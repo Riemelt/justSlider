@@ -6,12 +6,12 @@ import {
   NUMBER,
   SET,
   STEPS,
-} from "./constants";
+} from './constants';
 
-type SegmentType = typeof LINE  | typeof NUMBER;
-type ScaleType   = typeof STEPS | typeof SET;
+type SegmentType = typeof LINE | typeof NUMBER;
+type ScaleType = typeof STEPS | typeof SET;
 
-type LineSegmentSize = typeof NORMAL | typeof BIG | typeof LARGE;
+type LineSize = typeof NORMAL | typeof BIG | typeof LARGE;
 
 interface Segment {
   type: SegmentType;
@@ -19,10 +19,10 @@ interface Segment {
 }
 
 interface ScaleOptions {
-  type?:    ScaleType;
-  set?:     Array<number>;
+  type?: ScaleType;
+  set?: Array<number>;
   density?: number;
-  lines?:   boolean;
+  lines?: boolean;
   numbers?: boolean;
 }
 
@@ -30,11 +30,10 @@ type ScaleState = Required<ScaleOptions> & {
   segments: Array<Segment>;
 }
 
-
 export {
-  LineSegmentSize,
+  LineSize,
   Segment,
   ScaleType,
   ScaleOptions,
   ScaleState,
-}
+};

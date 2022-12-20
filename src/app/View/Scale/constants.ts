@@ -1,12 +1,12 @@
-const LINE   = "line";
-const NUMBER = "number";
+const LINE = 'line';
+const NUMBER = 'number';
 
-const SET   = "set";
-const STEPS = "steps";
+const SET = 'set';
+const STEPS = 'steps';
 
-const NORMAL = "normal";
-const BIG    = "big";
-const LARGE   = "large";
+const NORMAL = 'normal';
+const BIG = 'big';
+const LARGE = 'large';
 
 export {
   LINE,
@@ -16,4 +16,4 @@ export {
   NORMAL,
   BIG,
   LARGE,
-}
+};

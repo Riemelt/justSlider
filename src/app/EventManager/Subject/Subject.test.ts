@@ -1,6 +1,6 @@
-import Subject from "./Subject";
+import Subject from './Subject';
 
-describe("Subject", () => {
+describe('Subject', () => {
   let subject: Subject;
   let observer: () => void;
 
@@ -9,13 +9,13 @@ describe("Subject", () => {
     observer = () => undefined;
   });
 
-  test("Subscribes new observer", () => {
+  test('Subscribes new observer', () => {
     subject.subscribe(observer);
 
     expect(subject.observers).toContain(observer);
   });
 
-  test("Unsubscribes observer", () => {
+  test('Unsubscribes observer', () => {
     subject.subscribe(observer);
     subject.unsubscribe(observer);
 

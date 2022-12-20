@@ -4,28 +4,28 @@ include ../toggle/toggle
 mixin configuration-panel(vars = {})
   -
     const {
-      inputMin       = {},
-      inputMax       = {},
-      inputStep      = {},
-      inputFrom      = {},
-      inputTo        = {},
+      inputMin = {},
+      inputMax = {},
+      inputStep = {},
+      inputFrom = {},
+      inputTo = {},
       inputPrecision = {},
       toggleVertical = {},
-      toggleForward  = {},
-      toggleRange    = {},
-      toggleBar      = {},
-      toggleTooltip  = {},
-      toggleScale    = {},
+      toggleForward = {},
+      toggleRange = {},
+      toggleBar = {},
+      toggleTooltip = {},
+      toggleScale = {},
       scale = {
-        inputDensity:  {},
-        toggleType:    {},
+        inputDensity: {},
+        toggleType: {},
         toggleNumbers: {},
-        toggleLines:   {},
+        toggleLines: {},
       },
     } = vars
 
     const className = "configuration-panel"
-    let classNames  = className + ` js-${className}`
+    let classNames = className + ` js-${className}`
 
   ul(class=classNames)
     li(class=`${className}__item`)

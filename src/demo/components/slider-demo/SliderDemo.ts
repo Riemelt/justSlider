@@ -1,7 +1,7 @@
 import {
   JustSlider,
   State,
-} from "../../../app/types";
+} from '../../../app/types';
 import {
   BACKWARD,
   FORWARD,
@@ -9,34 +9,37 @@ import {
   HORIZONTAL,
   TO,
   VERTICAL,
-} from "../../../app/Model/constants";
+} from '../../../app/Model/constants';
 import {
   SET,
   STEPS,
-} from "../../../app/View/Scale/constants";
-import ConfigurationPanel    from "../configuration-panel";
+} from '../../../app/View/Scale/constants';
+import ConfigurationPanel from '../configuration-panel';
 import {
   SliderDemoOptions,
-} from "./types";
+} from './types';
 
 class SliderDemo {
-  private className:  string;
+  private className: string;
   private $component: JQuery<HTMLElement>;
-  private options:    SliderDemoOptions;
+  private options: SliderDemoOptions;
 
   private configurationPanel?: ConfigurationPanel;
-  private $slider?:            JQuery<HTMLElement>;
-  private slider?:             JustSlider;
+  private $slider?: JQuery<HTMLElement>;
+  private slider?: JustSlider;
 
   constructor($parent: JQuery<HTMLElement>, options: SliderDemoOptions) {
-    this.className  = "slider-demo";
-    this.options    = options;
+    this.className = 'slider-demo';
+    this.options = options;
     this.$component = $parent.find(`.js-${this.className}`);
     this.init(options);
   }
 
   private init(options: SliderDemoOptions): void {
-    this.configurationPanel = new ConfigurationPanel(this.$component.find(`.js-${this.className}__configuration-panel`), {
+    const panelClass = `.js-${this.className}__configuration-panel`;
+    const $panel = this.$component.find(panelClass);
+
+    this.configurationPanel = new ConfigurationPanel($panel, {
       ...options.configurationPanel,
       inputFrom: {
         ...options.configurationPanel.inputFrom,
@@ -102,7 +105,7 @@ class SliderDemo {
         toggleLines: {
           ...options.configurationPanel.scale?.toggleLines,
           handleToggleChange: this.handleToggleScaleLinesChange.bind(this),
-        }
+        },
       },
     });
 
@@ -112,7 +115,7 @@ class SliderDemo {
       onUpdate: this.handleSliderUpdate.bind(this),
     });
 
-    this.slider = this.$slider.data("just-slider");
+    this.slider = this.$slider.data('just-slider');
   }
 
   private handleSliderUpdate(state: State): void {
@@ -184,7 +187,9 @@ class SliderDemo {
 
   private handleToggleScaleChange(value: boolean): void {
     const scale = value ? this.options.slider.scale : null;
-    this.slider?.updateOptions({ scale });
+    if (scale !== undefined) {
+      this.slider?.updateOptions({ scale });
+    }
   }
 }
 

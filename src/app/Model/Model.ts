@@ -1,59 +1,63 @@
 import {
+  DIRECTION_UPDATE,
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
+  MIN_MAX_UPDATE,
   ORIENTATION_UPDATE,
+  PRECISION_UPDATE,
   PROGRESS_BAR_UPDATE,
+  RANGE_UPDATE,
   SCALE_UPDATE,
-  SLIDER_UPDATE,
+  STEP_UPDATE,
   TOOLTIPS_UPDATE,
-} from "../EventManager/constants";
-import EventManager from "../EventManager/EventManager";
-import {
-  SliderEvent,
-} from "../EventManager/types";
+} from '../EventManager/constants';
+import EventManager from '../EventManager/EventManager';
 import {
   Direction,
   Options,
   Orientation,
   State,
-} from "../types";
+} from '../types';
 import {
   LINE,
   NUMBER,
   STEPS,
-} from "../View/Scale/constants";
+} from '../View/Scale/constants';
 import {
   ScaleOptions,
   Segment,
-} from "../View/Scale/types";
+} from '../View/Scale/types';
 import {
   FORWARD,
   FROM,
   HORIZONTAL,
   TO,
-} from "./constants";
+} from './constants';
 import {
   HandleType,
-  Update,
-} from "./types";
+} from './types';
+import {
+  getUpdates,
+  UPDATES,
+} from './updates';
 
 class Model {
   private eventManager: EventManager;
   private state: State;
 
   private readonly DEFAULT_STATE: State = {
-    from:        0,
-    to:          100,
-    min:         0,
-    max:         100,
-    step:        10,
+    from: 0,
+    to: 100,
+    min: 0,
+    max: 100,
+    step: 10,
     orientation: HORIZONTAL,
-    direction:   FORWARD,
-    range:       false,
-    tooltips:    false,
+    direction: FORWARD,
+    range: false,
+    tooltips: false,
     progressBar: false,
-    scale:       null,
-    precision:   0,
+    scale: null,
+    precision: 0,
   };
 
   static adjustFloat(value: number, precision: number): number {
@@ -63,35 +67,125 @@ class Model {
 
   static getNumberOfDecimals(value: number): number {
     const convertedToString = value.toString();
-    const hasDecimals = convertedToString.includes(".") ? true : false;
-  
+    const hasDecimals = convertedToString.includes('.');
+
     if (!hasDecimals) {
       return 0;
     }
-  
-    return convertedToString.split(".").pop()?.length ?? 0;
+
+    return convertedToString.split('.').pop()?.length ?? 0;
+  }
+
+  static validateHandleOnMinMax(
+    value: number,
+    min: number,
+    max: number
+  ): number {
+    if (value > max) {
+      return max;
+    }
+
+    if (value < min) {
+      return min;
+    }
+
+    return value;
+  }
+
+  static validateHandleOnCollision(
+    value: number,
+    type: HandleType,
+    from: number,
+    to: number,
+    range: boolean
+  ): number {
+    if (!range) {
+      return value;
+    }
+
+    if (type === FROM) {
+      return value > to ? to : value;
+    }
+
+    return value < from ? from : value;
+  }
+
+  static validatePrecision(precision: number): number {
+    return (precision <= 0) ? 0 : precision;
+  }
+
+  static validateScaleSet(set: Array<number>): Array<number> {
+    const validated = set.filter((value) => value >= 0 && value <= 100);
+    return validated;
+  }
+
+  static validateScaleDensity(density: number): number {
+    if (density < 0) {
+      return 0;
+    }
+
+    if (density > 100) {
+      return 100;
+    }
+
+    return density;
+  }
+
+  static validateStep(step: number, length: number): number {
+    const newStep = step > length ? length : step;
+
+    if (newStep <= 0) {
+      return 1;
+    }
+
+    return newStep;
+  }
+
+  static validateMinMax(min: number, max: number): [number, number] {
+    return min > max ? [max, min] : [min, max];
+  }
+
+  static getValueFromPercentage(
+    percentage: number,
+    min: number,
+    max: number
+  ): number {
+    return min + ((max - min) * percentage / 100);
   }
 
   constructor(eventManager: EventManager) {
     this.eventManager = eventManager;
-    this.state        = this.DEFAULT_STATE;
+    this.state = this.DEFAULT_STATE;
   }
 
   public init({
-    from        = this.DEFAULT_STATE.from,
-    to          = this.DEFAULT_STATE.to,
-    min         = this.DEFAULT_STATE.min,
-    max         = this.DEFAULT_STATE.max,
-    step        = this.DEFAULT_STATE.step,
+    from = this.DEFAULT_STATE.from,
+    to = this.DEFAULT_STATE.to,
+    min = this.DEFAULT_STATE.min,
+    max = this.DEFAULT_STATE.max,
+    step = this.DEFAULT_STATE.step,
     orientation = this.DEFAULT_STATE.orientation,
-    direction   = this.DEFAULT_STATE.direction,
-    range       = this.DEFAULT_STATE.range,
-    tooltips    = this.DEFAULT_STATE.tooltips,
+    direction = this.DEFAULT_STATE.direction,
+    range = this.DEFAULT_STATE.range,
+    tooltips = this.DEFAULT_STATE.tooltips,
     progressBar = this.DEFAULT_STATE.progressBar,
-    scale       = this.DEFAULT_STATE.scale,
-    precision   = this.DEFAULT_STATE.precision,
+    scale = this.DEFAULT_STATE.scale,
+    precision = this.DEFAULT_STATE.precision,
   }: Options = {}): void {
-    this.state = { from, to, min, max, step, orientation, direction, range, tooltips, progressBar, precision, scale: null };
+    this.state = {
+      from,
+      to,
+      min,
+      max,
+      step,
+      orientation,
+      direction,
+      range,
+      tooltips,
+      progressBar,
+      precision,
+      scale: null,
+    };
 
     this.setMinMax(min, max);
     this.setStep(step);
@@ -104,91 +198,107 @@ class Model {
     return this.state;
   }
 
-  public updateOptions({ from, to, min, max, step, orientation, direction, range, tooltips, progressBar, scale, precision }: Options): void {
-    const handlesToUpdate:  Set<HandleType>  = new Set();
-    const eventsToDispatch: Set<SliderEvent> = new Set();
-    let shouldUpdateScale = false;
+  public updateOptions(options: Options): void {
+    const {
+      from,
+      to,
+      min,
+      max,
+      step,
+      orientation,
+      direction,
+      range,
+      tooltips,
+      progressBar,
+      scale,
+      precision,
+    } = options;
 
-    const updates: Array<Update | null> = [
-      this.getMinMaxUpdate(min, max),
-      this.getStepUpdate(step),
-      this.getRangeUpdate(range),
-      this.getDirectionUpdate(direction),
-      this.getOrientationUpdate(orientation),
-      this.getProgressBarUpdate(progressBar),
-      this.getTooltipsUpdate(tooltips),
-      this.getHandleUpdate(TO, to),
-      this.getHandleUpdate(FROM, from),
-      this.getScaleUpdate(scale),
-      this.getPrecisionUpdate(precision),
-    ];
+    const { events, stateUpdates } = getUpdates(options);
 
-    updates.forEach(update => {
-      if (update === null) return;
-
-      const { events, handles, scale } = update;
-      events.forEach(event => eventsToDispatch.add(event));
-      handles.forEach(handle => handlesToUpdate.add(handle));
-      
-      if (scale) {
-        shouldUpdateScale = true;
+    stateUpdates.forEach((update) => {
+      switch (update) {
+        case MIN_MAX_UPDATE:
+          this.setMinMax(min, max);
+          break;
+        case STEP_UPDATE:
+          this.setStep(step);
+          break;
+        case RANGE_UPDATE:
+          this.setRange(range);
+          break;
+        case DIRECTION_UPDATE:
+          this.setDirection(direction);
+          break;
+        case ORIENTATION_UPDATE:
+          this.setOrientation(orientation);
+          break;
+        case PROGRESS_BAR_UPDATE:
+          this.setProgressBar(progressBar);
+          break;
+        case TOOLTIPS_UPDATE:
+          this.setTooltips(tooltips);
+          break;
+        case HANDLE_TO_MOVE:
+          this.setHandle(TO, to);
+          break;
+        case HANDLE_FROM_MOVE:
+          this.setHandle(FROM, from);
+          break;
+        case SCALE_UPDATE:
+          this.setScale(scale);
+          break;
+        case PRECISION_UPDATE:
+          this.setPrecision(precision);
+          break;
+        default:
+          break;
       }
     });
 
-    handlesToUpdate.forEach(type => {
-      let value: number;
-
-      if (type === FROM) {
-        value = from ?? this.state.from;
-      } else {
-        value = to ?? this.state.to;
-      }
-
-      this.setHandle(type, value);
-    });
-
-    if (shouldUpdateScale) {
-      const scaleOptions = scale ?? this.state.scale;
-      this.setScale(scaleOptions);
-    }
-
-    this.eventManager.dispatchEvents(Array.from(eventsToDispatch));
+    this.eventManager.dispatchEvents(events);
   }
 
-  public updateHandle(value: number, type: HandleType, shouldAdjust = true): void {
+  public updateHandle(
+    value: number,
+    type: HandleType,
+    shouldAdjust = true
+  ): void {
     this.setHandle(type, value, shouldAdjust);
 
-    const update = this.getHandleUpdate(type, value);
-
-    if (update !== null) {
-      this.eventManager.dispatchEvents(update.events);
-    }
-  }
-
-  private getHandleUpdate(type: HandleType, value?: number): Update | null {
-    if (value === undefined) return null;
-
     const event = type === FROM ? HANDLE_FROM_MOVE : HANDLE_TO_MOVE;
-    return {
-      events:  [event, PROGRESS_BAR_UPDATE, SLIDER_UPDATE],
-      handles: [type],
-      scale:   false,
-    }
+    const { events } = UPDATES[event];
+
+    this.eventManager.dispatchEvents(events);
   }
 
-  private setHandle(type: HandleType, value: number, shouldAdjust = true): void {
+  private setHandle(
+    type: HandleType,
+    value?: number,
+    shouldAdjust = true
+  ): void {
+    const newValue = value ?? this.state[type];
     const { step } = this.state;
 
-    const newValue       = shouldAdjust ? this.adjustHandle(value, step, type) : value;
-    const validatedValue = this.validateHandle(value, type);
-    const valueToSet     = value !== validatedValue ? validatedValue : newValue;
-    const precision      = shouldAdjust ? Model.getNumberOfDecimals(step) : Model.getNumberOfDecimals(value);
-    
+    let adjusted: number;
+    let precision: number;
+
+    if (shouldAdjust) {
+      adjusted = this.adjustHandle(newValue, step, type);
+      precision = Model.getNumberOfDecimals(step);
+    } else {
+      adjusted = newValue;
+      precision = Model.getNumberOfDecimals(newValue);
+    }
+
+    const validated = this.validateHandle(newValue, type);
+    const valueToSet = newValue !== validated ? validated : adjusted;
+
     this.state[type] = Model.adjustFloat(valueToSet, precision);
   }
 
   private adjustHandle(value: number, step: number, type: HandleType): number {
-    const adjusted  = this.adjustWithStep(value, step);
+    const adjusted = this.adjustWithStep(value, step);
     const validated = this.validateHandle(adjusted, type);
     return validated;
   }
@@ -204,124 +314,63 @@ class Model {
   private validateHandle(value: number, type: HandleType): number {
     const { from, to, min, max, range } = this.state;
 
-    value = this.validateHandleOnCollision(value, type, from, to, range);
-    value = this.validateHandleOnMinMax(value, min, max);
+    const validatedOnCollision = Model.validateHandleOnCollision(
+      value,
+      type,
+      from,
+      to,
+      range
+    );
 
-    return value;
+    const validatedOnMinMax = Model.validateHandleOnMinMax(
+      validatedOnCollision,
+      min,
+      max
+    );
+
+    return validatedOnMinMax;
   }
 
-  private validateHandleOnMinMax(value: number, min: number, max: number): number {
-    if (value > max) {
-      value = max;
-    }
+  private setPrecision(precision?: number): void {
+    const newValue = precision ?? this.state.precision;
 
-    if (value < min) {
-      value = min;
-    }
-
-    return value;
+    this.state.precision = Model.validatePrecision(newValue);
   }
 
-  private validateHandleOnCollision(value: number, type: HandleType, from: number, to: number, range: boolean): number {
-    if (!range) {
-      return value;
-    }
+  private setRange(range?: boolean): void {
+    if (range === undefined) return;
 
-    if (type === FROM) {
-      value = value > to ? to : value;
-    } else {
-      value = value < from ? from : value;
-    }
-
-    return value;
-  }
-
-  private getPrecisionUpdate(precision?: number): Update | null {
-    if (precision === undefined) return null;
-    this.setPrecision(precision);
-
-    return {
-      events:  [TOOLTIPS_UPDATE, SCALE_UPDATE, SLIDER_UPDATE],
-      handles: [],
-      scale:   true,
-    };
-  }
-
-  private setPrecision(precision: number): void {
-    this.state.precision = this.validatePrecision(precision);
-  }
-
-  private validatePrecision(precision: number): number {
-    return (precision <= 0) ? 0 : precision;
-  }
-
-  private getTooltipsUpdate(tooltips?: boolean): Update | null {
-    if (tooltips === undefined) return null;
-    this.state.tooltips = tooltips;
-
-    return {
-      events:  [TOOLTIPS_UPDATE, SLIDER_UPDATE],
-      handles: [],
-      scale:   false,
-    };
-  }
-
-  private getProgressBarUpdate(progressBar?: boolean): Update | null {
-    if (progressBar === undefined) return null;
-    this.state.progressBar = progressBar;
-
-    return {
-      events:  [PROGRESS_BAR_UPDATE, SLIDER_UPDATE],
-      handles: [],
-      scale:   false,
-    };
-  }
-
-  private getDirectionUpdate(direction?: Direction): Update | null {
-    if (direction === undefined) return null;
-    this.state.direction = direction;
-
-    return {
-      events:  [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE],
-      handles: [],
-      scale:   false,
-    };
-  }
-
-  private getOrientationUpdate(orientation?: Orientation): Update | null {
-    if (orientation === undefined) return null;
-    this.state.orientation = orientation;
-
-    return {
-      events:  [ORIENTATION_UPDATE, HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE],
-      handles: [],
-      scale:   false,
-    };
-  }
-
-  private getRangeUpdate(range?: boolean): Update | null {
-    if (range === undefined) return null;
     this.state.range = range;
-
-    return {
-      events:  [HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE],
-      handles: [TO],
-      scale:   false,
-    };
   }
 
-  private getScaleUpdate(scale?: ScaleOptions | null): Update | null {
-    if (scale === undefined) return null;
+  private setDirection(direction?: Direction): void {
+    if (direction === undefined) return;
 
-    return {
-      events:  [SCALE_UPDATE, SLIDER_UPDATE],
-      handles: [],
-      scale:   true,
-    };
+    this.state.direction = direction;
   }
 
-  private setScale(scale: ScaleOptions | null) {
-    if (scale === null) {
+  private setOrientation(orientation?: Orientation): void {
+    if (orientation === undefined) return;
+
+    this.state.orientation = orientation;
+  }
+
+  private setProgressBar(progressBar?: boolean): void {
+    if (progressBar === undefined) return;
+
+    this.state.progressBar = progressBar;
+  }
+
+  private setTooltips(tooltips?: boolean): void {
+    if (tooltips === undefined) return;
+
+    this.state.tooltips = tooltips;
+  }
+
+  private setScale(scale?: ScaleOptions | null): void {
+    const newScale = scale !== undefined ? scale : this.state.scale;
+
+    if (newScale === null) {
       this.state.scale = null;
       return;
     }
@@ -329,12 +378,12 @@ class Model {
     const currentScale = this.state.scale;
 
     const {
-      type    = currentScale?.type    ?? STEPS,
-      set     = currentScale?.set     ?? [0, 25, 50, 75, 100],
+      type = currentScale?.type ?? STEPS,
+      set = currentScale?.set ?? [0, 25, 50, 75, 100],
       density = currentScale?.density ?? 3,
-      lines   = currentScale?.lines   ?? true,
+      lines = currentScale?.lines ?? true,
       numbers = currentScale?.numbers ?? true,
-    } = scale;
+    } = newScale;
 
     this.state.scale = {
       set,
@@ -343,12 +392,17 @@ class Model {
       numbers,
       density,
       segments: [],
-    }
+    };
 
     this.setScaleDensity(density);
     this.setScaleSet(set);
-    const generateScaleSegments = (type === STEPS) ? this.generateScaleSegmentsStepsMode.bind(this) : this.generateScaleSegmentsSetMode.bind(this);
-    generateScaleSegments();
+
+    if (type === STEPS) {
+      this.generateScaleSegmentsStepsMode();
+      return;
+    }
+
+    this.generateScaleSegmentsSetMode();
   }
 
   private generateScaleSegmentsStepsMode(): void {
@@ -360,7 +414,11 @@ class Model {
     const lineStep = (max - min) * density / 100;
     const stepPrecision = Model.getNumberOfDecimals(step);
 
-    for (let value = min; value < max; value = Model.adjustFloat(value + step, stepPrecision)) {
+    for (
+      let value = min;
+      value < max;
+      value = Model.adjustFloat(value + step, stepPrecision)
+    ) {
       const numberSegment: Segment = {
         value,
         type: NUMBER,
@@ -368,9 +426,12 @@ class Model {
 
       this.state.scale.segments.push(numberSegment);
 
-      let nextValue             = value + step;
-      nextValue                 = nextValue >= max ? max : nextValue;
-      const distanceToNextValue = Model.adjustFloat(nextValue - value, stepPrecision);
+      let nextValue = value + step;
+      nextValue = nextValue >= max ? max : nextValue;
+      const distanceToNextValue = Model.adjustFloat(
+        nextValue - value,
+        stepPrecision
+      );
 
       let linesPerStep: number;
       if (lineStep === 0) {
@@ -382,7 +443,7 @@ class Model {
 
       const lineDistance = distanceToNextValue / (linesPerStep + 1);
 
-      for (let j = 0; j < linesPerStep; j++) {
+      for (let j = 0; j < linesPerStep; j += 1) {
         const lineSegment: Segment = {
           value: value + ((j + 1) * lineDistance),
           type: LINE,
@@ -397,15 +458,15 @@ class Model {
       type: NUMBER,
     });
   }
-  
+
   private generateScaleSegmentsSetMode(): void {
     if (this.state.scale === null) return;
 
     const { density, set } = this.state.scale;
-    const { min, max }     = this.state;
+    const { min, max } = this.state;
 
-    for (let i = 0; i < set.length - 1; i++) {
-      const value = this.getValueFromPercentage(set[i], min, max);
+    for (let i = 0; i < set.length - 1; i += 1) {
+      const value = Model.getValueFromPercentage(set[i], min, max);
 
       const numberSegment: Segment = {
         value,
@@ -426,10 +487,10 @@ class Model {
 
       const lineDistance = distanceToNextValue / (linesPerStep + 1);
 
-      for (let j = 0; j < linesPerStep; j++) {
+      for (let j = 0; j < linesPerStep; j += 1) {
         const linePercentage = set[i] + ((j + 1) * lineDistance);
         const lineSegment: Segment = {
-          value: this.getValueFromPercentage(linePercentage, min, max),
+          value: Model.getValueFromPercentage(linePercentage, min, max),
           type: LINE,
         };
 
@@ -443,14 +504,10 @@ class Model {
     });
   }
 
-  private getValueFromPercentage(percentage: number, min: number, max: number): number {
-    return min + ((max - min) * percentage / 100);
-  }
-
   private setScaleSet(set: Array<number>): void {
     if (this.state.scale === null) return;
 
-    const validated = this.validateScaleSet(set);
+    const validated = Model.validateScaleSet(set);
 
     validated.sort((a, b) => a - b);
     validated.push(100);
@@ -461,80 +518,25 @@ class Model {
     this.state.scale.set = unique;
   }
 
-  private validateScaleSet(set: Array<number>): Array<number> {
-    const validated = set.filter(value => value >= 0 && value <= 100);
-    return validated;
-  }
-
   private setScaleDensity(density: number): void {
     if (this.state.scale === null) return;
-    
-    const validated = this.validateScaleDensity(density);
+
+    const validated = Model.validateScaleDensity(density);
     this.state.scale.density = validated;
-  }
-
-  private validateScaleDensity(density: number): number {
-    if (density < 0) {
-      return 0;
-    }
-
-    if (density > 100) {
-      return 100;
-    }
-
-    return density;
-  }
-
-  private getMinMaxUpdate(min?: number, max?: number): Update | null {
-    if (min === undefined && max === undefined) return null;
-
-    this.setMinMax(min, max);
-    const { step } = this.state;
-    this.setStep(step);
-
-    return {
-      events:  [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE],
-      handles: [FROM, TO],
-      scale:   true,
-    };
-  }
-
-  private validateMinMax(min: number, max: number): [number, number] {
-    return [min, max] = min > max ? [max, min] : [min, max];
   }
 
   private setMinMax(min?: number, max?: number): void {
     const newMin = min ?? this.state.min;
     const newMax = max ?? this.state.max;
 
-    [this.state.min, this.state.max] = this.validateMinMax(newMin, newMax);
+    [this.state.min, this.state.max] = Model.validateMinMax(newMin, newMax);
   }
 
-  private getStepUpdate(step?: number): Update | null {
-    if (step === undefined) return null;
-    this.setStep(step);
-
-    return {
-      events:  [HANDLE_FROM_MOVE, HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SCALE_UPDATE, SLIDER_UPDATE],
-      handles: [FROM, TO],
-      scale:   true,
-    };
-  }
-
-  private validateStep(step: number, length: number): number {
-    const newStep = step > length ? length : step;
-    
-    if (newStep <= 0) {
-      return 1;
-    }
-    
-    return newStep;
-  }
-
-  private setStep(step: number): void {
+  private setStep(step?: number): void {
+    const newStep = step ?? this.state.step;
     const { min, max } = this.state;
-    
-    this.state.step = this.validateStep(step, max - min);
+
+    this.state.step = Model.validateStep(newStep, max - min);
   }
 }
 
