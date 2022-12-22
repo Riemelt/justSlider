@@ -45,7 +45,7 @@ class Model {
   private eventManager: EventManager;
   private state: State;
 
-  private readonly DEFAULT_STATE: State = {
+  static readonly DEFAULT_STATE: State = {
     from: 0,
     to: 100,
     min: 0,
@@ -155,22 +155,22 @@ class Model {
 
   constructor(eventManager: EventManager) {
     this.eventManager = eventManager;
-    this.state = this.DEFAULT_STATE;
+    this.state = Model.DEFAULT_STATE;
   }
 
   public init({
-    from = this.DEFAULT_STATE.from,
-    to = this.DEFAULT_STATE.to,
-    min = this.DEFAULT_STATE.min,
-    max = this.DEFAULT_STATE.max,
-    step = this.DEFAULT_STATE.step,
-    orientation = this.DEFAULT_STATE.orientation,
-    direction = this.DEFAULT_STATE.direction,
-    range = this.DEFAULT_STATE.range,
-    tooltips = this.DEFAULT_STATE.tooltips,
-    progressBar = this.DEFAULT_STATE.progressBar,
-    scale = this.DEFAULT_STATE.scale,
-    precision = this.DEFAULT_STATE.precision,
+    from = Model.DEFAULT_STATE.from,
+    to = Model.DEFAULT_STATE.to,
+    min = Model.DEFAULT_STATE.min,
+    max = Model.DEFAULT_STATE.max,
+    step = Model.DEFAULT_STATE.step,
+    orientation = Model.DEFAULT_STATE.orientation,
+    direction = Model.DEFAULT_STATE.direction,
+    range = Model.DEFAULT_STATE.range,
+    tooltips = Model.DEFAULT_STATE.tooltips,
+    progressBar = Model.DEFAULT_STATE.progressBar,
+    scale = Model.DEFAULT_STATE.scale,
+    precision = Model.DEFAULT_STATE.precision,
   }: Options = {}): void {
     this.state = {
       from,
