@@ -5,22 +5,18 @@ const srcPath = path.resolve(__dirname, './src');
 const output = path.resolve(__dirname, './dist');
 
 const entryPoints = {
-  ['just-slider']: './app/index.ts',
+  'just-slider': ['./app/index.ts', './styles/base.scss'],
 };
 
-const mode = (process.env.NODE_ENV === 'production') ?
-  'production' :
-  'development';
+const isDev = process.env.NODE_ENV === 'development';
 
-const cssLoader = (mode === 'development') ?
-  'style-loader' :
-  MiniCssExtractPlugin.loader;
+const cssLoader = isDev ? 'style-loader' : MiniCssExtractPlugin.loader;
 
-console.log(`${mode} mode`);
+console.log(`isDev: ${isDev}`);
 
 module.exports = {
   context: srcPath,
-  mode,
+  mode: isDev ? 'development' : 'production',
   plugins: [
     new MiniCssExtractPlugin({
       filename: './[name].css',
@@ -34,10 +30,11 @@ module.exports = {
     path: output,
     clean: true,
   },
-  devtool: (mode === 'development') ? 'eval-source-map' : false,
+  devtool: isDev ? 'eval-source-map' : false,
   resolve: {
     alias: {
       jquery: 'jquery/src/jquery',
+      '@styles': path.resolve(__dirname, './src/styles/'),
     },
     extensions: ['.tsx', '.ts', '.js'],
   },
@@ -67,20 +64,19 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: [
-                  'autoprefixer',
-                  'postcss-preset-env',
-                ],
+                plugins: ['autoprefixer', 'postcss-preset-env'],
               },
             },
           },
           'sass-loader',
-          {
-            loader: 'sass-resources-loader',
-            options: {
-              resources: path.resolve(__dirname, './src/styles/variables.scss'),
-            },
-          },
+          // Note: the best practice is to use the standard Sass `@use` rule
+          // to load variables where needed, see in fixed scss files
+          // {
+          //   loader: 'sass-resources-loader',
+          //   options: {
+          //     resources: path.resolve(__dirname, './src/styles/variables.scss'),
+          //   },
+          // },
         ],
       },
     ],

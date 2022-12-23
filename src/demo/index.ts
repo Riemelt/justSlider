@@ -1,6 +1,8 @@
+// Note: load ssource styles directly in Pug via require()
+// import './styles/demo.scss';
+
 import '../demo/assets/favicons';
 import '../app';
-import './styles/demo.scss';
 import Demo from './Demo';
 
 (function ($) {
