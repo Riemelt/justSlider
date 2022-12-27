@@ -1,4 +1,5 @@
-import './styles/demo.scss';
+// Note: load ssource styles directly in Pug via require()
+// import './styles/demo.scss';
 
 import SliderDemo from './components/slider-demo';
 import {

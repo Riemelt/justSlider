@@ -1,3 +1,5 @@
+@use '@styles/variables.scss' as *;
+
 $className: 'toggle';
 
 .#{$className} {

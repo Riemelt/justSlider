@@ -9,6 +9,13 @@ include ./components/slider-demo/slider-demo
 doctype html
 html
   +head({ title })
+
+  //- using pug-plugin the source styles can be loaded in Pug via require(), not in JS/TS file
+  link(href=require('./styles/styles.scss') rel='stylesheet')
+
+  //- using pug-plugin the source scripts can be loaded in Pug via require(), not in Webpack entry
+  script(src=require('./index.ts') defer='defer')
+
   body
     ul(class=`${className} js-${className}`)
       li(class=`${className}__slider-demo`)
