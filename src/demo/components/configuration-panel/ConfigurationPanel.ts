@@ -8,8 +8,8 @@ import {
 import {
   STEPS,
 } from '../../../app/View/Scale/constants';
-import InputField from '../input-field';
-import Toggle from '../toggle';
+import InputField from '../input-field/InputField';
+import Toggle from '../toggle/Toggle';
 
 class ConfigurationPanel {
   private className: string;

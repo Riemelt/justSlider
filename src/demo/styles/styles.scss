@@ -1,6 +1,5 @@
-// Note: create the style bundle in one SCSS file, not import single files in scripts
-
 @use '@styles/base.scss';
+
 @use './demo.scss';
 @use '../components/slider-demo/slider-demo.scss';
 @use '../components/input-field/input-field.scss';

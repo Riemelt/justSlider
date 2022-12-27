@@ -9,14 +9,14 @@ const entryPoints = {
 };
 
 const isDev = process.env.NODE_ENV === 'development';
-
 const cssLoader = isDev ? 'style-loader' : MiniCssExtractPlugin.loader;
+const mode = isDev ? 'development' : 'production';
 
-console.log(`isDev: ${isDev}`);
+console.log(mode);
 
 module.exports = {
+  mode,
   context: srcPath,
-  mode: isDev ? 'development' : 'production',
   plugins: [
     new MiniCssExtractPlugin({
       filename: './[name].css',
@@ -69,14 +69,6 @@ module.exports = {
             },
           },
           'sass-loader',
-          // Note: the best practice is to use the standard Sass `@use` rule
-          // to load variables where needed, see in fixed scss files
-          // {
-          //   loader: 'sass-resources-loader',
-          //   options: {
-          //     resources: path.resolve(__dirname, './src/styles/variables.scss'),
-          //   },
-          // },
         ],
       },
     ],

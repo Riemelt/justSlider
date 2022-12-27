@@ -5,24 +5,21 @@ const path = require('path');
 const srcPath = path.resolve(__dirname, './src');
 const output = path.resolve(__dirname, './demo');
 
-// Note: define Pug files in entry, because the Pug file is the entry-point
-// and all scripts and styles must be specified in Pug
 const entryPoints = {
-  index: './demo/index.pug', // output ./demo/index.html
+  index: './demo/index.pug',
 };
 
 const isDev = process.env.NODE_ENV === 'development';
+const mode = isDev ? 'development' : 'production';
 
-console.log(`isDev: ${isDev}`);
+console.log(mode);
 
 module.exports = {
+  mode,
   context: srcPath,
-  mode: isDev ? 'development' : 'production',
   plugins: [
-    // enable using Pug files as entry point
     new PugPlugin({
       extractCss: {
-        // output filename of CSS files
         filename: 'assets/css/[name].[contenthash:8].css',
       },
     }),
@@ -93,21 +90,12 @@ module.exports = {
             },
           },
           'sass-loader',
-          // Note: the best practice is to use the standard Sass `@use` rule
-          // to load variables where needed, see in fixed scss files
-          // {
-          //   loader: 'sass-resources-loader',
-          //   options: {
-          //     resources: path.resolve(__dirname, './src/styles/variables.scss'),
-          //   },
-          // },
         ],
       },
     ],
   },
   performance: {
     hints: isDev ? 'warning' : 'error',
-    // in development mode the size of css and js are bigger than in production
     maxEntrypointSize: isDev ? 1000000 : 500000,
     maxAssetSize: isDev ? 1000000 : 500000,
   },
@@ -116,9 +104,8 @@ module.exports = {
     static: {
       directory: output,
     },
-    open: true, // open browser
+    open: true,
     compress: true,
-    // enable HMR for files defined in paths
     watchFiles: {
       paths: ['src/**/*.*'],
       options: {

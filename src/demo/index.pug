@@ -2,18 +2,15 @@ include ./components/head/head
 include ./components/slider-demo/slider-demo
 
 -
-  const className = "demo"
-  const data = require("./data.json")
+  const className = 'demo'
+  const data = require('./data.json')
   const demos = data.demos
 
 doctype html
 html
   +head({ title })
 
-  //- using pug-plugin the source styles can be loaded in Pug via require(), not in JS/TS file
   link(href=require('./styles/styles.scss') rel='stylesheet')
-
-  //- using pug-plugin the source scripts can be loaded in Pug via require(), not in Webpack entry
   script(src=require('./index.ts') defer='defer')
 
   body

@@ -14,7 +14,7 @@ import {
   SET,
   STEPS,
 } from '../../../app/View/Scale/constants';
-import ConfigurationPanel from '../configuration-panel';
+import ConfigurationPanel from '../configuration-panel/ConfigurationPanel';
 import {
   SliderDemoOptions,
 } from './types';
