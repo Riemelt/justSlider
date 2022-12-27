@@ -1,5 +1,3 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PugPlugin = require('pug-plugin');
 const webpack = require('webpack');
 
@@ -7,27 +5,26 @@ const path = require('path');
 const srcPath = path.resolve(__dirname, './src');
 const output = path.resolve(__dirname, './demo');
 
+// Note: define Pug files in entry, because the Pug file is the entry-point
+// and all scripts and styles must be specified in Pug
 const entryPoints = {
-  demo: './demo/index.ts',
+  index: './demo/index.pug', // output ./demo/index.html
 };
 
-const mode = (process.env.NODE_ENV === 'production') ?
-  'production' :
-  'development';
+const isDev = process.env.NODE_ENV === 'development';
 
-const cssLoader = (mode === 'development') ?
-  'style-loader' :
-  MiniCssExtractPlugin.loader;
-
-console.log(`${mode} mode`);
+console.log(`isDev: ${isDev}`);
 
 module.exports = {
   context: srcPath,
-  mode,
+  mode: isDev ? 'development' : 'production',
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: './[name].[contenthash].css',
-      ignoreOrder: true,
+    // enable using Pug files as entry point
+    new PugPlugin({
+      extractCss: {
+        // output filename of CSS files
+        filename: 'assets/css/[name].[contenthash:8].css',
+      },
     }),
     new webpack.ProvidePlugin({
       $: 'jquery',
@@ -35,31 +32,23 @@ module.exports = {
       'window.jQuery': 'jquery',
     }),
     require('autoprefixer'),
-    new HtmlWebpackPlugin({
-      template: './demo/index.pug',
-      filename: './index.html',
-      chunks: ['demo'],
-    }),
   ],
   entry: entryPoints,
   output: {
-    filename: './[name].[contenthash].js',
+    filename: 'assets/js/[name].[contenthash:8].js',
     path: output,
     clean: true,
   },
-  devtool: (mode === 'development') ? 'eval-source-map' : false,
+  devtool: isDev ? 'source-map' : false,
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
       '@favicons': path.resolve(__dirname, './src/demo/assets/favicons/'),
+      '@styles': path.resolve(__dirname, './src/styles/'),
     },
   },
   module: {
     rules: [
-      {
-        test: /\.html$/i,
-        loader: 'html-loader',
-      },
       {
         test: /\.pug$/,
         loader: PugPlugin.loader,
@@ -73,7 +62,7 @@ module.exports = {
         include: /favicons/,
         type: 'asset/resource',
         generator: {
-          filename: 'assets/favicons/[name][hash][ext][query]',
+          filename: 'assets/favicons/[name].[hash][ext][query]',
         },
       },
       {
@@ -94,34 +83,47 @@ module.exports = {
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
-          cssLoader,
           'css-loader',
           {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: [
-                  'autoprefixer',
-                  'postcss-preset-env',
-                ],
+                plugins: ['autoprefixer', 'postcss-preset-env'],
               },
             },
           },
           'sass-loader',
-          {
-            loader: 'sass-resources-loader',
-            options: {
-              resources: path.resolve(__dirname, './src/styles/variables.scss'),
-            },
-          },
+          // Note: the best practice is to use the standard Sass `@use` rule
+          // to load variables where needed, see in fixed scss files
+          // {
+          //   loader: 'sass-resources-loader',
+          //   options: {
+          //     resources: path.resolve(__dirname, './src/styles/variables.scss'),
+          //   },
+          // },
         ],
       },
     ],
   },
+  performance: {
+    hints: isDev ? 'warning' : 'error',
+    // in development mode the size of css and js are bigger than in production
+    maxEntrypointSize: isDev ? 1000000 : 500000,
+    maxAssetSize: isDev ? 1000000 : 500000,
+  },
   devServer: {
     hot: true,
     static: {
-      directory: path.resolve(__dirname, 'demo'),
+      directory: output,
+    },
+    open: true, // open browser
+    compress: true,
+    // enable HMR for files defined in paths
+    watchFiles: {
+      paths: ['src/**/*.*'],
+      options: {
+        usePolling: true,
+      },
     },
   },
 };
