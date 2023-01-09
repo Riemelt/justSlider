@@ -5,9 +5,6 @@ import {
 import {
   Options,
 } from '../../../app/types';
-import {
-  STEPS,
-} from '../../../app/View/Scale/constants';
 import InputField from '../input-field/InputField';
 import Toggle from '../toggle/Toggle';
 
@@ -30,7 +27,6 @@ class ConfigurationPanel {
 
   private inputScaleDensity?: InputField;
   private toggleScale?: Toggle;
-  private toggleScaleType?: Toggle;
   private toggleScaleNumbers?: Toggle;
   private toggleScaleLines?: Toggle;
 
@@ -80,17 +76,14 @@ class ConfigurationPanel {
 
     if (scale === null) {
       this.inputScaleDensity?.disable();
-      this.toggleScaleType?.disable();
       this.toggleScaleNumbers?.disable();
       this.toggleScaleLines?.disable();
     } else {
       this.inputScaleDensity?.enable();
-      this.toggleScaleType?.enable();
       this.toggleScaleNumbers?.enable();
       this.toggleScaleLines?.enable();
 
       this.inputScaleDensity?.update({ value: scale.density ?? 0 });
-      this.toggleScaleType?.update(scale.type === STEPS);
       this.toggleScaleNumbers?.update(scale.numbers ?? false);
       this.toggleScaleLines?.update(scale.lines ?? false);
     }
@@ -160,11 +153,6 @@ class ConfigurationPanel {
     this.inputScaleDensity = new InputField(
       this.$component.find(`.js-${this.className}__scale-density`),
       options.scale?.inputDensity
-    );
-
-    this.toggleScaleType = new Toggle(
-      this.$component.find(`.js-${this.className}__scale-type`),
-      options.scale?.toggleType
     );
 
     this.toggleScaleNumbers = new Toggle(

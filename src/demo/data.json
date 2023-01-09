@@ -49,9 +49,6 @@
             "title": "density",
             "type": "number"
           },
-          "toggleType": {
-            "title": "steps"
-          },
           "toggleNumbers": {
             "title": "numbers"
           },
@@ -73,8 +70,6 @@
         "tooltips": true,
         "precision": 0,
         "scale": {
-          "type": "set",
-          "set": [0, 25, 50, 75, 100],
           "density": 2,
           "lines": true,
           "numbers": true
@@ -130,9 +125,6 @@
             "title": "density",
             "type": "number"
           },
-          "toggleType": {
-            "title": "steps"
-          },
           "toggleNumbers": {
             "title": "numbers"
           },
@@ -154,7 +146,6 @@
         "tooltips": false,
         "precision": 1,
         "scale": {
-          "type": "steps",
           "density": 3,
           "lines": true,
           "numbers": true
@@ -210,9 +201,6 @@
             "title": "density",
             "type": "number"
           },
-          "toggleType": {
-            "title": "steps"
-          },
           "toggleNumbers": {
             "title": "numbers"
           },
@@ -234,11 +222,9 @@
         "tooltips": true,
         "precision": 0,
         "scale": {
-          "type": "set",
-          "set": [0, 50, 70, 80, 90, 100],
           "density": 2,
           "lines": true,
-          "numbers": true
+          "numbers": false
         }
       }
     },
@@ -291,9 +277,6 @@
             "title": "density",
             "type": "number"
           },
-          "toggleType": {
-            "title": "steps"
-          },
           "toggleNumbers": {
             "title": "numbers"
           },
@@ -315,7 +298,6 @@
         "tooltips": true,
         "precision": 0,
         "scale": {
-          "type": "steps",
           "density": 4,
           "lines": false,
           "numbers": true

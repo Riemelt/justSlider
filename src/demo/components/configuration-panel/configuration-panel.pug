@@ -18,7 +18,6 @@ mixin configuration-panel(vars = {})
       toggleScale = {},
       scale = {
         inputDensity: {},
-        toggleType: {},
         toggleNumbers: {},
         toggleLines: {},
       },
@@ -70,9 +69,6 @@ mixin configuration-panel(vars = {})
         li(class=`${className}__item`)
           div(class=`${className}__scale-density js-${className}__scale-density`)
             +input-field(scale.inputDensity)
-        li(class=`${className}__item`)
-          div(class=`${className}__scale-type js-${className}__scale-type`)
-            +toggle(scale.toggleType)
         li(class=`${className}__item`)
           div(class=`${className}__scale-numbers js-${className}__scale-numbers`)
             +toggle(scale.toggleNumbers)

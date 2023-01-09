@@ -13,7 +13,6 @@ interface ConfigurationPanelOptions {
   toggleScale?: ToggleOptions;
   scale?: {
     inputDensity?: InputFieldOptions;
-    toggleType?: ToggleOptions;
     toggleNumbers?: ToggleOptions;
     toggleLines?: ToggleOptions;
   }

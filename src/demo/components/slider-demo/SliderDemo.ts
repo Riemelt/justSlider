@@ -10,10 +10,6 @@ import {
   TO,
   VERTICAL,
 } from '../../../app/Model/constants';
-import {
-  SET,
-  STEPS,
-} from '../../../app/View/Scale/constants';
 import ConfigurationPanel from '../configuration-panel/ConfigurationPanel';
 import {
   SliderDemoOptions,
@@ -94,10 +90,6 @@ class SliderDemo {
           ...options.configurationPanel.scale?.inputDensity,
           handleInputChange: this.handleInputScaleDensityChange.bind(this),
         },
-        toggleType: {
-          ...options.configurationPanel.scale?.toggleType,
-          handleToggleChange: this.handleToggleScaleTypeChange.bind(this),
-        },
         toggleNumbers: {
           ...options.configurationPanel.scale?.toggleNumbers,
           handleToggleChange: this.handleToggleScaleNumbersChange.bind(this),
@@ -170,11 +162,6 @@ class SliderDemo {
 
   private handleInputScaleDensityChange(value: number): void {
     this.slider?.updateOptions({ scale: { density: value } });
-  }
-
-  private handleToggleScaleTypeChange(value: boolean): void {
-    const type = value ? STEPS : SET;
-    this.slider?.updateOptions({ scale: { type } });
   }
 
   private handleToggleScaleNumbersChange(value: boolean): void {
