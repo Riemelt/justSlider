@@ -9,7 +9,6 @@ import * as Utilities from '../utilities/utilities';
 import {
   LINE,
   NUMBER,
-  STEPS,
 } from './constants';
 import Scale from './Scale';
 import {
@@ -42,8 +41,6 @@ describe('Scale', () => {
     lines: true,
     numbers: true,
     density: 3,
-    set: [],
-    type: STEPS,
   };
 
   const modelState: State = {

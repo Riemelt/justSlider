@@ -80,15 +80,6 @@ Shows scale next to the slider. Customizable with its own options. It has divisi
 
 #### ScaleOptions
 
-#### type `"steps" | "set"` = "steps"
-
-In "steps" mode scale will generate divisions with values depending on `step` property. One value per step.
-In "set" mode it'll take `set` property and will generate divisions per every set value.
-
-#### set `number[]` = [0, 25, 50, 75, 100]
-
-Set is taken when scale `type` is set to "set" mode. Values in array are percentages. It will always start at 0 and end with 100 as min and max values of the slider.
-
 #### density `number` = 3
 
 Calculates little divisions between values on slider's scale. For instance, if set to 3, scale will generate a line every 3% of the slider's range in between the divisions with values.
@@ -114,9 +105,8 @@ const options = {
   from: 25,
   orientation: "vertical",
   scale: {
-    type: "set",
-    set: [0, 50, 100],
     lines: false,
+    numbers: true,
   }
 }
 

@@ -17,8 +17,6 @@ import {
 import {
   LINE,
   NUMBER,
-  SET,
-  STEPS,
 } from '../View/Scale/constants';
 import {
   BACKWARD,
@@ -472,27 +470,25 @@ describe('Model', () => {
       const { scale } = model.getState();
 
       expect(scale?.density).toBeDefined();
-      expect(scale?.type).toBeDefined();
-      expect(scale?.set).toBeDefined();
       expect(scale?.numbers).toBeDefined();
       expect(scale?.lines).toBeDefined();
     });
 
     test('Updates scale', () => {
-      model.init({ scale: { type: STEPS } });
-      model.updateOptions({ scale: { type: SET } });
+      model.init({ scale: { numbers: false } });
+      model.updateOptions({ scale: { numbers: true } });
 
       const state = model.getState();
 
-      expect(state.scale?.type).toBe(SET);
+      expect(state.scale?.numbers).toBe(true);
     });
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
       const events: Array<SliderEvent> = [SCALE_UPDATE, SLIDER_UPDATE];
 
-      model.init({ scale: { type: STEPS } });
-      model.updateOptions({ scale: { type: SET } });
+      model.init({ scale: { numbers: false } });
+      model.updateOptions({ scale: { numbers: true } });
 
       events.forEach((event) => {
         expect(mockedDispatcher).toBeCalledWith(event);
@@ -519,53 +515,11 @@ describe('Model', () => {
       expect(state.scale?.density).toBeLessThanOrEqual(100);
     });
 
-    test('Set should contain 0 and 100 in the beginning and in the end', () => {
-      model.init({ scale: {
-        set: [50],
-      } });
-
-      const state = model.getState();
-      expect(state.scale?.set).toEqual([0, 50, 100]);
-    });
-
-    test('Set values cannot be greater than 100 or less than 0', () => {
-      model.init({ scale: {
-        set: [-20, 50, 300],
-      } });
-
-      const state = model.getState();
-
-      expect(state.scale?.set.length).toBeGreaterThan(0);
-      state.scale?.set.forEach((value) => {
-        expect(value).toBeLessThanOrEqual(100);
-        expect(value).toBeGreaterThanOrEqual(0);
-      });
-    });
-
-    test('Set values are unique', () => {
-      model.init({ scale: {
-        set: [10, 20, 10],
-      } });
-
-      const state = model.getState();
-      expect(state.scale?.set).toEqual([0, 10, 20, 100]);
-    });
-
-    test('Set values are sorted', () => {
-      model.init({ scale: {
-        set: [10, 20, 15],
-      } });
-
-      const state = model.getState();
-      expect(state.scale?.set).toEqual([0, 10, 15, 20, 100]);
-    });
-
-    test('Generates segments, steps mode', () => {
+    test('Generates segments', () => {
       model.init({ min: 0,
         max: 20,
         step: 10,
         scale: {
-          type: STEPS,
           density: 15,
         } });
 
@@ -606,58 +560,6 @@ describe('Model', () => {
         {
           type: NUMBER,
           value: 20,
-        },
-      ]);
-    });
-
-    test('Generates segments, set mode', () => {
-      model.init({ min: 0,
-        max: 100,
-        step: 10,
-        scale: {
-          type: SET,
-          density: 15,
-          set: [0, 20, 80, 100],
-        } });
-
-      const state = model.getState();
-
-      expect(state.scale?.segments).toEqual([
-        {
-          type: NUMBER,
-          value: 0,
-        },
-        {
-          type: LINE,
-          value: 10,
-        },
-        {
-          type: NUMBER,
-          value: 20,
-        },
-        {
-          type: LINE,
-          value: 35,
-        },
-        {
-          type: LINE,
-          value: 50,
-        },
-        {
-          type: LINE,
-          value: 65,
-        },
-        {
-          type: NUMBER,
-          value: 80,
-        },
-        {
-          type: LINE,
-          value: 90,
-        },
-        {
-          type: NUMBER,
-          value: 100,
         },
       ]);
     });

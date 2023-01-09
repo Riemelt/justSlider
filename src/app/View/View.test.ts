@@ -16,9 +16,6 @@ import Scale from './Scale/Scale';
 import {
   ScaleState,
 } from './Scale/types';
-import {
-  STEPS,
-} from './Scale/constants';
 import * as Utilities from './utilities/utilities';
 
 describe('View', () => {
@@ -29,8 +26,6 @@ describe('View', () => {
     segments: [],
     lines: true,
     numbers: true,
-    type: STEPS,
-    set: [],
     density: 1,
   };
 

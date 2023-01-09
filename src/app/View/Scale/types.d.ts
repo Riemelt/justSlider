@@ -4,12 +4,9 @@ import {
   LINE,
   NORMAL,
   NUMBER,
-  SET,
-  STEPS,
 } from './constants';
 
 type SegmentType = typeof LINE | typeof NUMBER;
-type ScaleType = typeof STEPS | typeof SET;
 
 type LineSize = typeof NORMAL | typeof BIG | typeof LARGE;
 
@@ -19,8 +16,6 @@ interface Segment {
 }
 
 interface ScaleOptions {
-  type?: ScaleType;
-  set?: Array<number>;
   density?: number;
   lines?: boolean;
   numbers?: boolean;
@@ -33,7 +28,6 @@ type ScaleState = Required<ScaleOptions> & {
 export {
   LineSize,
   Segment,
-  ScaleType,
   ScaleOptions,
   ScaleState,
 };

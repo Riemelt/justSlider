@@ -21,7 +21,6 @@ import {
 import {
   LINE,
   NUMBER,
-  STEPS,
 } from '../View/Scale/constants';
 import {
   ScaleOptions,
@@ -112,11 +111,6 @@ class Model {
 
   static validatePrecision(precision: number): number {
     return (precision <= 0) ? 0 : precision;
-  }
-
-  static validateScaleSet(set: Array<number>): Array<number> {
-    const validated = set.filter((value) => value >= 0 && value <= 100);
-    return validated;
   }
 
   static validateScaleDensity(density: number): number {
@@ -378,16 +372,12 @@ class Model {
     const currentScale = this.state.scale;
 
     const {
-      type = currentScale?.type ?? STEPS,
-      set = currentScale?.set ?? [0, 25, 50, 75, 100],
       density = currentScale?.density ?? 3,
       lines = currentScale?.lines ?? true,
       numbers = currentScale?.numbers ?? true,
     } = newScale;
 
     this.state.scale = {
-      set,
-      type,
       lines,
       numbers,
       density,
@@ -395,17 +385,10 @@ class Model {
     };
 
     this.setScaleDensity(density);
-    this.setScaleSet(set);
-
-    if (type === STEPS) {
-      this.generateScaleSegmentsStepsMode();
-      return;
-    }
-
-    this.generateScaleSegmentsSetMode();
+    this.generateScaleSegments();
   }
 
-  private generateScaleSegmentsStepsMode(): void {
+  private generateScaleSegments(): void {
     if (this.state.scale === null) return;
 
     const { density } = this.state.scale;
@@ -457,65 +440,6 @@ class Model {
       value: max,
       type: NUMBER,
     });
-  }
-
-  private generateScaleSegmentsSetMode(): void {
-    if (this.state.scale === null) return;
-
-    const { density, set } = this.state.scale;
-    const { min, max } = this.state;
-
-    for (let i = 0; i < set.length - 1; i += 1) {
-      const value = Model.getValueFromPercentage(set[i], min, max);
-
-      const numberSegment: Segment = {
-        value,
-        type: NUMBER,
-      };
-
-      this.state.scale.segments.push(numberSegment);
-
-      const distanceToNextValue = set[i + 1] - set[i];
-
-      let linesPerStep: number;
-      if (density === 0) {
-        linesPerStep = 0;
-      } else {
-        linesPerStep = Math.trunc(distanceToNextValue / density);
-        linesPerStep += distanceToNextValue % density === 0 ? -1 : 0;
-      }
-
-      const lineDistance = distanceToNextValue / (linesPerStep + 1);
-
-      for (let j = 0; j < linesPerStep; j += 1) {
-        const linePercentage = set[i] + ((j + 1) * lineDistance);
-        const lineSegment: Segment = {
-          value: Model.getValueFromPercentage(linePercentage, min, max),
-          type: LINE,
-        };
-
-        this.state.scale.segments.push(lineSegment);
-      }
-    }
-
-    this.state.scale.segments.push({
-      value: max,
-      type: NUMBER,
-    });
-  }
-
-  private setScaleSet(set: Array<number>): void {
-    if (this.state.scale === null) return;
-
-    const validated = Model.validateScaleSet(set);
-
-    validated.sort((a, b) => a - b);
-    validated.push(100);
-    validated.unshift(0);
-
-    const unique = Array.from(new Set(validated));
-
-    this.state.scale.set = unique;
   }
 
   private setScaleDensity(density: number): void {
