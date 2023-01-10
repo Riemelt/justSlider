@@ -247,6 +247,13 @@ describe('Model', () => {
       expect(state.max).toBe(20);
     });
 
+    test('Min and max cannot be equal', () => {
+      model.init({ min: 0, max: 0 });
+      const state = model.getState();
+
+      expect(state.min).not.toBe(state.max);
+    });
+
     test('Adjust step value on update, if it\'s not valid', () => {
       model.init({ min: 0, max: 100, step: 10 });
       model.updateOptions({ max: 5 });
@@ -591,6 +598,15 @@ describe('Model', () => {
       });
 
       mockedDispatcher.mockRestore();
+    });
+
+    test('Cannot be less than precision of min, max or step', () => {
+      model.init({ min: 0, max: 2.22, step: 0.5 });
+      model.updateOptions({ precision: 1 });
+
+      const state = model.getState();
+
+      expect(state.precision).toBeGreaterThanOrEqual(2);
     });
   });
 });
