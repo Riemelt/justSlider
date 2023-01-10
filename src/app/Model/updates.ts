@@ -73,7 +73,13 @@ const UPDATES: Updates = {
       SCALE_UPDATE,
       SLIDER_UPDATE,
     ],
-    stateUpdates: [STEP_UPDATE, HANDLE_FROM_MOVE, HANDLE_TO_MOVE, SCALE_UPDATE],
+    stateUpdates: [
+      STEP_UPDATE,
+      PRECISION_UPDATE,
+      HANDLE_FROM_MOVE,
+      HANDLE_TO_MOVE,
+      SCALE_UPDATE,
+    ],
   },
   [MIN_MAX_UPDATE]: {
     events: [
@@ -86,6 +92,7 @@ const UPDATES: Updates = {
     stateUpdates: [
       MIN_MAX_UPDATE,
       STEP_UPDATE,
+      PRECISION_UPDATE,
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
       SCALE_UPDATE,

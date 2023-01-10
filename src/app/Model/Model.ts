@@ -109,10 +109,6 @@ class Model {
     return value < from ? from : value;
   }
 
-  static validatePrecision(precision: number): number {
-    return (precision <= 0) ? 0 : precision;
-  }
-
   static validateScaleDensity(density: number): number {
     if (density < 0) {
       return 0;
@@ -136,7 +132,10 @@ class Model {
   }
 
   static validateMinMax(min: number, max: number): [number, number] {
-    return min > max ? [max, min] : [min, max];
+    const newMin = min;
+    const newMax = min === max ? max + 1 : max;
+
+    return newMin > newMax ? [newMax, newMin] : [newMin, newMax];
   }
 
   static getValueFromPercentage(
@@ -272,18 +271,11 @@ class Model {
     shouldAdjust = true
   ): void {
     const newValue = value ?? this.state[type];
-    const { step } = this.state;
+    const { step, precision } = this.state;
 
-    let adjusted: number;
-    let precision: number;
-
-    if (shouldAdjust) {
-      adjusted = this.adjustHandle(newValue, step, type);
-      precision = Model.getNumberOfDecimals(step);
-    } else {
-      adjusted = newValue;
-      precision = Model.getNumberOfDecimals(newValue);
-    }
+    const adjusted = shouldAdjust ?
+      this.adjustHandle(newValue, step, type) :
+      newValue;
 
     const validated = this.validateHandle(newValue, type);
     const valueToSet = newValue !== validated ? validated : adjusted;
@@ -328,7 +320,19 @@ class Model {
   private setPrecision(precision?: number): void {
     const newValue = precision ?? this.state.precision;
 
-    this.state.precision = Model.validatePrecision(newValue);
+    this.state.precision = this.validatePrecision(newValue);
+  }
+
+  private validatePrecision(precision: number): number {
+    const { min, max, step } = this.state;
+
+    const minPrecision = Math.max(
+      Model.getNumberOfDecimals(min),
+      Model.getNumberOfDecimals(max),
+      Model.getNumberOfDecimals(step)
+    );
+
+    return (precision <= minPrecision) ? minPrecision : precision;
   }
 
   private setRange(range?: boolean): void {
@@ -392,15 +396,14 @@ class Model {
     if (this.state.scale === null) return;
 
     const { density } = this.state.scale;
-    const { min, max, step } = this.state;
+    const { min, max, step, precision } = this.state;
 
     const lineStep = (max - min) * density / 100;
-    const stepPrecision = Model.getNumberOfDecimals(step);
 
     for (
       let value = min;
       value < max;
-      value = Model.adjustFloat(value + step, stepPrecision)
+      value = Model.adjustFloat(value + step, precision)
     ) {
       const numberSegment: Segment = {
         value,
@@ -413,7 +416,7 @@ class Model {
       nextValue = nextValue >= max ? max : nextValue;
       const distanceToNextValue = Model.adjustFloat(
         nextValue - value,
-        stepPrecision
+        precision
       );
 
       let linesPerStep: number;
