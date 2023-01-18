@@ -30,7 +30,7 @@ $("#element").justSlider(options);
 
 ### Options
 
-#### min `number` = 0
+#### min `number` = 0 
 
 Minimum possible value of the slider.
 
@@ -80,15 +80,15 @@ Shows scale next to the slider. Customizable with its own options. It has divisi
 
 #### ScaleOptions
 
-#### density `number` = 3
+##### density `number` = 3
 
 Calculates little divisions between values on slider's scale. For instance, if set to 3, scale will generate a line every 3% of the slider's range in between the divisions with values.
 
-#### numbers `boolean` = true
+##### numbers `boolean` = true
 
 Shows numbers on scale.
 
-#### lines `boolean` = true
+##### lines `boolean` = true
 
 Shows little lines (divisions) on scale.
 
@@ -111,6 +111,36 @@ const options = {
 }
 
 $("div.container").justSlider(options);
+```
+
+### Initialization with data-attributes
+
+#### Attributes list
+
+##### data-min="0"
+##### data-max="100"
+##### data-step="10"
+##### data-from="0"
+##### data-to="100"
+##### data-orientation="horizontal"
+##### data-direction="forward"
+##### data-range="false"
+##### data-tooltips="false"
+##### data-progress-bar="false"
+##### data-precision="false"
+##### data-scale="false"
+##### data-scale-density="3"
+##### data-scale-numbers="true"
+##### data-scale-lines="true"
+
+#### Example
+
+```html
+<div class="slider" data-min="10" data-step="5" data-orientation="vertical" data-scale="true" data-scale-lines="false"></div>
+```
+
+```javascript
+$("div.slider").justSlider();
 ```
 
 ### API
