@@ -3,7 +3,7 @@ $className: 'slider-demo';
 .#{$className} {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
   gap: 5%;
 
@@ -22,9 +22,8 @@ $className: 'slider-demo';
   }
 
   &__slider {
+    min-height: 25rem;
     box-sizing: content-box;
-    height: 25rem;
-    max-width: 25rem;
     width: 100%;
     min-width: 6.25rem;
     align-items: center;
