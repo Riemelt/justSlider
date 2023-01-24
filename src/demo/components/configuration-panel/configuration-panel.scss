@@ -5,6 +5,8 @@ $className: 'configuration-panel';
   flex-direction: column;
   align-items: flex-end;
   list-style-type: none;
+  margin: 0rem;
+  padding: 0rem;
 
   &__item {
     margin-top: .625rem;
@@ -25,7 +27,8 @@ $className: 'configuration-panel';
   }
 
   &__scale-list {
-    margin-top: 1rem;
+    padding: 0rem;
+    margin: 1rem 0rem 0rem;
     display: flex;
     flex-direction: column;
     align-items: flex-end;

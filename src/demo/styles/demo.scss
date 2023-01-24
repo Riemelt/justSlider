@@ -4,8 +4,6 @@ $className:  'demo';
 $justSlider: 'just-slider';
 
 * {
-  margin: 0rem;
-  padding: 0rem;
   box-sizing: border-box;
 }
 
@@ -23,6 +21,7 @@ body {
 .#{$className} {
   min-height: 100vh;
   list-style-type: none;
+  margin: 0rem;
   padding: 4.375rem 9.375rem;
 
   @media (max-width: 1280px) {
