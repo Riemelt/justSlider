@@ -5,6 +5,7 @@ A jQuery plugin, customizable and responsive range slider for modern browsers. R
 Compatible with
 
 * node v18.10.0
+* npm 8.19.2
 * jquery v3.6.1
 
 ## [Demo](https://riemelt.github.io/justSlider/index.html)
