@@ -1,6 +1,6 @@
 {
   "name": "just-slider",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Slider plugin for jQuery",
   "main": "./dist/just-slider.js",
   "files": [
