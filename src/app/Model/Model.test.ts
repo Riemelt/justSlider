@@ -217,7 +217,7 @@ describe('Model', () => {
     });
 
     test(
-      'Adjust HandleTo value when switching range to true, if it\'s not valid',
+      'Adjust handle value when switching range to true, if it\'s not valid',
       () => {
         const initOptions = {
           from: 50,
@@ -233,7 +233,7 @@ describe('Model', () => {
         model.updateOptions({ range: true });
         const state = model.getState();
 
-        expect(state.to).toBeGreaterThanOrEqual(80);
+        expect(state.to).toBeGreaterThanOrEqual(70);
       }
     );
   });
@@ -447,6 +447,16 @@ describe('Model', () => {
 
       expect(state.from).toBe(25);
       expect(state.to).toBe(50);
+    });
+
+    test('Swaps handles if they collide', () => {
+      model.init({ ...options, range: true, from: 0, to: 10 });
+      model.updateHandle(30, FROM);
+
+      const state = model.getState();
+
+      expect(state.from).toBe(0);
+      expect(state.to).toBe(30);
     });
 
     test('Dispatches events on update', () => {

@@ -1,4 +1,5 @@
 import {
+  HANDLES_SWAP,
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
   ORIENTATION_UPDATE,
@@ -24,9 +25,6 @@ import {
   JustSliderOptions,
 } from '../types';
 import {
-  STEPS,
-} from '../View/Scale/constants';
-import {
   ScaleOptions,
 } from '../View/Scale/types';
 import View from '../View/View';
@@ -41,7 +39,6 @@ describe('Presenter', () => {
   const onUpdate = jest.fn(() => undefined);
 
   const scale: ScaleOptions = {
-    type: STEPS,
     lines: true,
     numbers: true,
   };
@@ -135,6 +132,7 @@ describe('Presenter', () => {
       SCALE_UPDATE,
       SLIDER_CLICK_DISABLE,
       SLIDER_CLICK_ENABLE,
+      HANDLES_SWAP,
     ];
 
     presenter.init(options);
@@ -246,6 +244,15 @@ describe('Presenter', () => {
 
       const mockedUpdate = jest.spyOn(view, 'updateScale');
       eventManager.dispatchEvent(SCALE_UPDATE);
+
+      expect(mockedUpdate).toBeCalledTimes(1);
+    });
+
+    test(HANDLES_SWAP, () => {
+      presenter.init(options);
+
+      const mockedUpdate = jest.spyOn(view, 'swapHandles');
+      eventManager.dispatchEvent(HANDLES_SWAP);
 
       expect(mockedUpdate).toBeCalledTimes(1);
     });

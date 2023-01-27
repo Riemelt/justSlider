@@ -25,11 +25,21 @@ import {
 
 const UPDATES: Updates = {
   [HANDLE_FROM_MOVE]: {
-    events: [HANDLE_FROM_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE],
+    events: [
+      HANDLE_FROM_MOVE,
+      HANDLE_TO_MOVE,
+      PROGRESS_BAR_UPDATE,
+      SLIDER_UPDATE,
+    ],
     stateUpdates: [HANDLE_FROM_MOVE],
   },
   [HANDLE_TO_MOVE]: {
-    events: [HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE],
+    events: [
+      HANDLE_TO_MOVE,
+      HANDLE_FROM_MOVE,
+      PROGRESS_BAR_UPDATE,
+      SLIDER_UPDATE,
+    ],
     stateUpdates: [HANDLE_TO_MOVE],
   },
   [ORIENTATION_UPDATE]: {
@@ -103,7 +113,12 @@ const UPDATES: Updates = {
     stateUpdates: [PRECISION_UPDATE, SCALE_UPDATE],
   },
   [RANGE_UPDATE]: {
-    events: [HANDLE_TO_MOVE, PROGRESS_BAR_UPDATE, SLIDER_UPDATE],
+    events: [
+      HANDLE_FROM_MOVE,
+      HANDLE_TO_MOVE,
+      PROGRESS_BAR_UPDATE,
+      SLIDER_UPDATE,
+    ],
     stateUpdates: [RANGE_UPDATE, HANDLE_TO_MOVE],
   },
 };

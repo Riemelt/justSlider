@@ -12,6 +12,7 @@ const PRECISION_UPDATE = 'PrecisionUpdate';
 const RANGE_UPDATE = 'RangeUpdate';
 const SLIDER_CLICK_DISABLE = 'SliderClickDisable';
 const SLIDER_CLICK_ENABLE = 'SliderClickEnable';
+const HANDLES_SWAP = 'HandlesSwap';
 
 export {
   HANDLE_FROM_MOVE,
@@ -28,4 +29,5 @@ export {
   RANGE_UPDATE,
   SLIDER_CLICK_DISABLE,
   SLIDER_CLICK_ENABLE,
+  HANDLES_SWAP,
 };

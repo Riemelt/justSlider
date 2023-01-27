@@ -301,4 +301,18 @@ describe('Handle', () => {
       mockedHandleOffset.mockRestore();
     });
   });
+
+  test('Sets type', () => {
+    const handler = jest.fn(() => undefined);
+    generateHandle(FROM);
+    handle.setHandlePointermoveHandler(handler);
+    handle.setType(TO);
+    handle.update(state);
+
+    const $handle = handle.getHandleHTML();
+    $handle.trigger('pointerdown');
+    $(document).trigger('pointermove');
+
+    expect(handler).toBeCalledWith(0, TO);
+  });
 });

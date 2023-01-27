@@ -92,6 +92,20 @@ class View {
     delete this.handles[type];
   }
 
+  public swapHandles(): void {
+    const { from, to } = this.handles;
+
+    if (from !== undefined && to !== undefined) {
+      this.handles = {
+        from: to,
+        to: from,
+      };
+
+      this.handles.from?.setType(FROM);
+      this.handles.to?.setType(TO);
+    }
+  }
+
   public addCreateHandleHandlers(handler: (
     value: number,
     type: HandleType

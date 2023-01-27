@@ -1,5 +1,6 @@
 import {
   DIRECTION_UPDATE,
+  HANDLES_SWAP,
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
   MIN_MAX_UPDATE,
@@ -91,22 +92,18 @@ class Model {
     return value;
   }
 
-  static validateHandleOnCollision(
+  static areHandlesCollided(
     value: number,
     type: HandleType,
     from: number,
     to: number,
     range: boolean
-  ): number {
+  ): boolean {
     if (!range) {
-      return value;
+      return false;
     }
 
-    if (type === FROM) {
-      return value > to ? to : value;
-    }
-
-    return value < from ? from : value;
+    return type === FROM ? value > to : value < from;
   }
 
   static validateScaleDensity(density: number): number {
@@ -257,9 +254,9 @@ class Model {
     type: HandleType,
     shouldAdjust = true
   ): void {
-    this.setHandle(type, value, shouldAdjust);
+    const newType = this.setHandle(type, value, shouldAdjust);
 
-    const event = type === FROM ? HANDLE_FROM_MOVE : HANDLE_TO_MOVE;
+    const event = newType === FROM ? HANDLE_FROM_MOVE : HANDLE_TO_MOVE;
     const { events } = UPDATES[event];
 
     this.eventManager.dispatchEvents(events);
@@ -269,23 +266,40 @@ class Model {
     type: HandleType,
     value?: number,
     shouldAdjust = true
-  ): void {
+  ): HandleType {
     const newValue = value ?? this.state[type];
-    const { step, precision } = this.state;
+    const { step, precision, from, to, range } = this.state;
 
     const adjusted = shouldAdjust ?
-      this.adjustHandle(newValue, step, type) :
+      this.adjustHandle(newValue, step) :
       newValue;
 
-    const validated = this.validateHandle(newValue, type);
+    const validated = this.validateHandle(newValue);
     const valueToSet = newValue !== validated ? validated : adjusted;
 
-    this.state[type] = Model.adjustFloat(valueToSet, precision);
+    let newType = type;
+
+    const isCollided = Model.areHandlesCollided(
+      validated,
+      type,
+      from,
+      to,
+      range
+    );
+
+    if (isCollided) {
+      this.eventManager.dispatchEvent(HANDLES_SWAP);
+      newType = type === FROM ? TO : FROM;
+    }
+
+    this.state[newType] = Model.adjustFloat(valueToSet, precision);
+
+    return newType;
   }
 
-  private adjustHandle(value: number, step: number, type: HandleType): number {
+  private adjustHandle(value: number, step: number): number {
     const adjusted = this.adjustWithStep(value, step);
-    const validated = this.validateHandle(adjusted, type);
+    const validated = this.validateHandle(adjusted);
     return validated;
   }
 
@@ -297,19 +311,11 @@ class Model {
     return adjusted;
   }
 
-  private validateHandle(value: number, type: HandleType): number {
-    const { from, to, min, max, range } = this.state;
-
-    const validatedOnCollision = Model.validateHandleOnCollision(
-      value,
-      type,
-      from,
-      to,
-      range
-    );
+  private validateHandle(value: number): number {
+    const { min, max } = this.state;
 
     const validatedOnMinMax = Model.validateHandleOnMinMax(
-      validatedOnCollision,
+      value,
       min,
       max
     );

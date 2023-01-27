@@ -85,6 +85,10 @@ class Handle {
     this.handleHandlePointermove = handler;
   }
 
+  public setType(type: HandleType): void {
+    this.type = type;
+  }
+
   public delete(): void {
     this.deleteHandlers();
     this.$component.remove();

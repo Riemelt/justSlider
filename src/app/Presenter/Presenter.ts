@@ -9,6 +9,7 @@ import {
 import View from '../View/View';
 import EventManager from '../EventManager/EventManager';
 import {
+  HANDLES_SWAP,
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
   ORIENTATION_UPDATE,
@@ -124,6 +125,7 @@ class Presenter {
     this.eventManager.registerEvent(SCALE_UPDATE);
     this.eventManager.registerEvent(SLIDER_CLICK_DISABLE);
     this.eventManager.registerEvent(SLIDER_CLICK_ENABLE);
+    this.eventManager.registerEvent(HANDLES_SWAP);
   }
 
   private addEventListeners(): void {
@@ -168,6 +170,10 @@ class Presenter {
     this.eventManager.addEventListener(SLIDER_UPDATE, () => {
       const state = this.model.getState();
       this.onUpdate?.(state);
+    });
+
+    this.eventManager.addEventListener(HANDLES_SWAP, () => {
+      this.view.swapHandles();
     });
   }
 }

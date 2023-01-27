@@ -14,6 +14,7 @@ import {
   MIN_MAX_UPDATE,
   PRECISION_UPDATE,
   RANGE_UPDATE,
+  HANDLES_SWAP,
 } from './constants';
 
 type SliderEvent =
@@ -30,7 +31,8 @@ type SliderEvent =
   typeof STEP_UPDATE |
   typeof MIN_MAX_UPDATE |
   typeof PRECISION_UPDATE |
-  typeof RANGE_UPDATE;
+  typeof RANGE_UPDATE |
+  typeof HANDLES_SWAP;
 
 
 type EventSubjects = {
