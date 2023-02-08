@@ -107,8 +107,8 @@ class Model {
   }
 
   static validateScaleDensity(density: number): number {
-    if (density < 0) {
-      return 0;
+    if (density < 0.5) {
+      return 0.5;
     }
 
     if (density > 100) {
@@ -404,12 +404,14 @@ class Model {
     const { density } = this.state.scale;
     const { min, max, step, precision } = this.state;
 
+    const stepsAmount = (max - min) / step;
     const lineStep = (max - min) * density / 100;
+    const numberStep = (Math.trunc(stepsAmount / 100) + 1) * step;
 
     for (
       let value = min;
       value < max;
-      value = Model.adjustFloat(value + step, precision)
+      value = Model.adjustFloat(value + numberStep, precision)
     ) {
       const numberSegment: Segment = {
         value,
@@ -418,7 +420,7 @@ class Model {
 
       this.state.scale.segments.push(numberSegment);
 
-      let nextValue = value + step;
+      let nextValue = value + numberStep;
       nextValue = nextValue >= max ? max : nextValue;
       const distanceToNextValue = Model.adjustFloat(
         nextValue - value,

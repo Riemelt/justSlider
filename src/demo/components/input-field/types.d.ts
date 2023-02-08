@@ -6,7 +6,7 @@ interface InputFieldOptions {
 }
 
 interface InputUpdate {
-  value: number,
+  value?: number,
   step?: number,
   min?: number,
 }

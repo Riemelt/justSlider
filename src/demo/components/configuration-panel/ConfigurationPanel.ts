@@ -155,6 +155,8 @@ class ConfigurationPanel {
       options.scale?.inputDensity
     );
 
+    this.inputScaleDensity.update({ step: 0.1 });
+
     this.toggleScaleNumbers = new Toggle(
       this.$component.find(`.js-${this.className}__scale-numbers`),
       options.scale?.toggleNumbers

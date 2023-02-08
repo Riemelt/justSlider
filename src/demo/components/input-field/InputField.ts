@@ -27,7 +27,9 @@ class InputField {
     step,
     min,
   }: InputUpdate): void {
-    this.$input.val(value);
+    if (value !== undefined) {
+      this.$input.val(value);
+    }
 
     if (step !== undefined) {
       this.$input.prop('step', step);

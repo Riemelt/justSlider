@@ -514,13 +514,13 @@ describe('Model', () => {
       mockedDispatcher.mockRestore();
     });
 
-    test('Density cannot be less than 0', () => {
+    test('Density cannot be less than 0.5', () => {
       model.init({ scale: {
-        density: -30,
+        density: 0.1,
       } });
 
       const state = model.getState();
-      expect(state.scale?.density).toBeGreaterThanOrEqual(0);
+      expect(state.scale?.density).toBeGreaterThanOrEqual(0.5);
     });
 
     test('Density cannot be greater than 100', () => {
@@ -533,12 +533,14 @@ describe('Model', () => {
     });
 
     test('Generates segments', () => {
-      model.init({ min: 0,
+      model.init({
+        min: 0,
         max: 20,
         step: 10,
         scale: {
           density: 15,
-        } });
+        },
+      });
 
       const state = model.getState();
       expect(state.scale?.segments).toEqual([
@@ -579,6 +581,23 @@ describe('Model', () => {
           value: 20,
         },
       ]);
+    });
+
+    test('Amount of number segments cannot be more than 100', () => {
+      model.init({
+        min: 0,
+        max: 1000,
+        step: 1,
+        scale: {
+          density: 15,
+        },
+      });
+
+      const state = model.getState();
+      const segments = state.scale?.segments;
+      const numbers = segments?.filter((segment) => segment.type === NUMBER);
+
+      expect(numbers?.length).not.toBeGreaterThan(100);
     });
   });
 
