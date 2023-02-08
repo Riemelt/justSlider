@@ -25,7 +25,7 @@ describe('JustSlider jQuery plugin', () => {
 
   const $slider: JQuery<HTMLElement> = $(`
     <div
-      class="slider"
+      class="just-slider"
       data-min="${options.min}"
       data-max="${options.max}"
       data-step="${options.step}"

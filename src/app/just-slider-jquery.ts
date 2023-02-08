@@ -51,4 +51,10 @@ import {
 
     return this;
   };
+
+  const $sliders = $('.just-slider');
+  $sliders.each((_, element) => {
+    const $element = $(element);
+    $element.justSlider();
+  });
 }(jQuery));

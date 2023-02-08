@@ -116,6 +116,8 @@ $("div.container").justSlider(options);
 
 ### Initialization with data-attributes
 
+Slider can be initialized with `just-slider` class and providing options via data attributes.
+
 #### Attributes list
 
 ##### data-min="0"
@@ -137,11 +139,7 @@ $("div.container").justSlider(options);
 #### Example
 
 ```html
-<div class="slider" data-min="10" data-step="5" data-orientation="vertical" data-scale="true" data-scale-lines="false"></div>
-```
-
-```javascript
-$("div.slider").justSlider();
+<div class="just-slider" data-min="10" data-step="5" data-orientation="vertical" data-scale="true" data-scale-lines="false"></div>
 ```
 
 ### API
