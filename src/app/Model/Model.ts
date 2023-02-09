@@ -277,8 +277,6 @@ class Model {
     const validated = this.validateHandle(newValue);
     const valueToSet = newValue !== validated ? validated : adjusted;
 
-    let newType = type;
-
     const isCollided = Model.areHandlesCollided(
       validated,
       type,
@@ -287,11 +285,14 @@ class Model {
       range
     );
 
+    let newType = type;
+
     if (isCollided) {
       this.eventManager.dispatchEvent(HANDLES_SWAP);
       newType = type === FROM ? TO : FROM;
     }
 
+    this.state[type] = this.state[newType];
     this.state[newType] = Model.adjustFloat(valueToSet, precision);
 
     return newType;
