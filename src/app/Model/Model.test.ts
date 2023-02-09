@@ -455,7 +455,7 @@ describe('Model', () => {
 
       const state = model.getState();
 
-      expect(state.from).toBe(0);
+      expect(state.from).toBe(10);
       expect(state.to).toBe(30);
     });
 
