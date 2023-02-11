@@ -7,12 +7,10 @@ include ./components/slider-demo/slider-demo
   const demos = data.demos
 
 doctype html
-html
+html(
+  lang="en"
+)
   +head({ title })
-
-  link(href=require('./styles/styles.scss') rel='stylesheet')
-  script(src=require('./index.ts') defer='defer')
-
   body
     ul(class=`${className} js-${className}`)
       li(class=`${className}__slider-demo`)
@@ -27,3 +25,5 @@ html
       li(class=`${className}__slider-demo`)
         div(class=`${className}__slider-demo-quaternary js-${className}__slider-demo-quaternary`)
           +slider-demo(demos.quaternary)
+    link(href=require('./styles/styles.scss') rel='stylesheet')
+    script(src=require('./index.ts') defer='defer')
