@@ -15,7 +15,7 @@ body {
   min-width: 320px;
   max-width: 1920px;
   margin: 0 auto;
-  background-color: $dark-58;
+  background-color: $darker;
 }
 
 .#{$className} {
@@ -67,7 +67,7 @@ body {
       border-radius: initial;
       height: .375rem;
       width: 100%;
-      background-color: $green-50;
+      background-color: $tertiary-50;
 
       &_vertical {
         width: .375rem;
@@ -75,7 +75,7 @@ body {
       }
 
       &__progress-bar {
-        background-color: $green;
+        background-color: $tertiary;
       }
 
       &__handle {
@@ -83,21 +83,21 @@ body {
         border: initial;
         width: .875rem;
         height: 2.8125rem;
-        background-color: $green;
+        background-color: $tertiary;
       }
 
       &__tooltip {
         font-weight: 700;
-        color: $green;
+        color: $tertiary;
         background-color: initial;
       }
 
       &__scale-line {
-        background-color: $green;
+        background-color: $tertiary;
       }
 
       &__scale-number {
-        color: $green;
+        color: $tertiary;
         font-size: .625rem;
       }
     }
@@ -105,15 +105,15 @@ body {
 
   &__slider-demo-quaternary {
     .#{$justSlider} {
-      background-color: $rose-25;
+      background-color: $secondary-25;
 
       &__handle {
         border: initial;
-        background-color: $rose;
+        background-color: $secondary;
       }
 
       &__progress-bar {
-        background-color: $rose-50;
+        background-color: $secondary-50;
       }
     }
   }

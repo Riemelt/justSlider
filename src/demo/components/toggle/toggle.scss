@@ -10,7 +10,7 @@ $className: 'toggle';
 
     &:focus-within {
       .#{$className}__title {
-        color: $rose;
+        color: $secondary;
       }
     }
   }
@@ -39,10 +39,10 @@ $className: 'toggle';
 
   &__switch-input:focus
   + &__switch {
-    border-color: $rose;
+    border-color: $secondary;
 
     &::after {
-      background-color: $rose;
+      background-color: $secondary;
     }
   }
 
@@ -50,7 +50,7 @@ $className: 'toggle';
     position: relative;
     height: 1.5rem;
     width: 3.75rem;
-    border: .1875rem solid $dark-58;
+    border: .1875rem solid $darker;
     border-radius: 1.25rem;
 
     &::after {
@@ -58,7 +58,7 @@ $className: 'toggle';
       content: '';
       height: .875rem;
       width: .875rem;
-      background-color: $dark-58;
+      background-color: $darker;
       border-radius: 50%;
       transition: right 0.4s;
       margin: auto;

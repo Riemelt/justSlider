@@ -9,17 +9,17 @@ $className: 'input-field';
     display: flex;
     justify-content: space-between;
     min-height: 1rem;
-    border: 3px solid $dark-58;
+    border: 3px solid $darker;
     border-radius: 1.25rem;
     overflow: hidden;
 
     &:focus-within {
-      border-color: $rose;
+      border-color: $secondary;
 
       .#{$className} {
         &__title,
         &__input {
-          color: $rose;
+          color: $secondary;
         }
 
         &__title {
