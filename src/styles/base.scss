@@ -60,6 +60,7 @@ $className: 'just-slider';
     padding: .3125rem .625rem;
     font-size: 1rem;
     font-family: Arial, 'sans-serif';
+    user-select: none;
   }
 
   &__progress-bar-wrapper {
@@ -125,6 +126,7 @@ $className: 'just-slider';
     margin-top: 1.25rem;
     line-height: 1.875rem;
     font-size: .75rem;
+    user-select: none;
 
     &_big {
       font-weight: 700;
