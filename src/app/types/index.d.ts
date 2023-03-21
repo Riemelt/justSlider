@@ -21,7 +21,6 @@ interface Options {
   step?: number;
   min?: number;
   max?: number;
-  precision?: number;
   orientation?: Orientation;
   direction?: Direction;
   range?: boolean;
@@ -32,6 +31,7 @@ interface Options {
 
 type State = Required<Options> & {
   scale: ScaleState | null;
+  precision: number;
 }
 
 interface JustSliderOptions extends Options {

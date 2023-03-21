@@ -603,36 +603,16 @@ describe('Model', () => {
 
   describe('Precision', () => {
     test('Updates precision', () => {
-      model.init({ precision: 1 });
-      model.updateOptions({ precision: 2 });
+      model.init();
+      model.updateOptions({ min: 0, max: 2.222, step: 0.5 });
 
       const state = model.getState();
 
-      expect(state.precision).toBe(2);
-    });
-
-    test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [
-        TOOLTIPS_UPDATE,
-        SCALE_UPDATE,
-        SLIDER_UPDATE,
-      ];
-
-      model.init({ precision: 1 });
-      model.updateOptions({ precision: 2 });
-
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
-      });
-
-      mockedDispatcher.mockRestore();
+      expect(state.precision).toBe(3);
     });
 
     test('Cannot be less than precision of min, max or step', () => {
       model.init({ min: 0, max: 2.22, step: 0.5 });
-      model.updateOptions({ precision: 1 });
-
       const state = model.getState();
 
       expect(state.precision).toBeGreaterThanOrEqual(2);

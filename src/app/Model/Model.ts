@@ -66,14 +66,17 @@ class Model {
   }
 
   static getNumberOfDecimals(value: number): number {
-    const convertedToString = value.toString();
-    const hasDecimals = convertedToString.includes('.');
+    const match = (`${value}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
 
-    if (!hasDecimals) {
+    if (!match) {
       return 0;
     }
 
-    return convertedToString.split('.').pop()?.length ?? 0;
+    return Math.max(
+      0,
+      (match[1] ? match[1].length : 0)
+      - (match[2] ? +match[2] : 0)
+    );
   }
 
   static validateHandleOnMinMax(
@@ -160,7 +163,6 @@ class Model {
     tooltips = Model.DEFAULT_STATE.tooltips,
     progressBar = Model.DEFAULT_STATE.progressBar,
     scale = Model.DEFAULT_STATE.scale,
-    precision = Model.DEFAULT_STATE.precision,
   }: Options = {}): void {
     this.state = {
       from,
@@ -173,12 +175,13 @@ class Model {
       range,
       tooltips,
       progressBar,
-      precision,
+      precision: 1,
       scale: null,
     };
 
     this.setMinMax(min, max);
     this.setStep(step);
+    this.updatePrecision();
     this.setHandle(FROM, from);
     this.setHandle(TO, to);
     this.setScale(scale);
@@ -201,7 +204,6 @@ class Model {
       tooltips,
       progressBar,
       scale,
-      precision,
     } = options;
 
     const { events, stateUpdates } = getUpdates(options);
@@ -239,7 +241,7 @@ class Model {
           this.setScale(scale);
           break;
         case PRECISION_UPDATE:
-          this.setPrecision(precision);
+          this.updatePrecision();
           break;
         default:
           break;
@@ -324,17 +326,7 @@ class Model {
     return validatedOnMinMax;
   }
 
-  private setPrecision(precision?: number): void {
-    const newValue = precision ?? this.state.precision;
-    const isStrict = (precision === undefined);
-
-    this.state.precision = this.validatePrecision(newValue, isStrict);
-  }
-
-  private validatePrecision(
-    precision: number,
-    isStrict = true,
-  ): number {
+  private updatePrecision(): void {
     const { min, max, step } = this.state;
 
     const minPrecision = Math.max(
@@ -343,11 +335,7 @@ class Model {
       Model.getNumberOfDecimals(step)
     );
 
-    if (isStrict) {
-      return minPrecision;
-    }
-
-    return (precision <= minPrecision) ? minPrecision : precision;
+    this.state.precision = minPrecision;
   }
 
   private setRange(range?: boolean): void {
@@ -480,7 +468,14 @@ class Model {
     const newStep = step ?? this.state.step;
     const { min, max } = this.state;
 
-    this.state.step = Model.validateStep(newStep, max - min);
+    const precision = Math.max(
+      Model.getNumberOfDecimals(min),
+      Model.getNumberOfDecimals(max),
+    );
+
+    const length = Model.adjustFloat(max - min, precision);
+
+    this.state.step = Model.validateStep(newStep, length);
   }
 }
 

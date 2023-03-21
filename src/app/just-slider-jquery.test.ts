@@ -15,7 +15,6 @@ describe('JustSlider jQuery plugin', () => {
     range: true,
     tooltips: true,
     progressBar: true,
-    precision: 1,
     scale: {
       density: 2,
       numbers: false,
@@ -36,7 +35,6 @@ describe('JustSlider jQuery plugin', () => {
       data-range="${options.range}"
       data-tooltips="${options.tooltips}"
       data-progress-bar="${options.progressBar}"
-      data-precision="${options.precision}"
       data-scale="${options.scale !== undefined}"
       data-scale-density="${options.scale?.density}"
       data-scale-numbers="${options.scale?.numbers}"
@@ -135,14 +133,6 @@ describe('JustSlider jQuery plugin', () => {
 
       const { progressBar } = justSlider.getState();
       expect(progressBar).toBe(options.progressBar);
-    });
-
-    test('Precision', () => {
-      $slider.justSlider();
-      const justSlider = $slider.data('just-slider');
-
-      const { precision } = justSlider.getState();
-      expect(precision).toBe(options.precision);
     });
 
     test('Scale', () => {

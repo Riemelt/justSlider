@@ -71,10 +71,6 @@ Shows tooltips attached to handles, indicating their current values.
 
 Shows progress bar between two handles if range mode is enabled. Otherwise bar is in between minimum and first handle values.
 
-#### precision `number` = 0
-
-Amount of decimals of handle values. If 0, values are integral.
-
 #### scale `ScaleOptions` = null
 
 Shows scale next to the slider. Customizable with its own options. It has divisions with little lines and values.
@@ -130,7 +126,6 @@ Slider can be initialized with `just-slider` class and providing options via dat
 ##### data-range="false"
 ##### data-tooltips="false"
 ##### data-progress-bar="false"
-##### data-precision="false"
 ##### data-scale="false"
 ##### data-scale-density="3"
 ##### data-scale-numbers="true"

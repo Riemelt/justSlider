@@ -22,10 +22,6 @@
           "title": "to",
           "type": "number"
         },
-        "inputPrecision": {
-          "title": "precision",
-          "type": "number"
-        },
         "toggleVertical": {
           "title": "vertical"
         },
@@ -68,7 +64,6 @@
         "direction": "forward",
         "progressBar": true,
         "tooltips": true,
-        "precision": 0,
         "scale": {
           "density": 2,
           "lines": true,
@@ -96,10 +91,6 @@
         },
         "inputTo": {
           "title": "to",
-          "type": "number"
-        },
-        "inputPrecision": {
-          "title": "precision",
           "type": "number"
         },
         "toggleVertical": {
@@ -144,7 +135,6 @@
         "direction": "forward",
         "progressBar": true,
         "tooltips": false,
-        "precision": 1,
         "scale": {
           "density": 3,
           "lines": true,
@@ -172,10 +162,6 @@
         },
         "inputTo": {
           "title": "to",
-          "type": "number"
-        },
-        "inputPrecision": {
-          "title": "precision",
           "type": "number"
         },
         "toggleVertical": {
@@ -220,7 +206,6 @@
         "direction": "backward",
         "progressBar": true,
         "tooltips": true,
-        "precision": 0,
         "scale": {
           "density": 2,
           "lines": true,
@@ -248,10 +233,6 @@
         },
         "inputTo": {
           "title": "to",
-          "type": "number"
-        },
-        "inputPrecision": {
-          "title": "precision",
           "type": "number"
         },
         "toggleVertical": {
@@ -296,7 +277,6 @@
         "direction": "forward",
         "progressBar": false,
         "tooltips": true,
-        "precision": 0,
         "scale": {
           "density": 4,
           "lines": false,

@@ -17,7 +17,6 @@ class ConfigurationPanel {
   private inputStep?: InputField;
   private inputFrom?: InputField;
   private inputTo?: InputField;
-  private inputPrecision?: InputField;
 
   private toggleVertical?: Toggle;
   private toggleForward?: Toggle;
@@ -51,7 +50,6 @@ class ConfigurationPanel {
     tooltips = false,
     range = false,
     scale = null,
-    precision = 0,
   }: Options = {}): void {
     this.inputFrom?.update({ step, min, value: from });
 
@@ -65,7 +63,6 @@ class ConfigurationPanel {
     this.inputStep?.update({ value: step });
     this.inputMin?.update({ value: min });
     this.inputMax?.update({ value: max });
-    this.inputPrecision?.update({ value: precision });
 
     this.toggleVertical?.update(orientation === VERTICAL);
     this.toggleForward?.update(direction === FORWARD);
@@ -113,11 +110,6 @@ class ConfigurationPanel {
     this.inputTo = new InputField(
       this.$component.find(`.js-${this.className}__input-to`),
       options.inputTo
-    );
-
-    this.inputPrecision = new InputField(
-      this.$component.find(`.js-${this.className}__input-precision`),
-      options.inputPrecision
     );
 
     this.toggleVertical = new Toggle(

@@ -9,7 +9,6 @@ mixin configuration-panel(vars = {})
       inputStep = {},
       inputFrom = {},
       inputTo = {},
-      inputPrecision = {},
       toggleVertical = {},
       toggleForward = {},
       toggleRange = {},
@@ -42,9 +41,6 @@ mixin configuration-panel(vars = {})
     li(class=`${className}__item`)
       div(class=`${className}__input-to js-${className}__input-to`)
         +input-field(inputTo)
-    li(class=`${className}__item`)
-      div(class=`${className}__input-precision js-${className}__input-precision`)
-        +input-field(inputPrecision)
     li(class=`${className}__item`)
       div(class=`${className}__toggle-vertical js-${className}__toggle-vertical`)
         +toggle(toggleVertical)

@@ -4,7 +4,6 @@ interface ConfigurationPanelOptions {
   inputStep?: InputFieldOptions;
   inputFrom?: InputFieldOptions;
   inputTo?: InputFieldOptions;
-  inputPrecision?: InputFieldOptions;
   toggleVertical?: ToggleOptions;
   toggleRange?: ToggleOptions;
   toggleBar?: ToggleOptions;

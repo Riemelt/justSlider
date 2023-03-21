@@ -108,10 +108,6 @@ const UPDATES: Updates = {
       SCALE_UPDATE,
     ],
   },
-  [PRECISION_UPDATE]: {
-    events: [TOOLTIPS_UPDATE, SCALE_UPDATE, SLIDER_UPDATE],
-    stateUpdates: [PRECISION_UPDATE, SCALE_UPDATE],
-  },
   [RANGE_UPDATE]: {
     events: [
       HANDLE_FROM_MOVE,
@@ -135,7 +131,6 @@ const getUpdates = function getUpdates({
   tooltips,
   progressBar,
   scale,
-  precision,
 }: Options): Update {
   const propertiesToUpdate: Set<SliderEvent> = new Set();
   const eventsToDispatch: Set<SliderEvent> = new Set();
@@ -178,10 +173,6 @@ const getUpdates = function getUpdates({
 
   if (scale !== undefined) {
     addUpdates(SCALE_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
-
-  if (precision !== undefined) {
-    addUpdates(PRECISION_UPDATE, propertiesToUpdate, eventsToDispatch);
   }
 
   return {
