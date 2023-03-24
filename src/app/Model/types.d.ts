@@ -15,10 +15,12 @@ import {
 } from '../EventManager/types';
 import {
   FROM,
+  RANGE,
   TO,
 } from './constants';
 
 type HandleType = typeof FROM | typeof TO;
+type TooltipType = typeof FROM | typeof TO | typeof RANGE;
 
 interface Update {
   events: Array<SliderEvent>;
@@ -42,4 +44,5 @@ export {
   HandleType,
   Update,
   Updates,
+  TooltipType,
 };

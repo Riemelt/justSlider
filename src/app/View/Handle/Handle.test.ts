@@ -18,7 +18,7 @@ import {
   VERTICAL,
 } from '../../Model/constants';
 import Handle from './Handle';
-import Tooltip from './Tooltip/Tooltip';
+import Tooltip from '../Tooltip/Tooltip';
 
 describe('Handle', () => {
   let handle: Handle;

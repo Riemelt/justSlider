@@ -5,6 +5,7 @@ const BACKWARD = 'backward';
 
 const FROM = 'from';
 const TO = 'to';
+const RANGE = 'range';
 
 export {
   VERTICAL,
@@ -13,4 +14,5 @@ export {
   BACKWARD,
   FROM,
   TO,
+  RANGE,
 };

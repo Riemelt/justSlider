@@ -23,12 +23,12 @@ $className: 'just-slider';
     top: 50%;
     z-index: 4;
 
-    &_focused {
+    &_type_tooltip {
       z-index: 5;
     }
 
-    &_unfocused {
-      z-index: 3;
+    &_hidden {
+      display: none;
     }
   }
 
@@ -56,11 +56,13 @@ $className: 'just-slider';
     background-color: $dark;
     color: white;
     border-radius: .1875rem;
-    transform: translate(0, -140%);
+    transform: translate(-50%, 0);
     padding: .3125rem .625rem;
     font-size: 1rem;
     font-family: Arial, 'sans-serif';
     user-select: none;
+    left: 100%;
+    bottom: 1.875rem;
   }
 
   &__progress-bar-wrapper {
@@ -175,10 +177,13 @@ $className: 'just-slider';
       }
 
       &__tooltip {
-        transform: initial;
-        top: 150%;
+        right: initial;
+        top: initial;
+        left: initial;
+        right: 1.875rem;
+        bottom: 0;
         padding: .625rem .625rem;
-        transform: rotate(-90deg) translate(0, 0);
+        transform: translate(0, 50%);
       }
 
       &__progress-bar {

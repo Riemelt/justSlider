@@ -4,11 +4,12 @@ import {
   Orientation,
 } from '../types';
 import {
-  HandleType,
+  HandleType, TooltipType,
 } from '../Model/types';
 import {
   FROM,
   HORIZONTAL,
+  RANGE,
   TO,
   VERTICAL,
 } from '../Model/constants';
@@ -18,6 +19,7 @@ import {
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
+import Tooltip from './Tooltip/Tooltip';
 
 class View {
   private eventManager: EventManager;
@@ -37,6 +39,13 @@ class View {
     from?: Handle,
     to?: Handle,
   } = {};
+
+  private tooltips: {
+    from?: Tooltip,
+    to?: Tooltip,
+    range?: Tooltip,
+  } = {};
+  private isTooltipsRange = false;
 
   private progressBar?: ProgressBar;
   private scale?: Scale;
@@ -120,8 +129,34 @@ class View {
   }
 
   public updateTooltips(state: State): void {
-    this.handles.from?.updateTooltip(state);
-    this.handles.to?.updateTooltip(state);
+    this.updateTooltip(FROM, state);
+    this.updateTooltip(TO, state);
+    // this.updateTooltip(RANGE, state);
+  }
+
+  public updateTooltip(type: TooltipType, state: State): void {
+    const { tooltips, range } = state;
+
+    if (tooltips && (type === FROM || (type === TO && range))) {
+      if (!this.tooltips[type]) {
+        this.tooltips[type] = new Tooltip({
+          type,
+          $parent: this.$justSlider,
+        });
+      }
+
+      this.tooltips[type]?.update(state);
+      return;
+    }
+
+    if (!this.tooltips[type]) return;
+
+    this.deleteTooltip(type);
+  }
+
+  private deleteTooltip(type: TooltipType): void {
+    this.tooltips[type]?.delete();
+    delete this.tooltips[type];
   }
 
   public updateProgressBar(state: State): void {

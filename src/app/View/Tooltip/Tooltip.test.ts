@@ -1,5 +1,5 @@
 import Tooltip from './Tooltip';
-import * as Utilities from '../../utilities/utilities';
+import * as Utilities from '../utilities/utilities';
 
 describe('Tooltip', () => {
   let $parent: JQuery<HTMLElement>;
@@ -31,7 +31,10 @@ describe('Tooltip', () => {
     const value = 5;
     const precision = 0;
 
-    tooltip.update(value, precision);
+    tooltip.update({
+      precision,
+      from: value,
+    });
 
     const $tooltip = $parent.find(tooltipClass);
 

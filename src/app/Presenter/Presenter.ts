@@ -132,11 +132,13 @@ class Presenter {
     this.eventManager.addEventListener(HANDLE_FROM_MOVE, () => {
       const state = this.model.getState();
       this.view.updateHandle(state, FROM);
+      this.view.updateTooltips(state);
     });
 
     this.eventManager.addEventListener(HANDLE_TO_MOVE, () => {
       const state = this.model.getState();
       this.view.updateHandle(state, TO);
+      this.view.updateTooltips(state);
     });
 
     this.eventManager.addEventListener(PROGRESS_BAR_UPDATE, () => {

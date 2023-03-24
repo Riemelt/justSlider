@@ -20,7 +20,6 @@ import {
 import {
   getTransformStyles,
 } from '../utilities/utilities';
-import Tooltip from './Tooltip/Tooltip';
 import {
   HandleOptions,
 } from './types';
@@ -44,8 +43,6 @@ class Handle {
 
   private type: HandleType = FROM;
   private state: State;
-
-  private tooltip?: Tooltip;
 
   static initHtml(): JQuery<HTMLElement> {
     return $(`
@@ -106,53 +103,6 @@ class Handle {
       direction,
       shift: value,
     });
-
-    this.updateFocus(value, min, max, this.type);
-    this.updateTooltip(state);
-  }
-
-  public updateTooltip(state: State): void {
-    const { tooltips, precision } = state;
-    const value = state[this.type];
-
-    if (tooltips) {
-      if (!this.tooltip) {
-        this.tooltip = new Tooltip(this.$handle);
-      }
-
-      this.tooltip.update(value, precision);
-      return;
-    }
-
-    if (!this.tooltip) return;
-
-    this.deleteTooltip();
-  }
-
-  private deleteTooltip(): void {
-    this.tooltip?.delete();
-    delete this.tooltip;
-  }
-
-  private updateFocus(
-    value: number,
-    min: number,
-    max: number,
-    type: HandleType
-  ): void {
-    if (type !== TO) {
-      return;
-    }
-
-    const medium = ((max - min) / 2) + min;
-
-    if (value < medium) {
-      this.$component.addClass('just-slider__point_focused');
-      this.$component.removeClass('just-slider__point_unfocused');
-    } else {
-      this.$component.removeClass('just-slider__point_focused');
-      this.$component.addClass('just-slider__point_unfocused');
-    }
   }
 
   private updatePosition(options: {
