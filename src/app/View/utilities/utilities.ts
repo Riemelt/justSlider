@@ -165,9 +165,34 @@ const getValueBasedOnPrecision = function getValueBasedOnPrecision(
   return value.toFixed(precision);
 };
 
+const getElementLength = function getElementLength(
+  element: JQuery<HTMLElement>,
+  orientation: Orientation,
+): number {
+  const length = orientation === HORIZONTAL ?
+    element.outerWidth() :
+    element.outerHeight();
+
+  return length ?? 0;
+};
+
+const getElementPos = function getElementPos(
+  element: JQuery<HTMLElement>,
+  orientation: Orientation,
+): number {
+  const pos = orientation === HORIZONTAL ?
+    element.offset()?.left :
+    element.offset()?.top;
+
+  return pos ?? 0;
+};
+
 export {
   getTransformStyles,
   getPositionStyles,
   convertViewPositionToModel,
   getValueBasedOnPrecision,
+  shouldFlip,
+  getElementLength,
+  getElementPos,
 };

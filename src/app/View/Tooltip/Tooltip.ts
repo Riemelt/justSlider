@@ -1,4 +1,4 @@
-import { FROM, RANGE } from '../../Model/constants';
+import { FORWARD, FROM, RANGE } from '../../Model/constants';
 import { TooltipType } from '../../Model/types';
 import { Direction, Orientation, State } from '../../types';
 import {
@@ -31,24 +31,38 @@ class Tooltip {
     this.init($parent);
   }
 
+  public $getHtml(): JQuery<HTMLElement> {
+    return this.$tooltip;
+  }
+
   public update(state: State): void {
-    const { from, to, precision, orientation, min, max, direction } = state;
+    const { from, to, precision, direction } = state;
     const firstValue = this.type === RANGE ? from : state[this.type];
     const firstConverted = getValueBasedOnPrecision(firstValue, precision);
     let text = firstConverted;
 
     if (this.type === RANGE) {
       const secondConverted = getValueBasedOnPrecision(to, precision);
-      text += ` - ${secondConverted}`;
+      const smaller = direction === FORWARD ? firstConverted : secondConverted;
+      const bigger = direction === FORWARD ? secondConverted : firstConverted;
+      text = `${smaller} - ${bigger}`;
     }
 
     this.$tooltip.html(text);
+    this.updatePosition(state);
+  }
+
+  public updatePosition(state: State) {
+    const { from, to, min, max, orientation, direction } = state;
+    const middle = from + ((to - from) / 2);
+    const value = this.type === RANGE ? middle : state[this.type];
+
     this.setPosition({
       min,
       max,
-      direction,
       orientation,
-      shift: firstValue,
+      direction,
+      shift: value,
     });
   }
 

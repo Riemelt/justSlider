@@ -28,7 +28,7 @@ $className: 'just-slider';
     }
 
     &_hidden {
-      display: none;
+      visibility: hidden;
     }
   }
 
@@ -63,6 +63,7 @@ $className: 'just-slider';
     user-select: none;
     left: 100%;
     bottom: 1.875rem;
+    white-space: nowrap;
   }
 
   &__progress-bar-wrapper {

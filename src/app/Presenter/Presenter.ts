@@ -111,7 +111,7 @@ class Presenter {
       value: number,
       handle: HandleType
     ) => {
-      this.model.updateHandle(value, handle, false);
+      this.model.updateHandle(value, handle);
     });
   }
 

@@ -15,7 +15,7 @@ import {
     const eventManager = new EventManager;
     const model = new Model(eventManager);
     const state = model.getState();
-    const view = new View(eventManager, state);
+    const view = new View(eventManager, state, this);
     const presenter = new Presenter(view, model, eventManager);
 
     let scaleDataOptions: ScaleOptions | null = null;
@@ -39,7 +39,6 @@ import {
       direction: options.direction ?? this.data('direction'),
       range: options.range ?? this.data('range'),
       progressBar: options.progressBar ?? this.data('progress-bar'),
-      precision: options.precision ?? this.data('precision'),
       tooltips: options.tooltips ?? this.data('tooltips'),
       scale: options.scale ?? scaleDataOptions,
     };

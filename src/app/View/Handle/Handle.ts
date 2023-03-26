@@ -18,6 +18,7 @@ import {
   Orientation,
 } from '../../types';
 import {
+  getElementPos,
   getTransformStyles,
 } from '../utilities/utilities';
 import {
@@ -92,7 +93,6 @@ class Handle {
   }
 
   public update(state: State): void {
-    this.state = state;
     const value = state[this.type];
     const { min, max, orientation, direction } = state;
 
@@ -162,17 +162,10 @@ class Handle {
     event.preventDefault();
     this.eventManager.dispatchEvent(SLIDER_CLICK_DISABLE);
 
-    let offset: number;
-
-    if (this.state.orientation === HORIZONTAL) {
-      offset = this.$handle.offset()?.left ?? 0;
-    } else {
-      offset = this.$handle.offset()?.top ?? 0;
-    }
-
+    const offset = getElementPos(this.$handle, this.state.orientation);
     const length = this.$handle.outerWidth() ?? 0;
-
     const center = offset + (length / 2);
+
     this.shiftFromCenter = this.state.orientation === HORIZONTAL ?
       pageX - center :
       pageY - center;

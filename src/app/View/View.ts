@@ -2,6 +2,7 @@ import EventManager from '../EventManager/EventManager';
 import {
   State,
   Orientation,
+  Direction,
 } from '../types';
 import {
   HandleType, TooltipType,
@@ -14,18 +15,24 @@ import {
   VERTICAL,
 } from '../Model/constants';
 import {
-  convertViewPositionToModel,
+  convertViewPositionToModel, getElementLength, getElementPos, shouldFlip,
 } from './utilities/utilities';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
 import Tooltip from './Tooltip/Tooltip';
 
+const LEFT = 'left';
+const RIGHT = 'right';
+
+type SIDE = typeof LEFT | typeof RIGHT;
+
 class View {
   private eventManager: EventManager;
   private state: State;
   private $component: JQuery<HTMLElement>;
   private $justSlider: JQuery<HTMLElement>;
+  private $parent: JQuery<HTMLElement>;
 
   private handleHandlePointermove?: (
     position: number,
@@ -59,11 +66,23 @@ class View {
     `);
   }
 
-  constructor(eventManager: EventManager, state: State) {
+  static isSliderBar($element: JQuery<HTMLElement>): boolean {
+    return $element.is('.just-slider__main') ||
+      $element.is('.just-slider__progress-bar-wrapper') ||
+      $element.is('.just-slider__progress-bar');
+  }
+
+  constructor(
+    eventManager: EventManager,
+    state: State,
+    $parent: JQuery<HTMLElement>,
+  ) {
     this.eventManager = eventManager;
     this.state = state;
+    this.$parent = $parent;
     this.$component = View.initHtml();
     this.$justSlider = this.$component.find('.just-slider__main');
+    this.setHandlers();
   }
 
   public getHtml(): JQuery<HTMLElement> {
@@ -131,13 +150,87 @@ class View {
   public updateTooltips(state: State): void {
     this.updateTooltip(FROM, state);
     this.updateTooltip(TO, state);
-    // this.updateTooltip(RANGE, state);
+    this.updateTooltip(RANGE, state);
+
+    this.fixTooltipsVisuals();
+  }
+
+  public fixTooltipsVisuals(): void {
+    const { orientation, direction, from, to, range } = this.state;
+    const collided = this.checkTooltipsCollision(direction, orientation);
+
+    if (range && collided && (from !== to)) {
+      this.tooltips[FROM]?.hide();
+      this.tooltips[TO]?.hide();
+      this.tooltips[RANGE]?.show();
+      return;
+    }
+
+    this.tooltips[FROM]?.show();
+    this.tooltips[TO]?.show();
+    this.tooltips[RANGE]?.hide();
+  }
+
+  private distanceToContainer(
+    $element: JQuery<Element>,
+    side: SIDE,
+  ): number {
+    const containerWidth = this.$parent.width() ?? 0;
+    const containerPos = this.$parent.offset()?.left ?? 0;
+    const width = $element.outerWidth() ?? 0;
+    const pos = $element.offset()?.left ?? 0;
+
+    return (side === LEFT) ?
+      (containerPos - pos) :
+      ((pos + width) - (containerPos + containerWidth));
+  }
+
+  private isBiggerThanContainer($element: JQuery<Element>): boolean {
+    const containerWidth = this.$parent.width() ?? 0;
+    const width = $element.outerWidth() ?? 0;
+
+    return width > containerWidth;
+  }
+
+  private checkTooltipsCollision(
+    direction: Direction,
+    orientation: Orientation,
+  ): boolean {
+    const isPositiveDirection = shouldFlip(direction, orientation);
+    const first = isPositiveDirection ?
+      this.tooltips[TO]?.$getHtml() :
+      this.tooltips[FROM]?.$getHtml();
+
+    if (first === undefined) {
+      return false;
+    }
+
+    const firstLength = getElementLength(first, orientation);
+    const firstPos = getElementPos(first, orientation);
+
+    const second = isPositiveDirection ?
+      this.tooltips[FROM]?.$getHtml() :
+      this.tooltips[TO]?.$getHtml();
+
+    if (second === undefined) {
+      return false;
+    }
+
+    const secondPos = getElementPos(second, orientation);
+
+    if (firstLength + firstPos > secondPos) {
+      return true;
+    }
+
+    return false;
   }
 
   public updateTooltip(type: TooltipType, state: State): void {
     const { tooltips, range } = state;
+    const isWithRange = (type === TO || type === RANGE) && range;
+    const shouldUpdate = tooltips && (type === FROM || isWithRange);
 
-    if (tooltips && (type === FROM || (type === TO && range))) {
+    if (shouldUpdate) {
       if (!this.tooltips[type]) {
         this.tooltips[type] = new Tooltip({
           type,
@@ -208,8 +301,14 @@ class View {
     type: HandleType
   ) => void): void {
     this.scaleClickHandler = (position) => {
+      this.$component.addClass('just-slider_animated');
+
       const closestHandle = this.getClosestHandle(position);
       handler(position, closestHandle);
+
+      setTimeout(() => {
+        this.$component.removeClass('just-slider_animated');
+      }, 300);
     };
   }
 
@@ -221,7 +320,6 @@ class View {
   }
 
   public setSliderClickHandler(): void {
-    this.$component.addClass('just-slider_animated');
     this.$justSlider.on(
       'pointerdown.slider',
       this.handleSliderClick.bind(this)
@@ -229,8 +327,13 @@ class View {
   }
 
   public removeSliderClickHandler(): void {
-    this.$component.removeClass('just-slider_animated');
     this.$justSlider.off('pointerdown.slider');
+  }
+
+  private setHandlers(): void {
+    $(window).on('resize.slider', () => {
+      this.fixTooltipsVisuals();
+    });
   }
 
   private initScale(): void {
@@ -276,7 +379,16 @@ class View {
     }
   }
 
-  private handleSliderClick(event: JQuery.Event): void {
+  private handleSliderClick(event: JQuery.Event & {
+    target: HTMLElement,
+  }): void {
+    const $element = $(event.target);
+
+    if (!View.isSliderBar($element)) {
+      return;
+    }
+
+    this.$component.addClass('just-slider_animated');
     const {
       pageX = 0,
       pageY = 0,
@@ -288,6 +400,10 @@ class View {
     const closestHandle = this.getClosestHandle(converted);
 
     this.sliderClickHandler?.(converted, closestHandle);
+
+    setTimeout(() => {
+      this.$component.removeClass('just-slider_animated');
+    }, 300);
   }
 
   private getClosestHandle(position: number): HandleType {
@@ -303,16 +419,10 @@ class View {
   private getConvertedPosition(position: number): number {
     const { min, max, orientation, direction } = this.state;
 
-    let length: number;
-    let shift: number;
-
-    if (orientation === HORIZONTAL) {
-      length = this.$justSlider.width() ?? 0;
-      shift = this.$justSlider.offset()?.left ?? 0;
-    } else {
-      length = this.$justSlider.height() ?? 0;
-      shift = this.$justSlider.offset()?.top ?? 0;
-    }
+    const length = (orientation === HORIZONTAL ?
+      this.$justSlider.width() :
+      this.$justSlider.height()) ?? 0;
+    const shift = getElementPos(this.$justSlider, orientation);
 
     const converted = convertViewPositionToModel({
       position,
