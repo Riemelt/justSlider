@@ -1,5 +1,5 @@
 import Tooltip from './Tooltip';
-import * as Utilities from '../utilities/utilities';
+import * as Utilities from '../../utilities/utilities';
 
 describe('Tooltip', () => {
   let $parent: JQuery<HTMLElement>;

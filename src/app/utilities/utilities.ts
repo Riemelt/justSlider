@@ -1,13 +1,20 @@
 import {
   Orientation,
   Direction,
-} from '../../types';
+} from '../types';
 import {
   BACKWARD,
   FORWARD,
   HORIZONTAL,
   VERTICAL,
-} from '../../Model/constants';
+} from '../Model/constants';
+
+interface Rect {
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+}
 
 const convertViewPositionToModel = function (options: {
   position: number,
@@ -187,6 +194,36 @@ const getElementPos = function getElementPos(
   return pos ?? 0;
 };
 
+const collision2d = function collision2d(rect1: Rect, rect2: Rect) {
+  return rect1.x < rect2.x + rect2.w &&
+    rect1.x + rect1.w > rect2.x &&
+    rect1.y < rect2.y + rect2.h &&
+    rect1.h + rect1.y > rect2.y;
+};
+
+const convertToRect = function convertToRect(
+  $element: JQuery<HTMLElement>
+): Rect {
+  const offset = $element.offset();
+
+  return {
+    x: offset?.left ?? 0,
+    y: offset?.top ?? 0,
+    w: $element.outerWidth() ?? 0,
+    h: $element.outerHeight() ?? 0,
+  };
+};
+
+const checkCollision = function checkCollision(
+  $element1: JQuery<HTMLElement>,
+  $element2: JQuery<HTMLElement>,
+) {
+  return collision2d(
+    convertToRect($element1),
+    convertToRect($element2),
+  );
+};
+
 export {
   getTransformStyles,
   getPositionStyles,
@@ -195,4 +232,5 @@ export {
   shouldFlip,
   getElementLength,
   getElementPos,
+  checkCollision,
 };

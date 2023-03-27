@@ -110,8 +110,8 @@ class Model {
   }
 
   static validateScaleDensity(density: number): number {
-    if (density < 0.5) {
-      return 0.5;
+    if (density < 1) {
+      return 1;
     }
 
     if (density > 100) {
@@ -122,7 +122,11 @@ class Model {
   }
 
   static validateStep(step: number, length: number): number {
-    const newStep = step > length ? length : step;
+    let newStep = step > length ? length : step;
+
+    if (Model.getNumberOfDecimals(newStep) > 15) {
+      newStep = Model.adjustFloat(newStep, 15);
+    }
 
     if (newStep <= 0) {
       return 1;
@@ -132,8 +136,18 @@ class Model {
   }
 
   static validateMinMax(min: number, max: number): [number, number] {
-    const newMin = min;
-    const newMax = min === max ? max + 1 : max;
+    let newMin = min;
+    let newMax = max;
+
+    if (Model.getNumberOfDecimals(newMin) > 15) {
+      newMin = Model.adjustFloat(newMin, 15);
+    }
+
+    if (Model.getNumberOfDecimals(newMax) > 15) {
+      newMax = Model.adjustFloat(newMax, 15);
+    }
+
+    newMax = newMin === newMax ? newMax + 1 : newMax;
 
     return newMin > newMax ? [newMax, newMin] : [newMin, newMax];
   }
@@ -398,7 +412,7 @@ class Model {
 
     const stepsAmount = (max - min) / step;
     const lineStep = (max - min) * density / 100;
-    const numberStep = (Math.trunc(stepsAmount / 100) + 1) * step;
+    const numberStep = (Math.trunc(stepsAmount / 50) + 1) * step;
 
     for (
       let value = min;

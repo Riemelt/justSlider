@@ -16,7 +16,7 @@ import Scale from './Scale/Scale';
 import {
   ScaleState,
 } from './Scale/types';
-import * as Utilities from './utilities/utilities';
+import * as Utilities from '../utilities/utilities';
 
 describe('View', () => {
   let eventManager: EventManager;

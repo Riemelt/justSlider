@@ -5,7 +5,7 @@ import {
 import {
   State,
 } from '../../types';
-import * as Utilities from '../utilities/utilities';
+import * as Utilities from '../../utilities/utilities';
 import {
   LINE,
   NUMBER,

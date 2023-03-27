@@ -20,7 +20,7 @@ import {
 import {
   getElementPos,
   getTransformStyles,
-} from '../utilities/utilities';
+} from '../../utilities/utilities';
 import {
   HandleOptions,
 } from './types';

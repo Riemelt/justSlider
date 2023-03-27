@@ -15,8 +15,9 @@ import {
   VERTICAL,
 } from '../Model/constants';
 import {
+  checkCollision,
   convertViewPositionToModel, getElementLength, getElementPos, shouldFlip,
-} from './utilities/utilities';
+} from '../utilities/utilities';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
@@ -25,7 +26,7 @@ import Tooltip from './Tooltip/Tooltip';
 const LEFT = 'left';
 const RIGHT = 'right';
 
-type SIDE = typeof LEFT | typeof RIGHT;
+type Side = typeof LEFT | typeof RIGHT;
 
 class View {
   private eventManager: EventManager;
@@ -156,8 +157,8 @@ class View {
   }
 
   public fixTooltipsVisuals(): void {
-    const { orientation, direction, from, to, range } = this.state;
-    const collided = this.checkTooltipsCollision(direction, orientation);
+    const { from, to, range } = this.state;
+    const collided = this.checkTooltipsCollision();
 
     if (range && collided && (from !== to)) {
       this.tooltips[FROM]?.hide();
@@ -173,7 +174,7 @@ class View {
 
   private distanceToContainer(
     $element: JQuery<Element>,
-    side: SIDE,
+    side: Side,
   ): number {
     const containerWidth = this.$parent.width() ?? 0;
     const containerPos = this.$parent.offset()?.left ?? 0;
@@ -192,37 +193,15 @@ class View {
     return width > containerWidth;
   }
 
-  private checkTooltipsCollision(
-    direction: Direction,
-    orientation: Orientation,
-  ): boolean {
-    const isPositiveDirection = shouldFlip(direction, orientation);
-    const first = isPositiveDirection ?
-      this.tooltips[TO]?.$getHtml() :
-      this.tooltips[FROM]?.$getHtml();
+  private checkTooltipsCollision(): boolean {
+    const $from = this.tooltips[FROM]?.$getHtml();
+    const $to = this.tooltips[TO]?.$getHtml();
 
-    if (first === undefined) {
+    if ($from === undefined || $to === undefined) {
       return false;
     }
 
-    const firstLength = getElementLength(first, orientation);
-    const firstPos = getElementPos(first, orientation);
-
-    const second = isPositiveDirection ?
-      this.tooltips[FROM]?.$getHtml() :
-      this.tooltips[TO]?.$getHtml();
-
-    if (second === undefined) {
-      return false;
-    }
-
-    const secondPos = getElementPos(second, orientation);
-
-    if (firstLength + firstPos > secondPos) {
-      return true;
-    }
-
-    return false;
+    return checkCollision($from, $to);
   }
 
   public updateTooltip(type: TooltipType, state: State): void {
@@ -301,14 +280,8 @@ class View {
     type: HandleType
   ) => void): void {
     this.scaleClickHandler = (position) => {
-      this.$component.addClass('just-slider_animated');
-
       const closestHandle = this.getClosestHandle(position);
       handler(position, closestHandle);
-
-      setTimeout(() => {
-        this.$component.removeClass('just-slider_animated');
-      }, 300);
     };
   }
 
@@ -333,6 +306,7 @@ class View {
   private setHandlers(): void {
     $(window).on('resize.slider', () => {
       this.fixTooltipsVisuals();
+      this.scale?.fixVisuals();
     });
   }
 
@@ -388,7 +362,6 @@ class View {
       return;
     }
 
-    this.$component.addClass('just-slider_animated');
     const {
       pageX = 0,
       pageY = 0,
@@ -400,10 +373,6 @@ class View {
     const closestHandle = this.getClosestHandle(converted);
 
     this.sliderClickHandler?.(converted, closestHandle);
-
-    setTimeout(() => {
-      this.$component.removeClass('just-slider_animated');
-    }, 300);
   }
 
   private getClosestHandle(position: number): HandleType {

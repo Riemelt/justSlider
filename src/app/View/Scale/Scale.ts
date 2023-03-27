@@ -4,9 +4,10 @@ import {
   State,
 } from '../../types';
 import {
+  checkCollision,
   getPositionStyles,
   getValueBasedOnPrecision,
-} from '../utilities/utilities';
+} from '../../utilities/utilities';
 import {
   BIG,
   LARGE,
@@ -19,6 +20,7 @@ import {
 
 class Scale {
   private $component: JQuery<HTMLElement>;
+  private $numberSegments: Array<JQuery<HTMLElement>>;
 
   private handleNumberClick?: (position: number) => void;
 
@@ -56,8 +58,17 @@ class Scale {
     $element.css(property, style);
   }
 
+  static hideNumberSegment($segment: JQuery<HTMLElement>) {
+    $segment.addClass('just-slider__scale-number_hidden');
+  }
+
+  static showNumberSegment($segment: JQuery<HTMLElement>) {
+    $segment.removeClass('just-slider__scale-number_hidden');
+  }
+
   constructor($parent: JQuery<HTMLElement>) {
     this.$component = Scale.initHtml();
+    this.$numberSegments = [];
     this.init($parent);
   }
 
@@ -74,6 +85,7 @@ class Scale {
 
   public update(state: State): void {
     this.$component.empty();
+    this.$numberSegments = [];
     if (state.scale === null) return;
 
     const { min, max, orientation, direction, precision } = state;
@@ -122,12 +134,40 @@ class Scale {
           isBig
         );
 
+        this.$numberSegments.push($numberSegment);
+
         Scale.updatePosition({
           ...updatePositionOptions,
           $element: $numberSegment,
         });
       }
     });
+
+    this.fixVisuals();
+  }
+
+  public fixVisuals() {
+    let $current = this.$numberSegments[0];
+
+    for (let i = 1; i < this.$numberSegments.length; i += 1) {
+      const $next = this.$numberSegments[i];
+      const collided = checkCollision($current, $next);
+
+      if (collided) {
+        if (i === this.$numberSegments.length - 1) {
+          Scale.hideNumberSegment($current);
+          Scale.showNumberSegment($next);
+          continue;
+        }
+
+        Scale.hideNumberSegment($next);
+        Scale.showNumberSegment($current);
+        continue;
+      }
+
+      Scale.showNumberSegment($next);
+      $current = $next;
+    }
   }
 
   private setStyleModifier(lines: boolean): void {

@@ -37,6 +37,14 @@ body {
     }
   }
 
+  &__slider-demo-primary {
+    .#{$justSlider} {
+      &_vertical {
+        height: 100%;
+      }
+    }
+  }
+
   &__slider-demo-secondary {
     .#{$justSlider} {
       border-radius: initial;
@@ -114,6 +122,10 @@ body {
 
       &__progress-bar {
         background-color: $secondary-50;
+      }
+
+      &_vertical {
+        height: 100%;
       }
     }
   }

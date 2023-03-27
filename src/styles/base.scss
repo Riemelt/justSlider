@@ -130,19 +130,15 @@ $className: 'just-slider';
     line-height: 1.875rem;
     font-size: .75rem;
     user-select: none;
+    padding: 0 .25rem;
 
     &_big {
       font-weight: 700;
       font-size: .875rem;
     }
-  }
 
-  &_animated {
-    .#{$className} {
-      &__point,
-      &__progress-bar {
-        transition: transform 0.3s;
-      }
+    &_hidden {
+      visibility: hidden;
     }
   }
 

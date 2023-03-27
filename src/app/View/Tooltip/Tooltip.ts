@@ -4,7 +4,7 @@ import { Direction, Orientation, State } from '../../types';
 import {
   getTransformStyles,
   getValueBasedOnPrecision,
-} from '../utilities/utilities';
+} from '../../utilities/utilities';
 import { TooltipOptions } from './types';
 
 class Tooltip {

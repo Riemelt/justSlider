@@ -8,7 +8,7 @@ import {
 } from '../../types';
 import {
   getTransformStyles,
-} from '../utilities/utilities';
+} from '../../utilities/utilities';
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;

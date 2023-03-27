@@ -3,11 +3,11 @@ import {
   FORWARD,
   HORIZONTAL,
   VERTICAL,
-} from '../../Model/constants';
+} from '../Model/constants';
 import {
   Orientation,
   Direction,
-} from '../../types';
+} from '../types';
 import {
   getTransformStyles,
   getPositionStyles,
