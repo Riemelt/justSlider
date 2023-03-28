@@ -11,6 +11,7 @@ class Tooltip {
   private $component: JQuery<HTMLElement>;
   private $tooltip: JQuery<HTMLElement>;
   private type: TooltipType = FROM;
+  private offset = 0;
 
   static initHtml(): JQuery<HTMLElement> {
     return $(`
@@ -33,6 +34,15 @@ class Tooltip {
 
   public $getHtml(): JQuery<HTMLElement> {
     return this.$tooltip;
+  }
+
+  public setOffset(value: number): void {
+    this.offset = value;
+    this.$component.css('left', `${value}px`);
+  }
+
+  public getOffset(): number {
+    return this.offset;
   }
 
   public update(state: State): void {

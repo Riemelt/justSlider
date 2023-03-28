@@ -53,7 +53,6 @@ class View {
     to?: Tooltip,
     range?: Tooltip,
   } = {};
-  private isTooltipsRange = false;
 
   private progressBar?: ProgressBar;
   private scale?: Scale;
@@ -157,6 +156,71 @@ class View {
   }
 
   public fixTooltipsVisuals(): void {
+    const types: Array<TooltipType> = [FROM, TO, RANGE];
+    types.forEach(this.fixTooltipPosition.bind(this));
+
+    this.fixTooltipsOnCollision();
+
+    types.forEach(this.hideBigTooltip.bind(this));
+  }
+
+  private fixTooltipPosition(type: TooltipType): void {
+    const tooltip = this.tooltips[type];
+
+    if (tooltip === undefined) {
+      return;
+    }
+
+    let newOffset = 0;
+
+    if (this.state.orientation === VERTICAL) {
+      tooltip.setOffset(newOffset);
+      return;
+    }
+
+    const $element = tooltip.$getHtml();
+    const offset = tooltip.getOffset();
+    const distanceLeft = this.distanceToContainer($element, LEFT, offset);
+
+    if (distanceLeft > 0) {
+      newOffset = distanceLeft;
+      tooltip.setOffset(newOffset);
+      return;
+    }
+
+    const distanceRight = this.distanceToContainer($element, RIGHT, offset);
+
+    if (distanceRight > 0) {
+      newOffset = -distanceRight;
+    }
+
+    tooltip.setOffset(newOffset);
+  }
+
+  private hideBigTooltip(type: TooltipType) {
+    const tooltip = this.tooltips[type];
+
+    if (tooltip === undefined) {
+      return;
+    }
+
+    const $element = tooltip.$getHtml();
+
+    if (this.state.orientation === VERTICAL) {
+      const distanceLeft = this.distanceToContainer($element, LEFT);
+
+      if (distanceLeft > 0) {
+        tooltip.hide();
+        return;
+      }
+    }
+
+    if (this.isBiggerThanContainer($element)) {
+      tooltip.hide();
+    }
+  }
+
+  private fixTooltipsOnCollision(): void {
     const { from, to, range } = this.state;
     const collided = this.checkTooltipsCollision();
 
@@ -173,13 +237,14 @@ class View {
   }
 
   private distanceToContainer(
-    $element: JQuery<Element>,
+    $element: JQuery<HTMLElement>,
     side: Side,
+    offset = 0,
   ): number {
-    const containerWidth = this.$parent.width() ?? 0;
-    const containerPos = this.$parent.offset()?.left ?? 0;
-    const width = $element.outerWidth() ?? 0;
-    const pos = $element.offset()?.left ?? 0;
+    const containerWidth = getElementLength(this.$parent, HORIZONTAL);
+    const containerPos = getElementPos(this.$parent, HORIZONTAL);
+    const width = getElementLength($element, HORIZONTAL);
+    const pos = getElementPos($element, HORIZONTAL) - offset;
 
     return (side === LEFT) ?
       (containerPos - pos) :
@@ -187,7 +252,7 @@ class View {
   }
 
   private isBiggerThanContainer($element: JQuery<Element>): boolean {
-    const containerWidth = this.$parent.width() ?? 0;
+    const containerWidth = this.$parent.outerWidth() ?? 0;
     const width = $element.outerWidth() ?? 0;
 
     return width > containerWidth;
@@ -303,11 +368,14 @@ class View {
     this.$justSlider.off('pointerdown.slider');
   }
 
+  private fixVisuals(): void {
+    this.fixTooltipsVisuals();
+    this.scale?.fixVisuals();
+  }
+
   private setHandlers(): void {
-    $(window).on('resize.slider', () => {
-      this.fixTooltipsVisuals();
-      this.scale?.fixVisuals();
-    });
+    $(window).on('resize.slider', this.fixVisuals.bind(this));
+    jQuery(this.fixVisuals.bind(this));
   }
 
   private initScale(): void {
