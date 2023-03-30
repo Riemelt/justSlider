@@ -60,7 +60,7 @@ describe('Scale', () => {
 
   beforeEach(() => {
     $parent = $('<div class="just-slider"></div>');
-    scale = new Scale($parent);
+    scale = new Scale($parent, modelState);
   });
 
   test('Creates html node and appends to the parent', () => {

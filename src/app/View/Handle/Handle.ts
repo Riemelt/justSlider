@@ -7,7 +7,6 @@ import {
   FORWARD,
   FROM,
   HORIZONTAL,
-  TO,
 } from '../../Model/constants';
 import {
   HandleType,

@@ -18,7 +18,6 @@ import {
   VERTICAL,
 } from '../../Model/constants';
 import Handle from './Handle';
-import Tooltip from '../Tooltip/Tooltip';
 
 describe('Handle', () => {
   let handle: Handle;
@@ -42,7 +41,10 @@ describe('Handle', () => {
     precision: 0,
   };
 
-  const generateHandle = function generateHandle(type: HandleType) {
+  const generateHandle = function generateHandle(
+    type: HandleType,
+    state: State,
+  ) {
     $parent = $('<div class="just-slider"></div>');
 
     eventManager = new EventManager();
@@ -61,14 +63,14 @@ describe('Handle', () => {
 
   describe('Creates html node and appends to the parent', () => {
     test('Point node', () => {
-      generateHandle(FROM);
+      generateHandle(FROM, state);
 
       const $point = $parent.find(pointClass);
       expect($point.length).toBe(1);
     });
 
     test('Handle node', () => {
-      generateHandle(FROM);
+      generateHandle(FROM, state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
       expect($handle.length).toBe(1);
@@ -76,7 +78,7 @@ describe('Handle', () => {
   });
 
   test('Deletes html node from parent', () => {
-    generateHandle(FROM);
+    generateHandle(FROM, state);
 
     handle.delete();
     const $point = $parent.find(pointClass);
@@ -84,58 +86,10 @@ describe('Handle', () => {
     expect($point.length).toBe(0);
   });
 
-  test('Updates tooltip', () => {
-    generateHandle(FROM);
-
-    const mockedUpdate = jest.spyOn(Tooltip.prototype, 'update');
-
-    handle.update({ ...state, tooltips: true });
-    expect(mockedUpdate).toBeCalled();
-
-    mockedUpdate.mockRestore();
-  });
-
-  test('Deletes tooltip', () => {
-    generateHandle(FROM);
-
-    const mockedDelete = jest.spyOn(Tooltip.prototype, 'delete');
-
-    handle.update({ ...state, tooltips: true });
-    handle.update({ ...state, tooltips: false });
-    expect(mockedDelete).toBeCalled();
-
-    mockedDelete.mockRestore();
-  });
-
-  describe('Updates focus', () => {
-    const unfocusedClass = 'just-slider__point_unfocused';
-    const focusedClass = 'just-slider__point_focused';
-
-    test('Sets focus', () => {
-      generateHandle(TO);
-
-      handle.update({ ...state, from: -80, to: -50 });
-      const $point = $parent.find(pointClass);
-
-      expect($point.hasClass(focusedClass)).toBe(true);
-      expect($point.hasClass(unfocusedClass)).toBe(false);
-    });
-
-    test('Unsets focus', () => {
-      generateHandle(TO);
-
-      handle.update(state);
-      const $point = $parent.find(pointClass);
-
-      expect($point.hasClass(focusedClass)).toBe(false);
-      expect($point.hasClass(unfocusedClass)).toBe(true);
-    });
-  });
-
   test('Updates transform styles', () => {
     const mockedTransform = jest.spyOn(Utilities, 'getTransformStyles');
 
-    generateHandle(FROM);
+    generateHandle(FROM, state);
     handle.update(state);
 
     expect(mockedTransform).toBeCalledWith({
@@ -155,7 +109,7 @@ describe('Handle', () => {
   });
 
   test('Sets PointerMove handler', () => {
-    generateHandle(FROM);
+    generateHandle(FROM, state);
     const handler = jest.fn(() => undefined);
     handle.setHandlePointermoveHandler(handler);
     handle.update(state);
@@ -174,7 +128,7 @@ describe('Handle', () => {
         key: 'ArrowRight',
       });
 
-      generateHandle(FROM);
+      generateHandle(FROM, state);
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
@@ -190,7 +144,7 @@ describe('Handle', () => {
         key: 'ArrowLeft',
       });
 
-      generateHandle(FROM);
+      generateHandle(FROM, state);
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
@@ -208,7 +162,7 @@ describe('Handle', () => {
         'dispatchEvent'
       );
 
-      generateHandle(FROM);
+      generateHandle(FROM, state);
       handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
@@ -226,7 +180,7 @@ describe('Handle', () => {
         'dispatchEvent'
       );
 
-      generateHandle(FROM);
+      generateHandle(FROM, state);
       handle.update(state);
 
       const $handle = $parent.find(`${pointClass} ${handleClass}`);
@@ -248,7 +202,7 @@ describe('Handle', () => {
         pageX: 300,
       });
 
-      generateHandle(FROM);
+      generateHandle(FROM, state);
 
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
@@ -279,7 +233,7 @@ describe('Handle', () => {
         pageY: 500,
       });
 
-      generateHandle(FROM);
+      generateHandle(FROM, { ...state, orientation: VERTICAL });
 
       handle.setHandlePointermoveHandler(handler);
       handle.update({ ...state, orientation: VERTICAL });
@@ -304,7 +258,7 @@ describe('Handle', () => {
 
   test('Sets type', () => {
     const handler = jest.fn(() => undefined);
-    generateHandle(FROM);
+    generateHandle(FROM, state);
     handle.setHandlePointermoveHandler(handler);
     handle.setType(TO);
     handle.update(state);

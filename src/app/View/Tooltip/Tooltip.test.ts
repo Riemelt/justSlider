@@ -1,5 +1,8 @@
 import Tooltip from './Tooltip';
 import * as Utilities from '../../utilities/utilities';
+import { TooltipOptions } from './types';
+import { FORWARD, FROM, HORIZONTAL } from '../../Model/constants';
+import { State } from '../../types';
 
 describe('Tooltip', () => {
   let $parent: JQuery<HTMLElement>;
@@ -7,9 +10,29 @@ describe('Tooltip', () => {
 
   const tooltipClass = '.just-slider__tooltip';
 
+  const modelState: State = {
+    min: -100,
+    max: 300,
+    from: 200,
+    to: 250,
+    range: false,
+    orientation: HORIZONTAL,
+    direction: FORWARD,
+    scale: null,
+    step: 10,
+    progressBar: false,
+    tooltips: false,
+    precision: 1,
+  };
+
   beforeEach(() => {
     $parent = $('<div class="just-slider"></div>');
-    tooltip = new Tooltip($parent);
+    const options: TooltipOptions = {
+      $parent,
+      type: FROM,
+      state: modelState,
+    };
+    tooltip = new Tooltip(options);
   });
 
   test('Creates html node and appends to the parent', () => {
@@ -28,12 +51,13 @@ describe('Tooltip', () => {
   test('Updates value in the html node', () => {
     const mocked = jest.spyOn(Utilities, 'getValueBasedOnPrecision');
 
-    const value = 5;
+    const from = 5;
     const precision = 0;
 
     tooltip.update({
+      ...modelState,
+      from,
       precision,
-      from: value,
     });
 
     const $tooltip = $parent.find(tooltipClass);

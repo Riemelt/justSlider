@@ -17,6 +17,7 @@ import {
   ScaleState,
 } from './Scale/types';
 import * as Utilities from '../utilities/utilities';
+import Tooltip from './Tooltip/Tooltip';
 
 describe('View', () => {
   let eventManager: EventManager;
@@ -44,8 +45,13 @@ describe('View', () => {
     precision: 0,
   };
 
+  const $container: JQuery<HTMLElement> = $(`
+    <div class="just-slider">
+    </div>
+  `);
+
   const generateView = function generateView(state: State) {
-    view = new View(eventManager, state);
+    view = new View(eventManager, state, $container);
   };
 
   beforeEach(() => {
@@ -190,13 +196,15 @@ describe('View', () => {
 
   test('Updates tooltips', () => {
     generateView(state);
-    const mockedUpdateTooltip = jest.spyOn(Handle.prototype, 'updateTooltip');
+    const mockedUpdateTooltip = jest.spyOn(Tooltip.prototype, 'update');
 
     view.addCreateHandleHandlers(() => undefined);
     view.initComponents();
 
-    view.updateHandle(state, TO);
-    view.updateTooltips(state);
+    view.updateTooltips({
+      ...state,
+      tooltips: true,
+    });
 
     expect(mockedUpdateTooltip).toBeCalledTimes(3);
 
@@ -273,7 +281,7 @@ describe('View', () => {
   });
 
   describe('Slider click', () => {
-    test('Enables slider click handler and adds animation', () => {
+    test('Enables slider click handler', () => {
       generateView(state);
       const handler = jest.fn(() => undefined);
       view.addCreateSliderClickHandler(handler);
@@ -284,11 +292,10 @@ describe('View', () => {
 
       $justSlider.trigger('pointerdown');
 
-      expect($component.hasClass('just-slider_animated')).toBe(true);
       expect(handler).toBeCalledTimes(1);
     });
 
-    test('Disables slider click handler and removes animation', () => {
+    test('Disables slider click handler', () => {
       generateView(state);
       const handler = jest.fn(() => undefined);
       view.addCreateSliderClickHandler(handler);
@@ -301,7 +308,6 @@ describe('View', () => {
 
       $justSlider.trigger('pointerdown');
 
-      expect($component.hasClass('just-slider_animated')).toBe(false);
       expect(handler).toBeCalledTimes(0);
     });
 

@@ -45,10 +45,10 @@ const UPDATES: Updates = {
   [ORIENTATION_UPDATE]: {
     events: [
       ORIENTATION_UPDATE,
+      SCALE_UPDATE,
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
       PROGRESS_BAR_UPDATE,
-      SCALE_UPDATE,
       SLIDER_UPDATE,
     ],
     stateUpdates: [ORIENTATION_UPDATE],
@@ -62,7 +62,7 @@ const UPDATES: Updates = {
     stateUpdates: [TOOLTIPS_UPDATE],
   },
   [SCALE_UPDATE]: {
-    events: [SCALE_UPDATE, SLIDER_UPDATE],
+    events: [SCALE_UPDATE, TOOLTIPS_UPDATE, SLIDER_UPDATE],
     stateUpdates: [SCALE_UPDATE],
   },
   [DIRECTION_UPDATE]: {
@@ -77,10 +77,10 @@ const UPDATES: Updates = {
   },
   [STEP_UPDATE]: {
     events: [
+      SCALE_UPDATE,
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
       PROGRESS_BAR_UPDATE,
-      SCALE_UPDATE,
       SLIDER_UPDATE,
     ],
     stateUpdates: [
@@ -93,10 +93,10 @@ const UPDATES: Updates = {
   },
   [MIN_MAX_UPDATE]: {
     events: [
+      SCALE_UPDATE,
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
       PROGRESS_BAR_UPDATE,
-      SCALE_UPDATE,
       SLIDER_UPDATE,
     ],
     stateUpdates: [

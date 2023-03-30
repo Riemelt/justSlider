@@ -9,6 +9,11 @@ import {
   VERTICAL,
 } from '../Model/constants';
 
+const LEFT = 'left';
+const RIGHT = 'right';
+
+type Side = typeof LEFT | typeof RIGHT;
+
 interface Rect {
   x: number,
   y: number,
@@ -224,6 +229,37 @@ const checkCollision = function checkCollision(
   );
 };
 
+const distanceToContainer = function distanceToContainer({
+  $container,
+  $element,
+  side,
+  offset = 0,
+}: {
+  $container: JQuery<HTMLElement>,
+  $element: JQuery<HTMLElement>,
+  side: Side,
+  offset?: number,
+}): number {
+  const containerWidth = getElementLength($container, HORIZONTAL);
+  const containerPos = getElementPos($container, HORIZONTAL);
+  const width = getElementLength($element, HORIZONTAL);
+  const pos = getElementPos($element, HORIZONTAL) - offset;
+
+  return (side === LEFT) ?
+    (containerPos - pos) :
+    ((pos + width) - (containerPos + containerWidth));
+};
+
+const isBiggerThanContainer = function isBiggerThanContainer(
+  $container: JQuery<HTMLElement>,
+  $element: JQuery<HTMLElement>
+): boolean {
+  const containerWidth = getElementLength($container, HORIZONTAL);
+  const width = getElementLength($element, HORIZONTAL);
+
+  return width > containerWidth;
+};
+
 export {
   getTransformStyles,
   getPositionStyles,
@@ -233,4 +269,9 @@ export {
   getElementLength,
   getElementPos,
   checkCollision,
+  distanceToContainer,
+  isBiggerThanContainer,
+  LEFT,
+  RIGHT,
+  Side,
 };

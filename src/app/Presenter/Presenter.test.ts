@@ -62,7 +62,11 @@ describe('Presenter', () => {
     eventManager = new EventManager();
     model = new Model(eventManager);
     const state = model.getState();
-    view = new View(eventManager, state);
+    const $container: JQuery<HTMLElement> = $(`
+      <div class="just-slider">
+      </div>
+    `);
+    view = new View(eventManager, state, $container);
     presenter = new Presenter(view, model, eventManager);
   };
 

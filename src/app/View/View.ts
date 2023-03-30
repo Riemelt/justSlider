@@ -2,7 +2,6 @@ import EventManager from '../EventManager/EventManager';
 import {
   State,
   Orientation,
-  Direction,
 } from '../types';
 import {
   HandleType, TooltipType,
@@ -16,17 +15,13 @@ import {
 } from '../Model/constants';
 import {
   checkCollision,
-  convertViewPositionToModel, getElementLength, getElementPos, shouldFlip,
+  convertViewPositionToModel,
+  getElementPos,
 } from '../utilities/utilities';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
 import Tooltip from './Tooltip/Tooltip';
-
-const LEFT = 'left';
-const RIGHT = 'right';
-
-type Side = typeof LEFT | typeof RIGHT;
 
 class View {
   private eventManager: EventManager;
@@ -34,6 +29,7 @@ class View {
   private $component: JQuery<HTMLElement>;
   private $justSlider: JQuery<HTMLElement>;
   private $parent: JQuery<HTMLElement>;
+  private margin = 0;
 
   private handleHandlePointermove?: (
     position: number,
@@ -155,120 +151,6 @@ class View {
     this.fixTooltipsVisuals();
   }
 
-  public fixTooltipsVisuals(): void {
-    const types: Array<TooltipType> = [FROM, TO, RANGE];
-    types.forEach(this.fixTooltipPosition.bind(this));
-
-    this.fixTooltipsOnCollision();
-
-    types.forEach(this.hideBigTooltip.bind(this));
-  }
-
-  private fixTooltipPosition(type: TooltipType): void {
-    const tooltip = this.tooltips[type];
-
-    if (tooltip === undefined) {
-      return;
-    }
-
-    let newOffset = 0;
-
-    if (this.state.orientation === VERTICAL) {
-      tooltip.setOffset(newOffset);
-      return;
-    }
-
-    const $element = tooltip.$getHtml();
-    const offset = tooltip.getOffset();
-    const distanceLeft = this.distanceToContainer($element, LEFT, offset);
-
-    if (distanceLeft > 0) {
-      newOffset = distanceLeft;
-      tooltip.setOffset(newOffset);
-      return;
-    }
-
-    const distanceRight = this.distanceToContainer($element, RIGHT, offset);
-
-    if (distanceRight > 0) {
-      newOffset = -distanceRight;
-    }
-
-    tooltip.setOffset(newOffset);
-  }
-
-  private hideBigTooltip(type: TooltipType) {
-    const tooltip = this.tooltips[type];
-
-    if (tooltip === undefined) {
-      return;
-    }
-
-    const $element = tooltip.$getHtml();
-
-    if (this.state.orientation === VERTICAL) {
-      const distanceLeft = this.distanceToContainer($element, LEFT);
-
-      if (distanceLeft > 0) {
-        tooltip.hide();
-        return;
-      }
-    }
-
-    if (this.isBiggerThanContainer($element)) {
-      tooltip.hide();
-    }
-  }
-
-  private fixTooltipsOnCollision(): void {
-    const { from, to, range } = this.state;
-    const collided = this.checkTooltipsCollision();
-
-    if (range && collided && (from !== to)) {
-      this.tooltips[FROM]?.hide();
-      this.tooltips[TO]?.hide();
-      this.tooltips[RANGE]?.show();
-      return;
-    }
-
-    this.tooltips[FROM]?.show();
-    this.tooltips[TO]?.show();
-    this.tooltips[RANGE]?.hide();
-  }
-
-  private distanceToContainer(
-    $element: JQuery<HTMLElement>,
-    side: Side,
-    offset = 0,
-  ): number {
-    const containerWidth = getElementLength(this.$parent, HORIZONTAL);
-    const containerPos = getElementPos(this.$parent, HORIZONTAL);
-    const width = getElementLength($element, HORIZONTAL);
-    const pos = getElementPos($element, HORIZONTAL) - offset;
-
-    return (side === LEFT) ?
-      (containerPos - pos) :
-      ((pos + width) - (containerPos + containerWidth));
-  }
-
-  private isBiggerThanContainer($element: JQuery<Element>): boolean {
-    const containerWidth = this.$parent.outerWidth() ?? 0;
-    const width = $element.outerWidth() ?? 0;
-
-    return width > containerWidth;
-  }
-
-  private checkTooltipsCollision(): boolean {
-    const $from = this.tooltips[FROM]?.$getHtml();
-    const $to = this.tooltips[TO]?.$getHtml();
-
-    if ($from === undefined || $to === undefined) {
-      return false;
-    }
-
-    return checkCollision($from, $to);
-  }
-
   public updateTooltip(type: TooltipType, state: State): void {
     const { tooltips, range } = state;
     const isWithRange = (type === TO || type === RANGE) && range;
@@ -278,6 +160,7 @@ class View {
       if (!this.tooltips[type]) {
         this.tooltips[type] = new Tooltip({
           type,
+          state,
           $parent: this.$justSlider,
         });
       }
@@ -327,12 +210,14 @@ class View {
       }
 
       this.scale?.update(state);
+      this.fixScaleVisuals();
       return;
     }
 
     if (!this.scale) return;
 
     this.deleteScale();
+    this.addMarginIfRequired();
   }
 
   public deleteScale(): void {
@@ -368,18 +253,89 @@ class View {
     this.$justSlider.off('pointerdown.slider');
   }
 
-  private fixVisuals(): void {
+  private fixTooltipsVisuals(): void {
+    const types: Array<TooltipType> = [FROM, TO, RANGE];
+    types.forEach((type) => {
+      this.tooltips[type]?.fixPosition(this.$parent);
+    });
+
+    this.fixTooltipsOnCollision();
+
+    types.forEach((type) => {
+      this.tooltips[type]?.hideIfBiggerThanContainer(this.$parent);
+    });
+  }
+
+  private fixTooltipsOnCollision(): void {
+    const { from, to, range } = this.state;
+    const collided = this.checkTooltipsCollision();
+
+    if (range && collided && (from !== to)) {
+      this.tooltips[FROM]?.hide();
+      this.tooltips[TO]?.hide();
+      this.tooltips[RANGE]?.show();
+      return;
+    }
+
+    this.tooltips[FROM]?.show();
+    this.tooltips[TO]?.show();
+    this.tooltips[RANGE]?.hide();
+  }
+
+  private checkTooltipsCollision(): boolean {
+    const $from = this.tooltips[FROM]?.$getHtml();
+    const $to = this.tooltips[TO]?.$getHtml();
+
+    if ($from === undefined || $to === undefined) {
+      return false;
+    }
+
+    return checkCollision($from, $to);
+  }
+
+  private fixScaleVisuals(): void {
+    this.addMarginIfRequired();
+    this.scale?.hideSegmentsOnCollision();
+    this.scale?.hideIfBiggerThanContainer(this.$parent);
+  }
+
+  private addMarginIfRequired(): void {
+    let newMargin = 0;
+
+    if (this.scale === undefined ||
+      this.state.orientation === VERTICAL ||
+      this.state.scale?.numbers === false
+    ) {
+      this.setMargin(newMargin);
+      return;
+    }
+
+    newMargin = this.scale.getRequiredMargin(this.$parent, this.margin);
+    this.setMargin(newMargin);
+  }
+
+  private setMargin(margin: number) {
+    this.margin = margin;
+    this.$component.css('margin-left', `${margin}px`);
+    this.$component.css('margin-right', `${margin}px`);
+  }
+
+  private fixVisualsOnResize(): void {
     this.fixTooltipsVisuals();
-    this.scale?.fixVisuals();
+    this.scale?.hideSegmentsOnCollision();
+    this.scale?.hideIfBiggerThanContainer(this.$parent);
   }
 
   private setHandlers(): void {
-    $(window).on('resize.slider', this.fixVisuals.bind(this));
-    jQuery(this.fixVisuals.bind(this));
+    $(window).on('resize.slider', this.fixVisualsOnResize.bind(this));
+    jQuery(() => {
+      this.fixScaleVisuals();
+      this.fixTooltipsVisuals();
+    });
   }
 
   private initScale(): void {
-    this.scale = new Scale(this.$component);
+    this.scale = new Scale(this.$component, this.state);
 
     if (this.scaleClickHandler !== undefined) {
       this.scale.setNumberClickHandler(this.scaleClickHandler.bind(this));

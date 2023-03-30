@@ -1,3 +1,4 @@
+import { FORWARD, VERTICAL } from '../../Model/constants';
 import {
   Direction,
   Orientation,
@@ -5,8 +6,12 @@ import {
 } from '../../types';
 import {
   checkCollision,
+  distanceToContainer,
   getPositionStyles,
   getValueBasedOnPrecision,
+  isBiggerThanContainer,
+  LEFT,
+  RIGHT,
 } from '../../utilities/utilities';
 import {
   BIG,
@@ -20,7 +25,8 @@ import {
 
 class Scale {
   private $component: JQuery<HTMLElement>;
-  private $numberSegments: Array<JQuery<HTMLElement>>;
+  private numberSegments: Array<JQuery<HTMLElement>>;
+  private state: State;
 
   private handleNumberClick?: (position: number) => void;
 
@@ -66,10 +72,63 @@ class Scale {
     $segment.removeClass('just-slider__scale-number_hidden');
   }
 
-  constructor($parent: JQuery<HTMLElement>) {
+  constructor($parent: JQuery<HTMLElement>, state: State) {
     this.$component = Scale.initHtml();
-    this.$numberSegments = [];
+    this.numberSegments = [];
+    this.state = state;
     this.init($parent);
+  }
+
+  public hideIfBiggerThanContainer($container: JQuery<HTMLElement>) {
+    this.numberSegments.forEach(($segment) => {
+      if (this.state.orientation === VERTICAL) {
+        const distanceRight = distanceToContainer({
+          $container,
+          $element: $segment,
+          side: RIGHT,
+        });
+
+        if (distanceRight > 0) {
+          Scale.hideNumberSegment($segment);
+          return;
+        }
+      }
+
+      if (isBiggerThanContainer($container, $segment)) {
+        Scale.hideNumberSegment($segment);
+      }
+    });
+  }
+
+  public getRequiredMargin(
+    $container: JQuery<HTMLElement>,
+    offset: number,
+  ): number {
+    const first = this.numberSegments[0];
+    const last = this.numberSegments[this.numberSegments.length - 1];
+
+    if (first?.outerWidth() === 0 ||
+      last?.outerWidth() === 0 ||
+      this.numberSegments.length === 0
+    ) {
+      return 0;
+    }
+
+    const firstDistance = distanceToContainer({
+      $container,
+      offset: (this.state.direction === FORWARD ? 1 : (-1)) * offset,
+      $element: first,
+      side: this.state.direction === FORWARD ? LEFT : RIGHT,
+    });
+
+    const lastDistance = distanceToContainer({
+      $container,
+      offset: (this.state.direction === FORWARD ? -1 : (1)) * offset,
+      $element: last,
+      side: this.state.direction === FORWARD ? RIGHT : LEFT,
+    });
+
+    return Math.max(firstDistance, lastDistance, 0);
   }
 
   public setNumberClickHandler(handler: (position: number) => void): void {
@@ -85,7 +144,7 @@ class Scale {
 
   public update(state: State): void {
     this.$component.empty();
-    this.$numberSegments = [];
+    this.numberSegments = [];
     if (state.scale === null) return;
 
     const { min, max, orientation, direction, precision } = state;
@@ -134,7 +193,7 @@ class Scale {
           isBig
         );
 
-        this.$numberSegments.push($numberSegment);
+        this.numberSegments.push($numberSegment);
 
         Scale.updatePosition({
           ...updatePositionOptions,
@@ -142,32 +201,55 @@ class Scale {
         });
       }
     });
-
-    this.fixVisuals();
   }
 
-  public fixVisuals() {
-    let $current = this.$numberSegments[0];
+  public hideSegmentsOnCollision() {
+    this.numberSegments.forEach(($segment) => {
+      Scale.hideNumberSegment($segment);
+    });
 
-    for (let i = 1; i < this.$numberSegments.length; i += 1) {
-      const $next = this.$numberSegments[i];
-      const collided = checkCollision($current, $next);
+    const getVisible = function getVisible(
+      segments: Array<JQuery<HTMLElement>>
+    ) {
+      const segmentsVisibility = segments.map(($segment) => ({
+        $segment,
+        visible: true,
+      }));
 
-      if (collided) {
-        if (i === this.$numberSegments.length - 1) {
-          Scale.hideNumberSegment($current);
-          Scale.showNumberSegment($next);
+      let current = 0;
+
+      for (let i = 1; i < segments.length; i += 1) {
+        const next = i;
+        const collided = checkCollision(segments[current], segments[next]);
+
+        if (collided) {
+          if (i === segments.length - 1) {
+            segmentsVisibility[current].visible = false;
+            segmentsVisibility[next].visible = true;
+            continue;
+          }
+
+          segmentsVisibility[current].visible = true;
+          segmentsVisibility[next].visible = false;
           continue;
         }
 
-        Scale.hideNumberSegment($next);
-        Scale.showNumberSegment($current);
-        continue;
+        segmentsVisibility[current].visible = true;
+        segmentsVisibility[next].visible = true;
+        current = next;
       }
 
-      Scale.showNumberSegment($next);
-      $current = $next;
-    }
+      return segmentsVisibility.filter((segment) => segment.visible);
+    };
+
+    const visibleForward = getVisible(this.numberSegments);
+    const visibleBackward = getVisible(visibleForward.map((element) => (
+      element.$segment
+    )));
+
+    visibleBackward.forEach((segment) => {
+      Scale.showNumberSegment(segment.$segment);
+    });
   }
 
   private setStyleModifier(lines: boolean): void {

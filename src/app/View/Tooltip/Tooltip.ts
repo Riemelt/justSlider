@@ -1,15 +1,20 @@
-import { FORWARD, FROM, RANGE } from '../../Model/constants';
+import { FORWARD, FROM, RANGE, VERTICAL } from '../../Model/constants';
 import { TooltipType } from '../../Model/types';
 import { Direction, Orientation, State } from '../../types';
 import {
+  distanceToContainer,
   getTransformStyles,
   getValueBasedOnPrecision,
+  isBiggerThanContainer,
+  LEFT,
+  RIGHT,
 } from '../../utilities/utilities';
 import { TooltipOptions } from './types';
 
 class Tooltip {
   private $component: JQuery<HTMLElement>;
   private $tooltip: JQuery<HTMLElement>;
+  private state: State;
   private type: TooltipType = FROM;
   private offset = 0;
 
@@ -25,24 +30,17 @@ class Tooltip {
   constructor({
     $parent,
     type,
+    state,
   }: TooltipOptions) {
     this.$component = Tooltip.initHtml();
     this.$tooltip = this.$component.find('.just-slider__tooltip');
     this.type = type;
+    this.state = state;
     this.init($parent);
   }
 
   public $getHtml(): JQuery<HTMLElement> {
     return this.$tooltip;
-  }
-
-  public setOffset(value: number): void {
-    this.offset = value;
-    this.$component.css('left', `${value}px`);
-  }
-
-  public getOffset(): number {
-    return this.offset;
   }
 
   public update(state: State): void {
@@ -76,6 +74,60 @@ class Tooltip {
     });
   }
 
+  public fixPosition($container: JQuery<HTMLElement>): void {
+    let newOffset = 0;
+
+    if (this.state.orientation === VERTICAL) {
+      this.setOffset(newOffset);
+      return;
+    }
+
+    const distanceLeft = distanceToContainer({
+      $container,
+      $element: this.$tooltip,
+      side: LEFT,
+      offset: this.offset,
+    });
+
+    if (distanceLeft > 0) {
+      newOffset = distanceLeft;
+      this.setOffset(newOffset);
+      return;
+    }
+
+    const distanceRight = distanceToContainer({
+      $container,
+      $element: this.$tooltip,
+      side: RIGHT,
+      offset: this.offset,
+    });
+
+    if (distanceRight > 0) {
+      newOffset = -distanceRight;
+    }
+
+    this.setOffset(newOffset);
+  }
+
+  public hideIfBiggerThanContainer($container: JQuery<HTMLElement>): void {
+    if (this.state.orientation === VERTICAL) {
+      const distanceLeft = distanceToContainer({
+        $container,
+        $element: this.$tooltip,
+        side: LEFT,
+      });
+
+      if (distanceLeft > 0) {
+        this.hide();
+        return;
+      }
+    }
+
+    if (isBiggerThanContainer($container, this.$tooltip)) {
+      this.hide();
+    }
+  }
+
   public delete(): void {
     this.$component.remove();
   }
@@ -90,6 +142,11 @@ class Tooltip {
 
   public setType(type: TooltipType): void {
     this.type = type;
+  }
+
+  private setOffset(value: number): void {
+    this.offset = value;
+    this.$component.css('left', `${value}px`);
   }
 
   private setPosition(options: {

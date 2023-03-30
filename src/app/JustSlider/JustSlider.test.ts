@@ -47,7 +47,7 @@ describe('JustSlider', () => {
     eventManager = new EventManager();
     model = new Model(eventManager);
     const state = model.getState();
-    view = new View(eventManager, state);
+    view = new View(eventManager, state, $parent);
     presenter = new Presenter(view, model, eventManager);
   });
 

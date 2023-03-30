@@ -412,7 +412,8 @@ class Model {
 
     const stepsAmount = (max - min) / step;
     const lineStep = (max - min) * density / 100;
-    const numberStep = (Math.trunc(stepsAmount / 50) + 1) * step;
+    const stepsAmountLimited = Math.trunc(stepsAmount / 50);
+    const numberStep = (stepsAmountLimited > 0 ? stepsAmountLimited : 1) * step;
 
     for (
       let value = min;

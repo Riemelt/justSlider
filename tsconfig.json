@@ -12,5 +12,6 @@
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
+    "sourceMap": true,
   }
 }
