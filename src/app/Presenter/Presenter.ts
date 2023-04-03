@@ -1,13 +1,9 @@
 import Model from '../Model/Model';
-import {
-  FROM,
-  TO,
-} from '../Model/constants';
-import {
-  HandleType,
-} from '../Model/types';
+import { FROM, TO } from '../Model/constants';
+import { HandleType } from '../Model/types';
 import View from '../View/View';
 import EventManager from '../EventManager/EventManager';
+import { SliderEvent } from '../EventManager/types';
 import {
   HANDLES_SWAP,
   HANDLE_FROM_MOVE,
@@ -20,10 +16,7 @@ import {
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
-import {
-  JustSliderOptions,
-  State,
-} from '../types';
+import { JustSliderOptions, State } from '../types';
 
 class Presenter {
   private eventManager: EventManager;
@@ -93,39 +86,35 @@ class Presenter {
   }
 
   private createHandlers(): void {
-    this.view.addCreateHandleHandlers((
+    const updateHandleHandler = (
       value: number,
       handle: HandleType
     ) => {
       this.model.updateHandle(value, handle);
-    });
+    };
 
-    this.view.addCreateSliderClickHandler((
-      value: number,
-      handle: HandleType
-    ) => {
-      this.model.updateHandle(value, handle);
-    });
-
-    this.view.addCreateScaleClickHandler((
-      value: number,
-      handle: HandleType
-    ) => {
-      this.model.updateHandle(value, handle);
-    });
+    this.view.addCreateHandleHandlers(updateHandleHandler);
+    this.view.addCreateSliderClickHandler(updateHandleHandler);
+    this.view.addCreateScaleClickHandler(updateHandleHandler);
   }
 
   private registerEvents(): void {
-    this.eventManager.registerEvent(HANDLE_FROM_MOVE);
-    this.eventManager.registerEvent(HANDLE_TO_MOVE);
-    this.eventManager.registerEvent(SLIDER_UPDATE);
-    this.eventManager.registerEvent(ORIENTATION_UPDATE);
-    this.eventManager.registerEvent(TOOLTIPS_UPDATE);
-    this.eventManager.registerEvent(PROGRESS_BAR_UPDATE);
-    this.eventManager.registerEvent(SCALE_UPDATE);
-    this.eventManager.registerEvent(SLIDER_CLICK_DISABLE);
-    this.eventManager.registerEvent(SLIDER_CLICK_ENABLE);
-    this.eventManager.registerEvent(HANDLES_SWAP);
+    const events: Array<SliderEvent> = [
+      HANDLE_FROM_MOVE,
+      HANDLE_TO_MOVE,
+      SLIDER_UPDATE,
+      ORIENTATION_UPDATE,
+      TOOLTIPS_UPDATE,
+      PROGRESS_BAR_UPDATE,
+      SCALE_UPDATE,
+      SLIDER_CLICK_DISABLE,
+      SLIDER_CLICK_ENABLE,
+      HANDLES_SWAP,
+    ];
+
+    events.forEach((event) => {
+      this.eventManager.registerEvent(event);
+    });
   }
 
   private addEventListeners(): void {

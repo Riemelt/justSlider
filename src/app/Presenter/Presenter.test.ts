@@ -11,22 +11,11 @@ import {
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
 import EventManager from '../EventManager/EventManager';
-import {
-  SliderEvent,
-} from '../EventManager/types';
-import {
-  FORWARD,
-  FROM,
-  HORIZONTAL,
-  TO,
-} from '../Model/constants';
+import { SliderEvent } from '../EventManager/types';
+import { FORWARD, FROM, HORIZONTAL, TO } from '../Model/constants';
 import Model from '../Model/Model';
-import {
-  JustSliderOptions,
-} from '../types';
-import {
-  ScaleOptions,
-} from '../View/Scale/types';
+import { JustSliderOptions } from '../types';
+import { ScaleOptions } from '../View/Scale/types';
 import View from '../View/View';
 import Presenter from './Presenter';
 
