@@ -3,26 +3,11 @@ import {
   SLIDER_CLICK_ENABLE,
 } from '../../EventManager/constants';
 import EventManager from '../../EventManager/EventManager';
-import {
-  FORWARD,
-  FROM,
-  HORIZONTAL,
-} from '../../Model/constants';
-import {
-  HandleType,
-} from '../../Model/types';
-import {
-  Direction,
-  State,
-  Orientation,
-} from '../../types';
-import {
-  getElementPos,
-  getTransformStyles,
-} from '../../utilities/utilities';
-import {
-  HandleOptions,
-} from './types';
+import { FORWARD, FROM, HORIZONTAL } from '../../Model/constants';
+import { HandleType } from '../../Model/types';
+import { Direction, State, Orientation } from '../../types';
+import { getElementPos, getTransformStyles } from '../../utilities/utilities';
+import { HandleOptions } from './types';
 
 const ARROW_UP = 'ArrowUp';
 const ARROW_DOWN = 'ArrowDown';
@@ -44,7 +29,7 @@ class Handle {
   private type: HandleType = FROM;
   private state: State;
 
-  static initHtml(): JQuery<HTMLElement> {
+  static $initHtml(): JQuery<HTMLElement> {
     return $(`
       <div class="just-slider__point">
         <div class="just-slider__handle" tabindex="0">
@@ -65,13 +50,13 @@ class Handle {
 
   constructor(handleOptions: HandleOptions) {
     this.eventManager = handleOptions.eventManager;
-    this.$component = Handle.initHtml();
+    this.$component = Handle.$initHtml();
     this.$handle = this.$component.find('.just-slider__handle');
     this.state = handleOptions.state;
     this.init(handleOptions);
   }
 
-  public getHandleHTML(): JQuery<HTMLElement> {
+  public $getHtml(): JQuery<HTMLElement> {
     return this.$handle;
   }
 
@@ -137,17 +122,23 @@ class Handle {
     const value = this.state[this.type];
     const { step, direction } = this.state;
 
-    if (key === ARROW_RIGHT || key === ARROW_UP) {
+    const move = (sign: 1 | -1) => {
       event.preventDefault();
-      const newValue = Handle.moveByStep({ value, direction, step });
+      const newValue = Handle.moveByStep({
+        value,
+        direction,
+        step: step * sign,
+      });
       this.handleHandlePointermove?.(newValue, this.type, true);
+    };
+
+    if (key === ARROW_RIGHT || key === ARROW_UP) {
+      move(1);
       return;
     }
 
     if (key === ARROW_LEFT || key === ARROW_DOWN) {
-      event.preventDefault();
-      const newValue = Handle.moveByStep({ value, direction, step: -step });
-      this.handleHandlePointermove?.(newValue, this.type, true);
+      move(-1);
       return;
     }
   }

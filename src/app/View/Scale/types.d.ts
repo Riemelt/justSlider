@@ -1,13 +1,6 @@
-import {
-  BIG,
-  LARGE,
-  LINE,
-  NORMAL,
-  NUMBER,
-} from './constants';
+import { BIG, LARGE, LINE, NORMAL, NUMBER } from './constants';
 
 type SegmentType = typeof LINE | typeof NUMBER;
-
 type LineSize = typeof NORMAL | typeof BIG | typeof LARGE;
 
 interface Segment {

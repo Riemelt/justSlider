@@ -2,6 +2,7 @@ import EventManager from '../EventManager/EventManager';
 import {
   State,
   Orientation,
+  HTMLElementEvent,
 } from '../types';
 import {
   HandleType, TooltipType,
@@ -15,7 +16,7 @@ import {
 } from '../Model/constants';
 import {
   checkCollision,
-  convertViewPositionToModel,
+  getConvertedViewPositionToModel,
   getElementPos,
 } from '../utilities/utilities';
 import Handle from './Handle/Handle';
@@ -53,7 +54,7 @@ class View {
   private progressBar?: ProgressBar;
   private scale?: Scale;
 
-  static initHtml(): JQuery<HTMLElement> {
+  static $initHtml(): JQuery<HTMLElement> {
     return $(`
       <div class="just-slider">
         <div class="just-slider__main">
@@ -76,7 +77,7 @@ class View {
     this.eventManager = eventManager;
     this.state = state;
     this.$parent = $parent;
-    this.$component = View.initHtml();
+    this.$component = View.$initHtml();
     this.$justSlider = this.$component.find('.just-slider__main');
     this.setHandlers();
   }
@@ -377,9 +378,7 @@ class View {
     }
   }
 
-  private handleSliderClick(event: JQuery.Event & {
-    target: HTMLElement,
-  }): void {
+  private handleSliderClick(event: HTMLElementEvent<HTMLElement>): void {
     const $element = $(event.target);
 
     if (!View.isSliderBar($element)) {
@@ -417,7 +416,7 @@ class View {
       this.$justSlider.height()) ?? 0;
     const shift = getElementPos(this.$justSlider, orientation);
 
-    const converted = convertViewPositionToModel({
+    const converted = getConvertedViewPositionToModel({
       position,
       min,
       max,

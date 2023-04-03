@@ -18,7 +18,7 @@ class Tooltip {
   private type: TooltipType = FROM;
   private offset = 0;
 
-  static initHtml(): JQuery<HTMLElement> {
+  static $initHtml(): JQuery<HTMLElement> {
     return $(`
       <div class="just-slider__point just-slider__point_type_tooltip">
         <div class="just-slider__tooltip">
@@ -32,7 +32,7 @@ class Tooltip {
     type,
     state,
   }: TooltipOptions) {
-    this.$component = Tooltip.initHtml();
+    this.$component = Tooltip.$initHtml();
     this.$tooltip = this.$component.find('.just-slider__tooltip');
     this.type = type;
     this.state = state;
@@ -44,23 +44,12 @@ class Tooltip {
   }
 
   public update(state: State): void {
-    const { from, to, precision, direction } = state;
-    const firstValue = this.type === RANGE ? from : state[this.type];
-    const firstConverted = getValueBasedOnPrecision(firstValue, precision);
-    let text = firstConverted;
-
-    if (this.type === RANGE) {
-      const secondConverted = getValueBasedOnPrecision(to, precision);
-      const smaller = direction === FORWARD ? firstConverted : secondConverted;
-      const bigger = direction === FORWARD ? secondConverted : firstConverted;
-      text = `${smaller} - ${bigger}`;
-    }
-
+    const text = this.getText(state);
     this.$tooltip.html(text);
     this.updatePosition(state);
   }
 
-  public updatePosition(state: State) {
+  public updatePosition(state: State): void {
     const { from, to, min, max, orientation, direction } = state;
     const middle = from + ((to - from) / 2);
     const value = this.type === RANGE ? middle : state[this.type];
@@ -75,10 +64,8 @@ class Tooltip {
   }
 
   public fixPosition($container: JQuery<HTMLElement>): void {
-    let newOffset = 0;
-
     if (this.state.orientation === VERTICAL) {
-      this.setOffset(newOffset);
+      this.setOffset(0);
       return;
     }
 
@@ -90,8 +77,7 @@ class Tooltip {
     });
 
     if (distanceLeft > 0) {
-      newOffset = distanceLeft;
-      this.setOffset(newOffset);
+      this.setOffset(distanceLeft);
       return;
     }
 
@@ -102,10 +88,7 @@ class Tooltip {
       offset: this.offset,
     });
 
-    if (distanceRight > 0) {
-      newOffset = -distanceRight;
-    }
-
+    const newOffset = distanceRight > 0 ? -distanceRight : 0;
     this.setOffset(newOffset);
   }
 
@@ -142,6 +125,22 @@ class Tooltip {
 
   public setType(type: TooltipType): void {
     this.type = type;
+  }
+
+  private getText(state: State): string {
+    const { from, to, precision, direction } = state;
+    const firstValue = this.type === RANGE ? from : state[this.type];
+    const firstConverted = getValueBasedOnPrecision(firstValue, precision);
+
+    if (this.type !== RANGE) {
+      return firstConverted;
+    }
+
+    const secondConverted = getValueBasedOnPrecision(to, precision);
+    const smaller = direction === FORWARD ? firstConverted : secondConverted;
+    const bigger = direction === FORWARD ? secondConverted : firstConverted;
+
+    return `${smaller} - ${bigger}`;
   }
 
   private setOffset(value: number): void {

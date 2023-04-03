@@ -131,7 +131,7 @@ describe('View', () => {
 
       const mockedConvertPosition = jest.spyOn(
         Utilities,
-        'convertViewPositionToModel'
+        'getConvertedViewPositionToModel'
       );
 
       view.addCreateHandleHandlers(mockedHandler);
@@ -317,7 +317,7 @@ describe('View', () => {
         generateView(state);
         const mockedConvertPosition = jest.spyOn(
           Utilities,
-          'convertViewPositionToModel'
+          'getConvertedViewPositionToModel'
         );
         const handler = jest.fn(() => undefined);
 
@@ -363,7 +363,7 @@ describe('View', () => {
       () => {
         const mockedConvertPosition = jest.spyOn(
           Utilities,
-          'convertViewPositionToModel'
+          'getConvertedViewPositionToModel'
         );
         const handler = jest.fn(() => undefined);
 

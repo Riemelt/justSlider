@@ -1,11 +1,5 @@
-import {
-  BACKWARD,
-  FORWARD,
-  HORIZONTAL,
-} from '../../Model/constants';
-import {
-  State,
-} from '../../types';
+import { BACKWARD, FORWARD, HORIZONTAL } from '../../Model/constants';
+import { State } from '../../types';
 import * as Utilities from '../../utilities/utilities';
 import ProgressBar from './ProgressBar';
 

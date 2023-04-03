@@ -1,8 +1,8 @@
-import Tooltip from './Tooltip';
 import * as Utilities from '../../utilities/utilities';
-import { TooltipOptions } from './types';
 import { FORWARD, FROM, HORIZONTAL } from '../../Model/constants';
 import { State } from '../../types';
+import { TooltipOptions } from './types';
+import Tooltip from './Tooltip';
 
 describe('Tooltip', () => {
   let $parent: JQuery<HTMLElement>;

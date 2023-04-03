@@ -1,17 +1,9 @@
-import {
-  BACKWARD,
-  FORWARD,
-  HORIZONTAL,
-  VERTICAL,
-} from '../Model/constants';
-import {
-  Orientation,
-  Direction,
-} from '../types';
+import { BACKWARD, FORWARD, HORIZONTAL, VERTICAL } from '../Model/constants';
+import { Orientation, Direction } from '../types';
 import {
   getTransformStyles,
   getPositionStyles,
-  convertViewPositionToModel,
+  getConvertedViewPositionToModel,
   getValueBasedOnPrecision,
 } from './utilities';
 
@@ -245,7 +237,7 @@ describe('View utilities', () => {
     );
   });
 
-  describe('convertViewPositionToModel', () => {
+  describe('getConvertedViewPositionToModel', () => {
     const testCases: Array<{
       options: {
         position: number
@@ -332,7 +324,7 @@ describe('View utilities', () => {
     test.each(testCases)(
       'Returns "$expected" when $case',
       ({ options, expected }) => {
-        expect(convertViewPositionToModel(options)).toBe(expected);
+        expect(getConvertedViewPositionToModel(options)).toBe(expected);
       }
     );
   });

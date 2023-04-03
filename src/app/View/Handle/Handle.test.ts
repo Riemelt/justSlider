@@ -3,20 +3,10 @@ import {
   SLIDER_CLICK_DISABLE,
   SLIDER_CLICK_ENABLE,
 } from '../../EventManager/constants';
-import {
-  State,
-} from '../../types';
+import { State } from '../../types';
 import * as Utilities from '../../utilities/utilities';
-import {
-  HandleType,
-} from '../../Model/types';
-import {
-  FORWARD,
-  FROM,
-  HORIZONTAL,
-  TO,
-  VERTICAL,
-} from '../../Model/constants';
+import { HandleType } from '../../Model/types';
+import { FORWARD, FROM, HORIZONTAL, TO, VERTICAL } from '../../Model/constants';
 import Handle from './Handle';
 
 describe('Handle', () => {
@@ -132,7 +122,7 @@ describe('Handle', () => {
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
-      const $handle = handle.getHandleHTML();
+      const $handle = handle.$getHtml();
       $handle.trigger(eventKeydown);
 
       expect(handler).toBeCalledWith(210, FROM, true);
@@ -148,7 +138,7 @@ describe('Handle', () => {
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
-      const $handle = handle.getHandleHTML();
+      const $handle = handle.$getHtml();
       $handle.trigger(eventKeydown);
 
       expect(handler).toBeCalledWith(190, FROM, true);
@@ -207,7 +197,7 @@ describe('Handle', () => {
       handle.setHandlePointermoveHandler(handler);
       handle.update(state);
 
-      const $handle = handle.getHandleHTML();
+      const $handle = handle.$getHtml();
 
       $handle.outerWidth(100);
 
@@ -238,7 +228,7 @@ describe('Handle', () => {
       handle.setHandlePointermoveHandler(handler);
       handle.update({ ...state, orientation: VERTICAL });
 
-      const $handle = handle.getHandleHTML();
+      const $handle = handle.$getHtml();
 
       $handle.outerWidth(100);
 
@@ -263,7 +253,7 @@ describe('Handle', () => {
     handle.setType(TO);
     handle.update(state);
 
-    const $handle = handle.getHandleHTML();
+    const $handle = handle.$getHtml();
     $handle.trigger('pointerdown');
     $(document).trigger('pointermove');
 

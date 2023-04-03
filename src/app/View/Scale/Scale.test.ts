@@ -1,21 +1,9 @@
-import {
-  FORWARD,
-  HORIZONTAL,
-} from '../../Model/constants';
-import {
-  State,
-} from '../../types';
+import { FORWARD, HORIZONTAL } from '../../Model/constants';
+import { State } from '../../types';
 import * as Utilities from '../../utilities/utilities';
-import {
-  LINE,
-  NUMBER,
-} from './constants';
+import { LINE, NUMBER } from './constants';
 import Scale from './Scale';
-import {
-  Segment,
-  ScaleState,
-} from './types';
-
+import { Segment, ScaleState } from './types';
 
 describe('Scale', () => {
   let $parent: JQuery<HTMLElement>;

@@ -1,16 +1,6 @@
-import {
-  JustSlider,
-} from '../JustSlider/types';
-import {
-  BACKWARD,
-  FORWARD,
-  HORIZONTAL,
-  VERTICAL,
-} from '../Model/constants';
-import {
-  ScaleOptions,
-  ScaleState,
-} from '../View/Scale/types';
+import { JustSlider } from '../JustSlider/types';
+import { BACKWARD, FORWARD, HORIZONTAL, VERTICAL } from '../Model/constants';
+import { ScaleOptions, ScaleState } from '../View/Scale/types';
 
 type Orientation = typeof VERTICAL | typeof HORIZONTAL;
 type Direction = typeof FORWARD | typeof BACKWARD;

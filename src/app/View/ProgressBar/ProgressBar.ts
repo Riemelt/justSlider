@@ -1,20 +1,12 @@
-import {
-  FORWARD,
-} from '../../Model/constants';
-import {
-  Direction,
-  State,
-  Orientation,
-} from '../../types';
-import {
-  getTransformStyles,
-} from '../../utilities/utilities';
+import { FORWARD } from '../../Model/constants';
+import { Direction, State, Orientation } from '../../types';
+import { getTransformStyles } from '../../utilities/utilities';
 
 class ProgressBar {
   private $component: JQuery<HTMLElement>;
   private $bar: JQuery<HTMLElement>;
 
-  static initHtml(): JQuery<HTMLElement> {
+  static $initHtml(): JQuery<HTMLElement> {
     return $(`
       <div class="just-slider__progress-bar-wrapper">
         <div class="just-slider__progress-bar">
@@ -24,7 +16,7 @@ class ProgressBar {
   }
 
   constructor($parent: JQuery<HTMLElement>) {
-    this.$component = ProgressBar.initHtml();
+    this.$component = ProgressBar.$initHtml();
     this.$bar = this.$component.find('.just-slider__progress-bar');
     $parent.append(this.$component);
   }

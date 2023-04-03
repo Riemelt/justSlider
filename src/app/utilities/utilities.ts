@@ -1,13 +1,5 @@
-import {
-  Orientation,
-  Direction,
-} from '../types';
-import {
-  BACKWARD,
-  FORWARD,
-  HORIZONTAL,
-  VERTICAL,
-} from '../Model/constants';
+import { Orientation, Direction } from '../types';
+import { BACKWARD, FORWARD, HORIZONTAL, VERTICAL } from '../Model/constants';
 
 const LEFT = 'left';
 const RIGHT = 'right';
@@ -21,7 +13,7 @@ interface Rect {
   h: number,
 }
 
-const convertViewPositionToModel = function (options: {
+const getConvertedViewPositionToModel = function (options: {
   position: number,
   shift: number,
   length: number,
@@ -74,6 +66,21 @@ const getPositionStyles = function getPositionStyles(options: {
   };
 };
 
+const getPositionValue = function getPositionValue(
+  shift: number,
+  min: number,
+  max: number,
+  direction: Direction
+): number {
+  const percentage = getPercentage(shift, min, max);
+
+  if (direction === BACKWARD) {
+    return (100 - percentage);
+  }
+
+  return percentage;
+};
+
 const getTransformStyles = function getTransformStyles(options: {
   shift: number,
   min: number,
@@ -98,13 +105,10 @@ const getTransformStyles = function getTransformStyles(options: {
   );
 
   const translateStyle = getTranslateStyle(translateValue, axis);
-
-  let result = translateStyle;
-
-  if (scale !== undefined) {
-    const scaleStyle = getScaleStyle(scale, axis);
-    result += ` ${scaleStyle}`;
-  }
+  const scaleStyle = scale !== undefined ?
+    ` ${getScaleStyle(scale, axis)}` :
+    '';
+  const result = `${translateStyle}${scaleStyle}`;
 
   return {
     property: 'transform',
@@ -112,19 +116,18 @@ const getTransformStyles = function getTransformStyles(options: {
   };
 };
 
-const getPositionValue = function getPositionValue(
-  shift: number,
-  min: number,
-  max: number,
-  direction: Direction
-): number {
-  const percentage = getPercentage(shift, min, max);
+const getTranslateStyle = function getTranslateStyle(
+  translateValue: number,
+  axis: string
+): string {
+  return `translate${axis}(${translateValue}%)`;
+};
 
-  if (direction === BACKWARD) {
-    return (100 - percentage);
-  }
-
-  return percentage;
+const getScaleStyle = function getScaleStyle(
+  scale: number,
+  axis: string
+): string {
+  return `scale${axis}(${scale})`;
 };
 
 const getAxis = function getAxis(orientation: Orientation): string {
@@ -137,20 +140,6 @@ const getPercentage = function getPercentage(
   max: number
 ): number {
   return Math.abs((((value - min) / (max - min)) * 100));
-};
-
-const getScaleStyle = function getScaleStyle(
-  scale: number,
-  axis: string
-): string {
-  return `scale${axis}(${scale})`;
-};
-
-const getTranslateStyle = function getTranslateStyle(
-  translateValue: number,
-  axis: string
-): string {
-  return `translate${axis}(${translateValue}%)`;
 };
 
 const getTranslateValue = function getTranslateValue(
@@ -263,7 +252,7 @@ const isBiggerThanContainer = function isBiggerThanContainer(
 export {
   getTransformStyles,
   getPositionStyles,
-  convertViewPositionToModel,
+  getConvertedViewPositionToModel,
   getValueBasedOnPrecision,
   shouldFlip,
   getElementLength,

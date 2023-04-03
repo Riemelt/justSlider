@@ -1,9 +1,3 @@
-import { FORWARD, VERTICAL } from '../../Model/constants';
-import {
-  Direction,
-  Orientation,
-  State,
-} from '../../types';
 import {
   checkCollision,
   distanceToContainer,
@@ -13,15 +7,10 @@ import {
   LEFT,
   RIGHT,
 } from '../../utilities/utilities';
-import {
-  BIG,
-  LARGE,
-  LINE,
-  NORMAL,
-} from './constants';
-import {
-  LineSize,
-} from './types';
+import { FORWARD, VERTICAL } from '../../Model/constants';
+import { Direction, Orientation, State } from '../../types';
+import { BIG, LARGE, LINE, NORMAL } from './constants';
+import { LineSize } from './types';
 
 class Scale {
   private $component: JQuery<HTMLElement>;
@@ -33,7 +22,7 @@ class Scale {
   static readonly NUMBER_CLASS = 'just-slider__scale-number';
   static readonly LINE_CLASS = 'just-slider__scale-line';
 
-  static initHtml(): JQuery<HTMLElement> {
+  static $initHtml(): JQuery<HTMLElement> {
     return $(`
       <div class="just-slider__scale">
       </div>
@@ -73,7 +62,7 @@ class Scale {
   }
 
   constructor($parent: JQuery<HTMLElement>, state: State) {
-    this.$component = Scale.initHtml();
+    this.$component = Scale.$initHtml();
     this.numberSegments = [];
     this.state = state;
     this.init($parent);
@@ -255,9 +244,10 @@ class Scale {
   private setStyleModifier(lines: boolean): void {
     if (lines) {
       this.$component.removeClass('just-slider__scale_without-lines');
-    } else {
-      this.$component.addClass('just-slider__scale_without-lines');
+      return;
     }
+
+    this.$component.addClass('just-slider__scale_without-lines');
   }
 
   private createNumberSegment(
@@ -278,7 +268,7 @@ class Scale {
     return $segment;
   }
 
-  private handleScaleNumberClick(value: number) {
+  private handleScaleNumberClick(value: number): void {
     this.handleNumberClick?.(value);
   }
 

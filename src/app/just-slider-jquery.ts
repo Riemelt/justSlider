@@ -4,9 +4,7 @@ import View from './View/View';
 import { ScaleOptions } from './View/Scale/types';
 import JustSlider from './JustSlider/JustSlider';
 import EventManager from './EventManager/EventManager';
-import {
-  JustSliderOptions,
-} from './types';
+import { JustSliderOptions } from './types';
 
 (function ($) {
   $.fn.justSlider = function makeSlider(options: JustSliderOptions = {}) {
