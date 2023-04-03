@@ -13,33 +13,22 @@ import {
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
 import EventManager from '../EventManager/EventManager';
+import { Options, State } from '../types';
+import { LINE, NUMBER } from '../View/Scale/constants';
+import { ScaleOptions, Segment } from '../View/Scale/types';
 import {
-  Direction,
-  Options,
-  Orientation,
-  State,
-} from '../types';
-import {
-  LINE,
-  NUMBER,
-} from '../View/Scale/constants';
-import {
-  ScaleOptions,
-  Segment,
-} from '../View/Scale/types';
-import {
+  DIRECTION,
   FORWARD,
   FROM,
   HORIZONTAL,
+  ORIENTATION,
+  PROGRESS_BAR,
+  RANGE,
   TO,
+  TOOLTIPS,
 } from './constants';
-import {
-  HandleType,
-} from './types';
-import {
-  getUpdates,
-  UPDATES,
-} from './updates';
+import { HandleType } from './types';
+import { getUpdates, UPDATES } from './updates';
 
 class Model {
   private eventManager: EventManager;
@@ -60,7 +49,7 @@ class Model {
     precision: 0,
   };
 
-  static adjustFloat(value: number, precision: number): number {
+  static getAdjustedFloat(value: number, precision: number): number {
     const decimals = 10 ** precision;
     return Math.round(value * decimals) / decimals;
   }
@@ -75,11 +64,11 @@ class Model {
     return Math.max(
       0,
       (match[1] ? match[1].length : 0)
-      - (match[2] ? +match[2] : 0)
+      - (match[2] ? Number(match[2]) : 0)
     );
   }
 
-  static validateHandleOnMinMax(
+  static getValidatedHandleOnMinMax(
     value: number,
     min: number,
     max: number
@@ -109,7 +98,18 @@ class Model {
     return type === FROM ? value > to : value < from;
   }
 
-  static validateScaleDensity(density: number): number {
+  static getHandleTypeOnCollision(
+    isCollided: boolean,
+    type: HandleType,
+  ): HandleType {
+    if (!isCollided) {
+      return type;
+    }
+
+    return type === FROM ? TO : FROM;
+  }
+
+  static getValidatedScaleDensity(density: number): number {
     if (density < 1) {
       return 1;
     }
@@ -121,35 +121,49 @@ class Model {
     return density;
   }
 
-  static validateStep(step: number, length: number): number {
-    let newStep = step > length ? length : step;
-
-    if (Model.getNumberOfDecimals(newStep) > 15) {
-      newStep = Model.adjustFloat(newStep, 15);
+  static getScaleLinesPerStep(
+    lineStep: number,
+    distanceToNextValue: number,
+  ): number {
+    if (lineStep === 0) {
+      return 0;
     }
 
-    if (newStep <= 0) {
+    const linesPerStep = Math.trunc(distanceToNextValue / lineStep);
+    const subtraction = distanceToNextValue % lineStep === 0 ? -1 : 0;
+    return linesPerStep + subtraction;
+  }
+
+  static getValidatedStep(step: number, length: number): number {
+    const newStep = step > length ? length : step;
+    const validated = Model.getValidatedOnDecimalsAmount(newStep);
+
+    if (validated <= 0) {
       return 1;
     }
 
-    return newStep;
+    return validated;
   }
 
-  static validateMinMax(min: number, max: number): [number, number] {
-    let newMin = min;
-    let newMax = max;
-
-    if (Model.getNumberOfDecimals(newMin) > 15) {
-      newMin = Model.adjustFloat(newMin, 15);
+  static getValidatedOnDecimalsAmount(value: number): number {
+    if (Model.getNumberOfDecimals(value) <= 15) {
+      return value;
     }
 
-    if (Model.getNumberOfDecimals(newMax) > 15) {
-      newMax = Model.adjustFloat(newMax, 15);
-    }
+    return Model.getAdjustedFloat(value, 15);
+  }
 
-    newMax = newMin === newMax ? newMax + 1 : newMax;
+  static getValidatedMinMax(min: number, max: number): [number, number] {
+    const minValidated = Model.getValidatedOnDecimalsAmount(min);
+    const maxValidated = Model.getValidatedOnDecimalsAmount(max);
 
-    return newMin > newMax ? [newMax, newMin] : [newMin, newMax];
+    const newMax = minValidated === maxValidated ?
+      maxValidated + 1 :
+      maxValidated;
+
+    return minValidated > newMax ?
+      [newMax, minValidated] :
+      [minValidated, newMax];
   }
 
   static getValueFromPercentage(
@@ -231,19 +245,19 @@ class Model {
           this.setStep(step);
           break;
         case RANGE_UPDATE:
-          this.setRange(range);
+          this.setStateProperty(RANGE, range);
           break;
         case DIRECTION_UPDATE:
-          this.setDirection(direction);
+          this.setStateProperty(DIRECTION, direction);
           break;
         case ORIENTATION_UPDATE:
-          this.setOrientation(orientation);
+          this.setStateProperty(ORIENTATION, orientation);
           break;
         case PROGRESS_BAR_UPDATE:
-          this.setProgressBar(progressBar);
+          this.setStateProperty(PROGRESS_BAR, progressBar);
           break;
         case TOOLTIPS_UPDATE:
-          this.setTooltips(tooltips);
+          this.setStateProperty(TOOLTIPS, tooltips);
           break;
         case HANDLE_TO_MOVE:
           this.setHandle(TO, to);
@@ -284,8 +298,8 @@ class Model {
     const newValue = value ?? this.state[type];
     const { step, precision, from, to, range } = this.state;
 
-    const adjusted = this.adjustHandle(newValue, step);
-    const validated = this.validateHandle(newValue);
+    const adjusted = this.getAdjustedHandle(newValue, step);
+    const validated = this.getValidatedHandle(newValue);
     const valueToSet = newValue !== validated ? validated : adjusted;
 
     const isCollided = Model.areHandlesCollided(
@@ -296,26 +310,25 @@ class Model {
       range
     );
 
-    let newType = type;
-
     if (isCollided) {
       this.eventManager.dispatchEvent(HANDLES_SWAP);
-      newType = type === FROM ? TO : FROM;
     }
 
-    this.state[type] = this.validateHandle(this.state[newType]);
-    this.state[newType] = Model.adjustFloat(valueToSet, precision);
+    const newType = Model.getHandleTypeOnCollision(isCollided, type);
+
+    this.state[type] = this.getValidatedHandle(this.state[newType]);
+    this.state[newType] = Model.getAdjustedFloat(valueToSet, precision);
 
     return newType;
   }
 
-  private adjustHandle(value: number, step: number): number {
-    const adjusted = this.adjustWithStep(value, step);
-    const validated = this.validateHandle(adjusted);
+  private getAdjustedHandle(value: number, step: number): number {
+    const adjusted = this.getAdjustedHandleWithStep(value, step);
+    const validated = this.getValidatedHandle(adjusted);
     return validated;
   }
 
-  private adjustWithStep(value: number, step: number): number {
+  private getAdjustedHandleWithStep(value: number, step: number): number {
     const { min } = this.state;
     const relativeValue = value + (min * (-1));
 
@@ -323,16 +336,16 @@ class Model {
     return adjusted;
   }
 
-  private validateHandle(value: number): number {
+  private getValidatedHandle(value: number): number {
     const { min, max } = this.state;
 
-    const validatedOnMinMax = Model.validateHandleOnMinMax(
+    const validated = Model.getValidatedHandleOnMinMax(
       value,
       min,
       max
     );
 
-    return validatedOnMinMax;
+    return validated;
   }
 
   private updatePrecision(): void {
@@ -347,34 +360,13 @@ class Model {
     this.state.precision = minPrecision;
   }
 
-  private setRange(range?: boolean): void {
-    if (range === undefined) return;
+  private setStateProperty<Type extends keyof State>(
+    property: Type,
+    value?: State[Type],
+  ) {
+    if (value === undefined) return;
 
-    this.state.range = range;
-  }
-
-  private setDirection(direction?: Direction): void {
-    if (direction === undefined) return;
-
-    this.state.direction = direction;
-  }
-
-  private setOrientation(orientation?: Orientation): void {
-    if (orientation === undefined) return;
-
-    this.state.orientation = orientation;
-  }
-
-  private setProgressBar(progressBar?: boolean): void {
-    if (progressBar === undefined) return;
-
-    this.state.progressBar = progressBar;
-  }
-
-  private setTooltips(tooltips?: boolean): void {
-    if (tooltips === undefined) return;
-
-    this.state.tooltips = tooltips;
+    this.state[property] = value;
   }
 
   private setScale(scale?: ScaleOptions | null): void {
@@ -418,7 +410,7 @@ class Model {
     for (
       let value = min;
       value < max;
-      value = Model.adjustFloat(value + numberStep, precision)
+      value = Model.getAdjustedFloat(value + numberStep, precision)
     ) {
       const numberSegment: Segment = {
         value,
@@ -427,20 +419,18 @@ class Model {
 
       this.state.scale.segments.push(numberSegment);
 
-      let nextValue = value + numberStep;
-      nextValue = nextValue >= max ? max : nextValue;
-      const distanceToNextValue = Model.adjustFloat(
-        nextValue - value,
+      const nextValue = value + numberStep;
+      const validated = nextValue >= max ? max : nextValue;
+
+      const distanceToNextValue = Model.getAdjustedFloat(
+        validated - value,
         precision
       );
 
-      let linesPerStep: number;
-      if (lineStep === 0) {
-        linesPerStep = 0;
-      } else {
-        linesPerStep = Math.trunc(distanceToNextValue / lineStep);
-        linesPerStep += distanceToNextValue % lineStep === 0 ? -1 : 0;
-      }
+      const linesPerStep = Model.getScaleLinesPerStep(
+        lineStep,
+        distanceToNextValue,
+      );
 
       const lineDistance = distanceToNextValue / (linesPerStep + 1);
 
@@ -463,7 +453,7 @@ class Model {
   private setScaleDensity(density: number): void {
     if (this.state.scale === null) return;
 
-    const validated = Model.validateScaleDensity(density);
+    const validated = Model.getValidatedScaleDensity(density);
     this.state.scale.density = validated;
   }
 
@@ -471,7 +461,7 @@ class Model {
     const newMin = min ?? this.state.min;
     const newMax = max ?? this.state.max;
 
-    [this.state.min, this.state.max] = Model.validateMinMax(newMin, newMax);
+    [this.state.min, this.state.max] = Model.getValidatedMinMax(newMin, newMax);
   }
 
   private setStep(step?: number): void {
@@ -483,9 +473,9 @@ class Model {
       Model.getNumberOfDecimals(max),
     );
 
-    const length = Model.adjustFloat(max - min, precision);
+    const length = Model.getAdjustedFloat(max - min, precision);
 
-    this.state.step = Model.validateStep(newStep, length);
+    this.state.step = Model.getValidatedStep(newStep, length);
   }
 }
 

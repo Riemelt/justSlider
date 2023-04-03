@@ -12,16 +12,9 @@ import {
   STEP_UPDATE,
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
-import {
-  SliderEvent,
-} from '../EventManager/types';
-import {
-  Options,
-} from '../types';
-import {
-  Update,
-  Updates,
-} from './types';
+import { SliderEvent } from '../EventManager/types';
+import { Options } from '../types';
+import { Update, Updates } from './types';
 
 const UPDATES: Updates = {
   [HANDLE_FROM_MOVE]: {
@@ -135,45 +128,49 @@ const getUpdates = function getUpdates({
   const propertiesToUpdate: Set<SliderEvent> = new Set();
   const eventsToDispatch: Set<SliderEvent> = new Set();
 
-  if (min !== undefined || max !== undefined) {
-    addUpdates(MIN_MAX_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
+  const options = {
+    min,
+    max,
+    step,
+    range,
+    direction,
+    orientation,
+    progressBar,
+    tooltips,
+    to,
+    from,
+    scale,
+  };
 
-  if (step !== undefined) {
-    addUpdates(STEP_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
+  const events: Array<keyof Updates> = [
+    MIN_MAX_UPDATE,
+    MIN_MAX_UPDATE,
+    STEP_UPDATE,
+    RANGE_UPDATE,
+    DIRECTION_UPDATE,
+    ORIENTATION_UPDATE,
+    PROGRESS_BAR_UPDATE,
+    TOOLTIPS_UPDATE,
+    HANDLE_TO_MOVE,
+    HANDLE_FROM_MOVE,
+    SCALE_UPDATE,
+  ];
 
-  if (range !== undefined) {
-    addUpdates(RANGE_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
+  const optionsAndEvents: Array<{
+    value: Options[keyof Options],
+    event: keyof Updates,
+  }> = Object.values(options).map((value, index) => (
+    {
+      value,
+      event: events[index],
+    }
+  ));
 
-  if (direction !== undefined) {
-    addUpdates(DIRECTION_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
-
-  if (orientation !== undefined) {
-    addUpdates(ORIENTATION_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
-
-  if (progressBar !== undefined) {
-    addUpdates(PROGRESS_BAR_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
-
-  if (tooltips !== undefined) {
-    addUpdates(TOOLTIPS_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
-
-  if (to !== undefined) {
-    addUpdates(HANDLE_TO_MOVE, propertiesToUpdate, eventsToDispatch);
-  }
-
-  if (from !== undefined) {
-    addUpdates(HANDLE_FROM_MOVE, propertiesToUpdate, eventsToDispatch);
-  }
-
-  if (scale !== undefined) {
-    addUpdates(SCALE_UPDATE, propertiesToUpdate, eventsToDispatch);
-  }
+  optionsAndEvents.forEach(({ value, event }) => {
+    if (value !== undefined) {
+      addUpdates(event, propertiesToUpdate, eventsToDispatch);
+    }
+  });
 
   return {
     events: [...eventsToDispatch],

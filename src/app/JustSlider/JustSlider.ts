@@ -1,15 +1,7 @@
 import Presenter from '../Presenter/Presenter';
-import {
-  HandleType,
-} from '../Model/types';
-import {
-  FROM,
-  TO,
-} from '../Model/constants';
-import {
-  JustSliderOptions,
-  State,
-} from '../types';
+import { HandleType } from '../Model/types';
+import { FROM, TO } from '../Model/constants';
+import { JustSliderOptions, State } from '../types';
 
 class JustSlider {
   private presenter: Presenter;

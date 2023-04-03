@@ -8,26 +8,11 @@ import {
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
 import EventManager from '../EventManager/EventManager';
-import {
-  SliderEvent,
-} from '../EventManager/types';
-import {
-  Options,
-} from '../types';
-import {
-  LINE,
-  NUMBER,
-} from '../View/Scale/constants';
-import {
-  BACKWARD,
-  FORWARD,
-  FROM,
-  HORIZONTAL,
-  TO,
-  VERTICAL,
-} from './constants';
+import { SliderEvent } from '../EventManager/types';
+import { Options } from '../types';
+import { LINE, NUMBER } from '../View/Scale/constants';
+import { BACKWARD, FORWARD, FROM, HORIZONTAL, TO, VERTICAL } from './constants';
 import Model from './Model';
-
 
 describe('Model', () => {
   let model: Model;

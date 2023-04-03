@@ -34,7 +34,6 @@ type SliderEvent =
   typeof RANGE_UPDATE |
   typeof HANDLES_SWAP;
 
-
 type EventSubjects = {
   [key in SliderEvent]?: Subject;
 };

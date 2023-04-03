@@ -1,10 +1,5 @@
-import {
-  HANDLE_FROM_MOVE,
-  SLIDER_UPDATE,
-} from './constants';
-import {
-  SliderEvent,
-} from './types';
+import { HANDLE_FROM_MOVE, SLIDER_UPDATE } from './constants';
+import { SliderEvent } from './types';
 import EventManager from './EventManager';
 import Subject from './Subject/Subject';
 

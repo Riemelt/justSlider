@@ -2,14 +2,8 @@ import Presenter from '../Presenter/Presenter';
 import EventManager from '../EventManager/EventManager';
 import View from '../View/View';
 import Model from '../Model/Model';
-import {
-  FORWARD,
-  FROM,
-  HORIZONTAL,
-} from '../Model/constants';
-import {
-  JustSliderOptions,
-} from '../types';
+import { FORWARD, FROM, HORIZONTAL } from '../Model/constants';
+import { JustSliderOptions } from '../types';
 import JustSlider from './JustSlider';
 
 describe('JustSlider', () => {

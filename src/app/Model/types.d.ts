@@ -10,14 +10,8 @@ import {
   STEP_UPDATE,
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
-import {
-  SliderEvent,
-} from '../EventManager/types';
-import {
-  FROM,
-  RANGE,
-  TO,
-} from './constants';
+import { SliderEvent } from '../EventManager/types';
+import { FROM, RANGE, TO } from './constants';
 
 type HandleType = typeof FROM | typeof TO;
 type TooltipType = typeof FROM | typeof TO | typeof RANGE;
