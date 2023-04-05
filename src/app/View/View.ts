@@ -1,24 +1,12 @@
-import EventManager from '../EventManager/EventManager';
-import {
-  State,
-  Orientation,
-  HTMLElementEvent,
-} from '../types';
-import {
-  HandleType, TooltipType,
-} from '../Model/types';
-import {
-  FROM,
-  HORIZONTAL,
-  RANGE,
-  TO,
-  VERTICAL,
-} from '../Model/constants';
 import {
   checkCollision,
   getConvertedViewPositionToModel,
   getElementPos,
 } from '../utilities/utilities';
+import EventManager from '../EventManager/EventManager';
+import { State, Orientation, HTMLElementEvent } from '../types';
+import { HandleType, TooltipType } from '../Model/types';
+import { FROM, HORIZONTAL, RANGE, TO, VERTICAL } from '../Model/constants';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
@@ -82,7 +70,7 @@ class View {
     this.setHandlers();
   }
 
-  public getHtml(): JQuery<HTMLElement> {
+  public $getHtml(): JQuery<HTMLElement> {
     return this.$component;
   }
 
@@ -131,7 +119,7 @@ class View {
     }
   }
 
-  public addCreateHandleHandlers(handler: (
+  public addHandleMoveHandler(handler: (
     value: number,
     type: HandleType
   ) => void): void {
@@ -145,9 +133,11 @@ class View {
   }
 
   public updateTooltips(state: State): void {
-    this.updateTooltip(FROM, state);
-    this.updateTooltip(TO, state);
-    this.updateTooltip(RANGE, state);
+    const types: Array<TooltipType> = [FROM, TO, RANGE];
+
+    types.forEach((type) => {
+      this.updateTooltip(type, state);
+    });
 
     this.fixTooltipsVisuals();
   }
@@ -226,7 +216,7 @@ class View {
     delete this.scale;
   }
 
-  public addCreateScaleClickHandler(handler: (
+  public addScaleClickHandler(handler: (
     value: number,
     type: HandleType
   ) => void): void {
@@ -236,7 +226,7 @@ class View {
     };
   }
 
-  public addCreateSliderClickHandler(handler: (
+  public addSliderClickHandler(handler: (
     value: number,
     type: HandleType
   ) => void): void {
@@ -301,17 +291,15 @@ class View {
   }
 
   private addMarginIfRequired(): void {
-    let newMargin = 0;
-
     if (this.scale === undefined ||
       this.state.orientation === VERTICAL ||
       this.state.scale?.numbers === false
     ) {
-      this.setMargin(newMargin);
+      this.setMargin(0);
       return;
     }
 
-    newMargin = this.scale.getRequiredMargin(this.$parent, this.margin);
+    const newMargin = this.scale.getRequiredMargin(this.$parent, this.margin);
     this.setMargin(newMargin);
   }
 

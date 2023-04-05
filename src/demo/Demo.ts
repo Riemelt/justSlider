@@ -1,7 +1,5 @@
 import SliderDemo from './components/slider-demo/SliderDemo';
-import {
-  DemoOptions,
-} from './types';
+import { DemoOptions } from './types';
 
 class Demo {
   private className: string;

@@ -1,21 +1,11 @@
 import EventManager from '../EventManager/EventManager';
-import {
-  State,
-} from '../types';
-import {
-  FORWARD,
-  FROM,
-  HORIZONTAL,
-  TO,
-  VERTICAL,
-} from '../Model/constants';
+import { State } from '../types';
+import { FORWARD, FROM, HORIZONTAL, TO, VERTICAL } from '../Model/constants';
 import View from './View';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
-import {
-  ScaleState,
-} from './Scale/types';
+import { ScaleState } from './Scale/types';
 import * as Utilities from '../utilities/utilities';
 import Tooltip from './Tooltip/Tooltip';
 
@@ -61,7 +51,7 @@ describe('View', () => {
   describe('On initialization', () => {
     test('Generates html node', () => {
       generateView(state);
-      const $component = view.getHtml();
+      const $component = view.$getHtml();
       expect($component.is('.just-slider'));
 
       const $main = $component.find('.just-slider__main');
@@ -73,7 +63,7 @@ describe('View', () => {
     generateView(state);
     view.setOrientation(VERTICAL);
 
-    const $component = view.getHtml();
+    const $component = view.$getHtml();
     expect($component.hasClass('just-slider_vertical')).toBe(true);
   });
 
@@ -82,7 +72,7 @@ describe('View', () => {
     view.setOrientation(VERTICAL);
     view.setOrientation(HORIZONTAL);
 
-    const $component = view.getHtml();
+    const $component = view.$getHtml();
     expect($component.hasClass('just-slider_vertical')).toBe(false);
   });
 
@@ -96,7 +86,7 @@ describe('View', () => {
           'setHandlePointermoveHandler',
         );
 
-        view.addCreateHandleHandlers(() => undefined);
+        view.addHandleMoveHandler(() => undefined);
         view.updateHandle(state, TO);
 
         expect(mockedSetHandler).toBeCalledTimes(1);
@@ -110,7 +100,7 @@ describe('View', () => {
         generateView(state);
         const mockedHandleDelete = jest.spyOn(view, 'deleteHandle');
 
-        view.addCreateHandleHandlers(() => undefined);
+        view.addHandleMoveHandler(() => undefined);
         view.updateHandle(state, TO);
         view.updateHandle({ ...state, range: false }, TO);
 
@@ -134,10 +124,10 @@ describe('View', () => {
         'getConvertedViewPositionToModel'
       );
 
-      view.addCreateHandleHandlers(mockedHandler);
+      view.addHandleMoveHandler(mockedHandler);
       view.initComponents();
 
-      const $component = view.getHtml();
+      const $component = view.$getHtml();
       const $justSlider = $component.find('.just-slider__main');
 
       const mockedOffset = jest
@@ -172,7 +162,7 @@ describe('View', () => {
       generateView(state);
       const mockedUpdate = jest.spyOn(Handle.prototype, 'update');
 
-      view.addCreateHandleHandlers(() => undefined);
+      view.addHandleMoveHandler(() => undefined);
       view.initComponents();
       view.updateHandle(state, FROM);
 
@@ -184,7 +174,7 @@ describe('View', () => {
       generateView(state);
       const mockedHandleDelete = jest.spyOn(Handle.prototype, 'delete');
 
-      view.addCreateHandleHandlers(() => undefined);
+      view.addHandleMoveHandler(() => undefined);
       view.initComponents();
       view.deleteHandle(FROM);
 
@@ -198,7 +188,7 @@ describe('View', () => {
     generateView(state);
     const mockedUpdateTooltip = jest.spyOn(Tooltip.prototype, 'update');
 
-    view.addCreateHandleHandlers(() => undefined);
+    view.addHandleMoveHandler(() => undefined);
     view.initComponents();
 
     view.updateTooltips({
@@ -268,7 +258,7 @@ describe('View', () => {
         'setNumberClickHandler'
       );
 
-      view.addCreateScaleClickHandler(mockedHandler);
+      view.addScaleClickHandler(mockedHandler);
       view.updateScale(state);
 
       const handler = mockedSetHandler.mock.calls[0][0];
@@ -284,10 +274,10 @@ describe('View', () => {
     test('Enables slider click handler', () => {
       generateView(state);
       const handler = jest.fn(() => undefined);
-      view.addCreateSliderClickHandler(handler);
+      view.addSliderClickHandler(handler);
       view.setSliderClickHandler();
 
-      const $component = view.getHtml();
+      const $component = view.$getHtml();
       const $justSlider = $component.find('.just-slider__main');
 
       $justSlider.trigger('pointerdown');
@@ -298,12 +288,12 @@ describe('View', () => {
     test('Disables slider click handler', () => {
       generateView(state);
       const handler = jest.fn(() => undefined);
-      view.addCreateSliderClickHandler(handler);
+      view.addSliderClickHandler(handler);
       view.setSliderClickHandler();
 
       view.removeSliderClickHandler();
 
-      const $component = view.getHtml();
+      const $component = view.$getHtml();
       const $justSlider = $component.find('.just-slider__main');
 
       $justSlider.trigger('pointerdown');
@@ -325,10 +315,10 @@ describe('View', () => {
           pageX: 280,
         });
 
-        view.addCreateSliderClickHandler(handler);
+        view.addSliderClickHandler(handler);
         view.setSliderClickHandler();
 
-        const $component = view.getHtml();
+        const $component = view.$getHtml();
         const $justSlider = $component.find('.just-slider__main');
 
         const mockedOffset = jest
@@ -376,10 +366,10 @@ describe('View', () => {
           orientation: VERTICAL,
           from: 0,
         });
-        view.addCreateSliderClickHandler(handler);
+        view.addSliderClickHandler(handler);
         view.setSliderClickHandler();
 
-        const $component = view.getHtml();
+        const $component = view.$getHtml();
         const $justSlider = $component.find('.just-slider__main');
 
         const mockedOffset = jest

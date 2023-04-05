@@ -1,10 +1,5 @@
-import {
-  FORWARD,
-  VERTICAL,
-} from '../../../app/Model/constants';
-import {
-  Options,
-} from '../../../app/types';
+import { FORWARD, VERTICAL } from '../../../app/Model/constants';
+import { Options } from '../../../app/types';
 import InputField from '../input-field/InputField';
 import Toggle from '../toggle/Toggle';
 

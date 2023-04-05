@@ -14,6 +14,9 @@ const MAX = 'max';
 const TOOLTIPS = 'tooltips';
 const PROGRESS_BAR = 'progressBar';
 const SCALE = 'scale';
+const DENSITY = 'density';
+const NUMBERS = 'numbers';
+const LINES = 'lines';
 
 export {
   VERTICAL,
@@ -31,4 +34,7 @@ export {
   TOOLTIPS,
   PROGRESS_BAR,
   SCALE,
+  DENSITY,
+  NUMBERS,
+  LINES,
 };

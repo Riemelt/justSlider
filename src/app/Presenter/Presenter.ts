@@ -64,7 +64,7 @@ class Presenter {
   }
 
   public $getSlider(): JQuery<HTMLElement> {
-    return this.view.getHtml();
+    return this.view.$getHtml();
   }
 
   public updateHandle(type: HandleType, value: number): void {
@@ -93,9 +93,9 @@ class Presenter {
       this.model.updateHandle(value, handle);
     };
 
-    this.view.addCreateHandleHandlers(updateHandleHandler);
-    this.view.addCreateSliderClickHandler(updateHandleHandler);
-    this.view.addCreateScaleClickHandler(updateHandleHandler);
+    this.view.addHandleMoveHandler(updateHandleHandler);
+    this.view.addSliderClickHandler(updateHandleHandler);
+    this.view.addScaleClickHandler(updateHandleHandler);
   }
 
   private registerEvents(): void {

@@ -83,15 +83,15 @@ describe('Presenter', () => {
   });
 
   test('Creates view handlers', () => {
-    const mockedViewHandleHandler = jest.spyOn(view, 'addCreateHandleHandlers');
+    const mockedViewHandleHandler = jest.spyOn(view, 'addHandleMoveHandler');
     const mockedViewSliderClickHandler = jest.spyOn(
       view,
-      'addCreateSliderClickHandler'
+      'addSliderClickHandler'
     );
 
     const mockedViewScaleClickHandler = jest.spyOn(
       view,
-      'addCreateScaleClickHandler'
+      'addScaleClickHandler'
     );
 
     presenter.init(options);
@@ -274,12 +274,12 @@ describe('Presenter', () => {
   });
 
   test('Returns slider\'s html node', () => {
-    const mockedGetHtml = jest.spyOn(view, 'getHtml');
+    const $getHtmlMocked = jest.spyOn(view, '$getHtml');
 
     presenter.init(options);
     const $slider = presenter.$getSlider();
 
-    expect($slider).toEqual(mockedGetHtml.mock.results[0].value);
+    expect($slider).toEqual($getHtmlMocked.mock.results[0].value);
   });
 
   test('Returns slider\'s state', () => {

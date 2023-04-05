@@ -1,19 +1,31 @@
 import {
   JustSlider,
+  JustSliderOptions,
   State,
 } from '../../../app/types';
 import {
   BACKWARD,
+  DENSITY,
+  DIRECTION,
   FORWARD,
   FROM,
   HORIZONTAL,
+  LINES,
+  MAX,
+  MIN,
+  NUMBERS,
+  ORIENTATION,
+  PROGRESS_BAR,
+  RANGE,
+  SCALE,
+  STEP,
   TO,
+  TOOLTIPS,
   VERTICAL,
 } from '../../../app/Model/constants';
 import ConfigurationPanel from '../configuration-panel/ConfigurationPanel';
-import {
-  SliderDemoOptions,
-} from './types';
+import { SliderDemoOptions } from './types';
+import { ScaleOptions } from '../../../app/View/Scale/types';
 
 class SliderDemo {
   private className: string;
@@ -23,6 +35,12 @@ class SliderDemo {
   private configurationPanel?: ConfigurationPanel;
   private $slider?: JQuery<HTMLElement>;
   private slider?: JustSlider;
+
+  static isScaleProperty(
+    property: keyof JustSliderOptions | keyof ScaleOptions
+  ): property is keyof ScaleOptions {
+    return (property === DENSITY || property === NUMBERS || property === LINES);
+  }
 
   constructor($parent: JQuery<HTMLElement>, options: SliderDemoOptions) {
     this.className = 'slider-demo';
@@ -39,60 +57,60 @@ class SliderDemo {
       ...options.configurationPanel,
       inputFrom: {
         ...options.configurationPanel.inputFrom,
-        handleInputChange: this.handleInputFromChange.bind(this),
+        handleInputChange: this.handleInputChange.bind(this, FROM),
       },
       inputTo: {
         ...options.configurationPanel.inputFrom,
-        handleInputChange: this.handleInputToChange.bind(this),
+        handleInputChange: this.handleInputChange.bind(this, TO),
       },
       inputMin: {
         ...options.configurationPanel.inputMin,
-        handleInputChange: this.handleInputMinChange.bind(this),
+        handleInputChange: this.handleInputChange.bind(this, MIN),
       },
       inputMax: {
         ...options.configurationPanel.inputMax,
-        handleInputChange: this.handleInputMaxChange.bind(this),
+        handleInputChange: this.handleInputChange.bind(this, MAX),
       },
       inputStep: {
         ...options.configurationPanel.inputStep,
-        handleInputChange: this.handleInputStepChange.bind(this),
+        handleInputChange: this.handleInputChange.bind(this, STEP),
       },
       toggleVertical: {
         ...options.configurationPanel.toggleVertical,
-        handleToggleChange: this.handleToggleOrientationChange.bind(this),
+        handleToggleChange: this.handleInputChange.bind(this, ORIENTATION),
       },
       toggleRange: {
         ...options.configurationPanel.toggleRange,
-        handleToggleChange: this.handleToggleRangeChange.bind(this),
+        handleToggleChange: this.handleInputChange.bind(this, RANGE),
       },
       toggleBar: {
         ...options.configurationPanel.toggleBar,
-        handleToggleChange: this.handleToggleProgressBarChange.bind(this),
+        handleToggleChange: this.handleInputChange.bind(this, PROGRESS_BAR),
       },
       toggleTooltip: {
         ...options.configurationPanel.toggleTooltip,
-        handleToggleChange: this.handleToggleTooltipsChange.bind(this),
+        handleToggleChange: this.handleInputChange.bind(this, TOOLTIPS),
       },
       toggleForward: {
         ...options.configurationPanel.toggleForward,
-        handleToggleChange: this.handleToggleDirectionChange.bind(this),
+        handleToggleChange: this.handleInputChange.bind(this, DIRECTION),
       },
       toggleScale: {
         ...options.configurationPanel.toggleScale,
-        handleToggleChange: this.handleToggleScaleChange.bind(this),
+        handleToggleChange: this.handleInputChange.bind(this, SCALE),
       },
       scale: {
         inputDensity: {
           ...options.configurationPanel.scale?.inputDensity,
-          handleInputChange: this.handleInputScaleDensityChange.bind(this),
+          handleInputChange: this.handleInputChange.bind(this, DENSITY),
         },
         toggleNumbers: {
           ...options.configurationPanel.scale?.toggleNumbers,
-          handleToggleChange: this.handleToggleScaleNumbersChange.bind(this),
+          handleToggleChange: this.handleInputChange.bind(this, NUMBERS),
         },
         toggleLines: {
           ...options.configurationPanel.scale?.toggleLines,
-          handleToggleChange: this.handleToggleScaleLinesChange.bind(this),
+          handleToggleChange: this.handleInputChange.bind(this, LINES),
         },
       },
     });
@@ -110,65 +128,46 @@ class SliderDemo {
     this.configurationPanel?.update(state);
   }
 
-  private handleInputFromChange(value: number): void {
-    this.slider?.update(FROM, value);
-  }
-
-  private handleInputToChange(value: number): void {
-    this.slider?.update(TO, value);
-  }
-
-  private handleInputMinChange(value: number): void {
-    this.slider?.updateOptions({ min: value });
-  }
-
-  private handleInputMaxChange(value: number): void {
-    this.slider?.updateOptions({ max: value });
-  }
-
-  private handleInputStepChange(value: number): void {
-    this.slider?.updateOptions({ step: value });
-  }
-
-  private handleToggleOrientationChange(value: boolean): void {
-    const orientation = value ? VERTICAL : HORIZONTAL;
-    this.slider?.updateOptions({ orientation });
-  }
-
-  private handleToggleDirectionChange(value: boolean): void {
-    const direction = value ? FORWARD : BACKWARD;
-    this.slider?.updateOptions({ direction });
-  }
-
-  private handleToggleProgressBarChange(value: boolean): void {
-    this.slider?.updateOptions({ progressBar: value });
-  }
-
-  private handleToggleRangeChange(value: boolean): void {
-    this.slider?.updateOptions({ range: value });
-  }
-
-  private handleToggleTooltipsChange(value: boolean): void {
-    this.slider?.updateOptions({ tooltips: value });
-  }
-
-  private handleInputScaleDensityChange(value: number): void {
-    this.slider?.updateOptions({ scale: { density: value } });
-  }
-
-  private handleToggleScaleNumbersChange(value: boolean): void {
-    this.slider?.updateOptions({ scale: { numbers: value } });
-  }
-
-  private handleToggleScaleLinesChange(value: boolean): void {
-    this.slider?.updateOptions({ scale: { lines: value } });
-  }
-
-  private handleToggleScaleChange(value: boolean): void {
-    const scale = value ? this.options.slider.scale : null;
-    if (scale !== undefined) {
-      this.slider?.updateOptions({ scale });
+  private handleInputChange(
+    property: keyof JustSliderOptions | keyof ScaleOptions,
+    value: number | boolean
+  ): void {
+    if ((typeof value === 'number') && (property === FROM || property === TO)) {
+      this.slider?.update(property, value);
+      return;
     }
+
+    const converted = this.getConvertedValue(property, value);
+    const options = { [property]: converted };
+
+    if (SliderDemo.isScaleProperty(property)) {
+      this.slider?.updateOptions({ scale: options });
+    }
+
+    this.slider?.updateOptions(options);
+  }
+
+  private getConvertedValue(
+    property: keyof JustSliderOptions | keyof ScaleOptions,
+    value: number | boolean
+  ): JustSliderOptions[keyof JustSliderOptions] {
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    if (property === ORIENTATION) {
+      return value ? VERTICAL : HORIZONTAL;
+    }
+
+    if (property === DIRECTION) {
+      return value ? FORWARD : BACKWARD;
+    }
+
+    if (property === SCALE) {
+      return (value ? this.options.slider.scale : null) ?? null;
+    }
+
+    return value;
   }
 }
 
