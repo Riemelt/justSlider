@@ -88,9 +88,10 @@ class Presenter {
   private createHandlers(): void {
     const updateHandleHandler = (
       value: number,
-      handle: HandleType
+      handle: HandleType,
+      shouldAdjust?: boolean,
     ) => {
-      this.model.updateHandle(value, handle);
+      this.model.updateHandle(value, handle, shouldAdjust);
     };
 
     this.view.addHandleMoveHandler(updateHandleHandler);

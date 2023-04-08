@@ -282,8 +282,9 @@ class Model {
   public updateHandle(
     value: number,
     type: HandleType,
+    shouldAdjust = true,
   ): void {
-    const newType = this.setHandle(type, value);
+    const newType = this.setHandle(type, value, shouldAdjust);
 
     const event = newType === FROM ? HANDLE_FROM_MOVE : HANDLE_TO_MOVE;
     const { events } = UPDATES[event];
@@ -294,11 +295,14 @@ class Model {
   private setHandle(
     type: HandleType,
     value?: number,
+    shouldAdjust = true,
   ): HandleType {
     const newValue = value ?? this.state[type];
     const { step, precision, from, to, range } = this.state;
 
-    const adjusted = this.getAdjustedHandle(newValue, step);
+    const adjusted = shouldAdjust ?
+      this.getAdjustedHandle(newValue, step) :
+      newValue;
     const validated = this.getValidatedHandle(newValue);
     const valueToSet = newValue !== validated ? validated : adjusted;
 

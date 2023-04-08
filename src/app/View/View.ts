@@ -218,11 +218,12 @@ class View {
 
   public addScaleClickHandler(handler: (
     value: number,
-    type: HandleType
+    type: HandleType,
+    shouldAdjust?: boolean,
   ) => void): void {
     this.scaleClickHandler = (position) => {
       const closestHandle = this.getClosestHandle(position);
-      handler(position, closestHandle);
+      handler(position, closestHandle, false);
     };
   }
 
