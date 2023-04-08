@@ -1,4 +1,3 @@
-import * as Utilities from '../../utilities/utilities';
 import { FORWARD, FROM, HORIZONTAL } from '../../Model/constants';
 import { State } from '../../types';
 import { TooltipOptions } from './types';
@@ -49,8 +48,6 @@ describe('Tooltip', () => {
   });
 
   test('Updates value in the html node', () => {
-    const mocked = jest.spyOn(Utilities, 'getValueBasedOnPrecision');
-
     const from = 5;
     const precision = 0;
 
@@ -61,13 +58,7 @@ describe('Tooltip', () => {
     });
 
     const $tooltip = $parent.find(tooltipClass);
-
-    expect(mocked).toBeCalledWith(5, 0);
-    const result = mocked.mock.results[0].value;
-
-    expect($tooltip.html()).toBe(result);
-
-    mocked.mockRestore();
+    expect($tooltip.html()).toBe(`${from}`);
   });
 });
 

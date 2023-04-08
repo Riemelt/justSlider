@@ -264,7 +264,7 @@ describe('View', () => {
       const handler = mockedSetHandler.mock.calls[0][0];
       handler(180);
 
-      expect(mockedHandler).toBeCalledWith(180, FROM);
+      expect(mockedHandler).toBeCalledWith(180, FROM, false);
 
       mockedSetHandler.mockRestore();
     });

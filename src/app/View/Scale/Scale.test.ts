@@ -82,7 +82,6 @@ describe('Scale', () => {
   describe('On update', () => {
     describe('Generates html nodes', () => {
       test('Numbers', () => {
-        const mocked = jest.spyOn(Utilities, 'getValueBasedOnPrecision');
         scale.update(modelState);
 
         const $scale = $parent.find(scaleClass);
@@ -90,14 +89,12 @@ describe('Scale', () => {
 
         expect($numbers.length).toBe(3);
 
-        const { results } = mocked.mock;
+        const numbers = segments.filter((segment) => segment.type === NUMBER);
 
         $numbers.each((index, number) => {
           const $number = $(number);
-          expect($number.html()).toBe(results[index].value);
+          expect($number.html()).toBe(`${numbers[index].value}`);
         });
-
-        mocked.mockRestore();
       });
 
       test('Lines', () => {

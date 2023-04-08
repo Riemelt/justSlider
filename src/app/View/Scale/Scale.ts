@@ -2,7 +2,6 @@ import {
   checkCollision,
   distanceToContainer,
   getPositionStyles,
-  getValueBasedOnPrecision,
   isBiggerThanContainer,
   LEFT,
   RIGHT,
@@ -136,7 +135,7 @@ class Scale {
     this.numberSegments = [];
     if (state.scale === null) return;
 
-    const { min, max, orientation, direction, precision } = state;
+    const { min, max, orientation, direction } = state;
     const { segments, numbers, lines } = state.scale;
 
     this.setStyleModifier(lines);
@@ -178,7 +177,6 @@ class Scale {
       if (numbers) {
         const $numberSegment = this.createNumberSegment(
           value,
-          precision,
           isBig
         );
 
@@ -252,11 +250,9 @@ class Scale {
 
   private createNumberSegment(
     value: number,
-    precision: number,
     isBig = false
   ): JQuery<HTMLElement> {
-    const converted = getValueBasedOnPrecision(value, precision);
-    const $segment = $(`<div class="${Scale.NUMBER_CLASS}">${converted}</div>`);
+    const $segment = $(`<div class="${Scale.NUMBER_CLASS}">${value}</div>`);
     $segment.on('click.scale', this.handleScaleNumberClick.bind(this, value));
 
     if (isBig) {

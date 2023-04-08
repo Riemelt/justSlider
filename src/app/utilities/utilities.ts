@@ -159,13 +159,6 @@ const getTranslateValue = function getTranslateValue(
   return percentage * sign;
 };
 
-const getValueBasedOnPrecision = function getValueBasedOnPrecision(
-  value: number,
-  precision: number
-): string {
-  return value.toFixed(precision);
-};
-
 const getElementLength = function getElementLength(
   element: JQuery<HTMLElement>,
   orientation: Orientation,
@@ -253,7 +246,6 @@ export {
   getTransformStyles,
   getPositionStyles,
   getConvertedViewPositionToModel,
-  getValueBasedOnPrecision,
   shouldFlip,
   getElementLength,
   getElementPos,

@@ -4,7 +4,6 @@ import { Direction, Orientation, State } from '../../types';
 import {
   distanceToContainer,
   getTransformStyles,
-  getValueBasedOnPrecision,
   isBiggerThanContainer,
   LEFT,
   RIGHT,
@@ -128,17 +127,16 @@ class Tooltip {
   }
 
   private getText(state: State): string {
-    const { from, to, precision, direction } = state;
+    const { from, to, direction } = state;
     const firstValue = this.type === RANGE ? from : state[this.type];
-    const firstConverted = getValueBasedOnPrecision(firstValue, precision);
 
     if (this.type !== RANGE) {
-      return firstConverted;
+      return `${firstValue}`;
     }
 
-    const secondConverted = getValueBasedOnPrecision(to, precision);
-    const smaller = direction === FORWARD ? firstConverted : secondConverted;
-    const bigger = direction === FORWARD ? secondConverted : firstConverted;
+    const secondValue = to;
+    const smaller = direction === FORWARD ? firstValue : secondValue;
+    const bigger = direction === FORWARD ? secondValue : firstValue;
 
     return `${smaller} - ${bigger}`;
   }
