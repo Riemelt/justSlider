@@ -1,8 +1,3 @@
-import EventManager from '../../EventManager/EventManager';
-import {
-  SLIDER_CLICK_DISABLE,
-  SLIDER_CLICK_ENABLE,
-} from '../../EventManager/constants';
 import { State } from '../../types';
 import * as Utilities from '../../utilities/utilities';
 import { HandleType } from '../../Model/types';
@@ -12,7 +7,6 @@ import Handle from './Handle';
 describe('Handle', () => {
   let handle: Handle;
   let $parent: JQuery<HTMLElement>;
-  let eventManager: EventManager;
 
   const handleClass = '.just-slider__handle';
   const pointClass = '.just-slider__point';
@@ -31,16 +25,25 @@ describe('Handle', () => {
     precision: 0,
   };
 
+  const domRect = {
+    width: 100,
+    height: 100,
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    x: 0,
+    y: 0,
+    toJSON: () => undefined,
+  };
+
   const generateHandle = function generateHandle(
     type: HandleType,
     state: State,
   ) {
     $parent = $('<div class="just-slider"></div>');
 
-    eventManager = new EventManager();
-
     handle = new Handle({
-      eventManager,
       $parent,
       type,
       state,
@@ -146,42 +149,6 @@ describe('Handle', () => {
   });
 
   describe('Drag\'n\'drop', () => {
-    test('Disables slider click on pointerdown', () => {
-      const mockedDispatchEvent = jest.spyOn(
-        EventManager.prototype,
-        'dispatchEvent'
-      );
-
-      generateHandle(FROM, state);
-      handle.update(state);
-
-      const $handle = $parent.find(`${pointClass} ${handleClass}`);
-      $handle.trigger('pointerdown');
-      $(document).trigger('pointerup');
-
-      expect(mockedDispatchEvent).toBeCalledWith(SLIDER_CLICK_DISABLE);
-
-      mockedDispatchEvent.mockRestore();
-    });
-
-    test('Enables slider click on pointerup', () => {
-      const mockedDispatchEvent = jest.spyOn(
-        EventManager.prototype,
-        'dispatchEvent'
-      );
-
-      generateHandle(FROM, state);
-      handle.update(state);
-
-      const $handle = $parent.find(`${pointClass} ${handleClass}`);
-      $handle.trigger('pointerdown');
-      $(document).trigger('pointerup');
-
-      expect(mockedDispatchEvent).toBeCalledWith(SLIDER_CLICK_ENABLE);
-
-      mockedDispatchEvent.mockRestore();
-    });
-
     test('Drag\'n\'drop in horizontal mode', () => {
       const handler = jest.fn(() => undefined);
 
@@ -199,7 +166,16 @@ describe('Handle', () => {
 
       const $handle = handle.$getHtml();
 
-      $handle.outerWidth(100);
+      const handleElement = $handle.get(0);
+
+      if (handleElement === undefined) {
+        expect(handleElement).toBeDefined();
+        return;
+      }
+
+      const mockedBoundingRect = jest
+        .spyOn(handleElement, 'getBoundingClientRect')
+        .mockImplementation(() => (domRect));
 
       const mockedHandleOffset = jest
         .spyOn($handle, 'offset')
@@ -211,6 +187,7 @@ describe('Handle', () => {
 
       expect(handler).toBeCalledWith(270, FROM);
 
+      mockedBoundingRect.mockRestore();
       mockedHandleOffset.mockRestore();
     });
 
@@ -230,7 +207,16 @@ describe('Handle', () => {
 
       const $handle = handle.$getHtml();
 
-      $handle.outerWidth(100);
+      const handleElement = $handle.get(0);
+
+      if (handleElement === undefined) {
+        expect(handleElement).toBeDefined();
+        return;
+      }
+
+      const mockedBoundingRect = jest
+        .spyOn(handleElement, 'getBoundingClientRect')
+        .mockImplementation(() => (domRect));
 
       const mockedHandleOffset = jest
         .spyOn($handle, 'offset')
@@ -242,6 +228,7 @@ describe('Handle', () => {
 
       expect(handler).toBeCalledWith(480, FROM);
 
+      mockedBoundingRect.mockRestore();
       mockedHandleOffset.mockRestore();
     });
   });

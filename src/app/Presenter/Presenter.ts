@@ -11,8 +11,6 @@ import {
   ORIENTATION_UPDATE,
   PROGRESS_BAR_UPDATE,
   SCALE_UPDATE,
-  SLIDER_CLICK_DISABLE,
-  SLIDER_CLICK_ENABLE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
@@ -54,7 +52,6 @@ class Presenter {
       ORIENTATION_UPDATE,
       TOOLTIPS_UPDATE,
       SCALE_UPDATE,
-      SLIDER_CLICK_ENABLE,
       SLIDER_UPDATE,
     ]);
   }
@@ -97,6 +94,7 @@ class Presenter {
     this.view.addHandleMoveHandler(updateHandleHandler);
     this.view.addSliderClickHandler(updateHandleHandler);
     this.view.addScaleClickHandler(updateHandleHandler);
+    this.view.addTooltipClickHandler(updateHandleHandler);
   }
 
   private registerEvents(): void {
@@ -108,8 +106,6 @@ class Presenter {
       TOOLTIPS_UPDATE,
       PROGRESS_BAR_UPDATE,
       SCALE_UPDATE,
-      SLIDER_CLICK_DISABLE,
-      SLIDER_CLICK_ENABLE,
       HANDLES_SWAP,
     ];
 
@@ -149,14 +145,6 @@ class Presenter {
     this.eventManager.addEventListener(SCALE_UPDATE, () => {
       const state = this.model.getState();
       this.view.updateScale(state);
-    });
-
-    this.eventManager.addEventListener(SLIDER_CLICK_DISABLE, () => {
-      this.view.removeSliderClickHandler();
-    });
-
-    this.eventManager.addEventListener(SLIDER_CLICK_ENABLE, () => {
-      this.view.setSliderClickHandler();
     });
 
     this.eventManager.addEventListener(SLIDER_UPDATE, () => {

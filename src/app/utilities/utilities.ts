@@ -242,6 +242,19 @@ const isBiggerThanContainer = function isBiggerThanContainer(
   return width > containerWidth;
 };
 
+const getElementCenterPos = function getElementCenterPos(
+  $element: JQuery<HTMLElement>,
+  orientation: Orientation,
+): number {
+  const offset = getElementPos($element, orientation);
+  const rect = $element.get(0)?.getBoundingClientRect();
+  const length = (orientation === HORIZONTAL ?
+    rect?.width :
+    rect?.height) ?? 0;
+
+  return offset + (length / 2);
+};
+
 export {
   getTransformStyles,
   getPositionStyles,
@@ -255,4 +268,5 @@ export {
   LEFT,
   RIGHT,
   Side,
+  getElementCenterPos,
 };

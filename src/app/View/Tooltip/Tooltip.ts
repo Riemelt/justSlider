@@ -1,8 +1,15 @@
-import { FORWARD, FROM, RANGE, VERTICAL } from '../../Model/constants';
+import {
+  FORWARD,
+  FROM,
+  HORIZONTAL,
+  RANGE,
+  VERTICAL,
+} from '../../Model/constants';
 import { TooltipType } from '../../Model/types';
 import { Direction, Orientation, State } from '../../types';
 import {
   distanceToContainer,
+  getElementCenterPos,
   getTransformStyles,
   isBiggerThanContainer,
   LEFT,
@@ -16,6 +23,12 @@ class Tooltip {
   private state: State;
   private type: TooltipType = FROM;
   private offset = 0;
+  private shiftFromCenter = 0;
+  private handleTooltipPointermove?: (
+    position: number,
+    type: TooltipType,
+    redirectEvent?: JQuery.Event,
+  ) => void;
 
   static $initHtml(): JQuery<HTMLElement> {
     return $(`
@@ -24,6 +37,11 @@ class Tooltip {
         </div>
       </div>
     `);
+  }
+
+  static handleDocumentPointerup(): void {
+    $(document).off('pointerup.tooltip');
+    $(document).off('pointermove.tooltip');
   }
 
   constructor({
@@ -35,6 +53,7 @@ class Tooltip {
     this.$tooltip = this.$component.find('.just-slider__tooltip');
     this.type = type;
     this.state = state;
+    this.setHandlers();
     this.init($parent);
   }
 
@@ -111,6 +130,7 @@ class Tooltip {
   }
 
   public delete(): void {
+    this.deleteHandlers();
     this.$component.remove();
   }
 
@@ -124,6 +144,14 @@ class Tooltip {
 
   public setType(type: TooltipType): void {
     this.type = type;
+  }
+
+  public setTooltipPointermoveHandler(handler: (
+    position: number,
+    type: TooltipType,
+    redirectEvent?: JQuery.Event,
+  ) => void): void {
+    this.handleTooltipPointermove = handler;
   }
 
   private getText(state: State): string {
@@ -160,6 +188,68 @@ class Tooltip {
 
   private init($parent: JQuery<HTMLElement>): void {
     $parent.append(this.$component);
+  }
+
+  private setHandlers(): void {
+    this.$tooltip.on('pointerdown.tooltip', this.handlePointerdown.bind(this));
+  }
+
+  private deleteHandlers(): void {
+    this.$tooltip.off('pointerdown.tooltip', this.handlePointerdown.bind(this));
+  }
+
+  private redirect(event: JQuery.Event): void {
+    const {
+      pageX = 0,
+      pageY = 0,
+    } = event;
+
+    const position = this.state.orientation === HORIZONTAL ? pageX : pageY;
+    this.handleTooltipPointermove?.(position, this.type, event);
+  }
+
+  private handlePointerdown(event: JQuery.Event): void {
+    const {
+      pageX = 0,
+      pageY = 0,
+    } = event;
+
+    if (this.type === RANGE) {
+      this.redirect(event);
+      return;
+    }
+
+    const { orientation } = this.state;
+    event.preventDefault();
+
+    const center = getElementCenterPos(this.$tooltip, orientation);
+
+    this.shiftFromCenter = orientation === HORIZONTAL ?
+      pageX - center :
+      pageY - center;
+
+    $(document).on(
+      'pointermove.tooltip',
+      this.handleDocumentPointermove.bind(this)
+    );
+
+    $(document).on(
+      'pointerup.tooltip',
+      Tooltip.handleDocumentPointerup
+    );
+  }
+
+  private handleDocumentPointermove(event: JQuery.Event): void {
+    const {
+      pageX = 0,
+      pageY = 0,
+    } = event;
+
+    const position = this.state.orientation === HORIZONTAL ?
+      pageX - this.shiftFromCenter :
+      pageY - this.shiftFromCenter;
+
+    this.handleTooltipPointermove?.(position, this.type);
   }
 }
 

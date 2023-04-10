@@ -3,7 +3,6 @@ import {
   getConvertedViewPositionToModel,
   getElementPos,
 } from '../utilities/utilities';
-import EventManager from '../EventManager/EventManager';
 import { State, Orientation, HTMLElementEvent } from '../types';
 import { HandleType, TooltipType } from '../Model/types';
 import { FROM, HORIZONTAL, RANGE, TO, VERTICAL } from '../Model/constants';
@@ -11,9 +10,9 @@ import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
 import Tooltip from './Tooltip/Tooltip';
+import { CanChangeType, SubViewSet } from './types';
 
 class View {
-  private eventManager: EventManager;
   private state: State;
   private $component: JQuery<HTMLElement>;
   private $justSlider: JQuery<HTMLElement>;
@@ -27,6 +26,11 @@ class View {
   ) => void;
   private sliderClickHandler?: (position: number, type: HandleType) => void;
   private scaleClickHandler?: (position: number) => void;
+  private tooltipClickHandler?: (
+    position: number,
+    type: TooltipType,
+    redirectEvent?: JQuery.Event,
+  ) => void;
 
   private handles: {
     from?: Handle,
@@ -57,12 +61,21 @@ class View {
       $element.is('.just-slider__progress-bar');
   }
 
+  static swapSubViews<T extends CanChangeType>(set: SubViewSet<T>) {
+    const { from, to } = set;
+
+    if (from !== undefined && to !== undefined) {
+      set.from = to;
+      set.to = from;
+      set.from?.setType(FROM);
+      set.to?.setType(TO);
+    }
+  }
+
   constructor(
-    eventManager: EventManager,
     state: State,
     $parent: JQuery<HTMLElement>,
   ) {
-    this.eventManager = eventManager;
     this.state = state;
     this.$parent = $parent;
     this.$component = View.$initHtml();
@@ -106,17 +119,8 @@ class View {
   }
 
   public swapHandles(): void {
-    const { from, to } = this.handles;
-
-    if (from !== undefined && to !== undefined) {
-      this.handles = {
-        from: to,
-        to: from,
-      };
-
-      this.handles.from?.setType(FROM);
-      this.handles.to?.setType(TO);
-    }
+    View.swapSubViews<Handle>(this.handles);
+    View.swapSubViews<Tooltip>(this.tooltips);
   }
 
   public addHandleMoveHandler(handler: (
@@ -149,11 +153,7 @@ class View {
 
     if (shouldUpdate) {
       if (!this.tooltips[type]) {
-        this.tooltips[type] = new Tooltip({
-          type,
-          state,
-          $parent: this.$justSlider,
-        });
+        this.initTooltip(type);
       }
 
       this.tooltips[type]?.update(state);
@@ -227,22 +227,35 @@ class View {
     };
   }
 
+  public addTooltipClickHandler(handler: (
+    value: number,
+    type: HandleType,
+  ) => void): void {
+    this.tooltipClickHandler = (
+      position,
+      type,
+      redirectEvent?: JQuery.Event
+    ) => {
+      const converted = this.getConvertedPosition(position);
+
+      if (redirectEvent !== undefined) {
+        const closestHandle = this.getClosestHandle(converted);
+        const $tooltip = this.tooltips[closestHandle]?.$getHtml();
+        $tooltip?.trigger(redirectEvent);
+        return;
+      }
+
+      if (type !== RANGE) {
+        handler(converted, type);
+      }
+    };
+  }
+
   public addSliderClickHandler(handler: (
     value: number,
     type: HandleType
   ) => void): void {
     this.sliderClickHandler = handler;
-  }
-
-  public setSliderClickHandler(): void {
-    this.$justSlider.on(
-      'pointerdown.slider',
-      this.handleSliderClick.bind(this)
-    );
-  }
-
-  public removeSliderClickHandler(): void {
-    this.$justSlider.off('pointerdown.slider');
   }
 
   private fixTooltipsVisuals(): void {
@@ -317,6 +330,10 @@ class View {
   }
 
   private setHandlers(): void {
+    this.$justSlider.on(
+      'pointerdown.slider',
+      this.handleSliderClick.bind(this)
+    );
     $(window).on('resize.slider', this.fixVisualsOnResize.bind(this));
     jQuery(() => {
       this.fixScaleVisuals();
@@ -353,11 +370,23 @@ class View {
     this.deleteHandle(TO);
   }
 
+  private initTooltip(type: TooltipType): void {
+    this.tooltips[type] = new Tooltip({
+      type,
+      state: this.state,
+      $parent: this.$justSlider,
+    });
+
+    if (this.tooltipClickHandler !== undefined) {
+      const handler = this.tooltipClickHandler.bind(this);
+      this.tooltips[type]?.setTooltipPointermoveHandler(handler);
+    }
+  }
+
   private initHandle(type: HandleType): void {
     this.handles[type] = new Handle({
       type,
       $parent: this.$justSlider,
-      eventManager: this.eventManager,
       state: this.state,
     });
 

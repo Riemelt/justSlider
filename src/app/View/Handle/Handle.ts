@@ -1,12 +1,10 @@
-import {
-  SLIDER_CLICK_DISABLE,
-  SLIDER_CLICK_ENABLE,
-} from '../../EventManager/constants';
-import EventManager from '../../EventManager/EventManager';
 import { FORWARD, FROM, HORIZONTAL } from '../../Model/constants';
 import { HandleType } from '../../Model/types';
 import { Direction, State, Orientation } from '../../types';
-import { getElementPos, getTransformStyles } from '../../utilities/utilities';
+import {
+  getElementCenterPos,
+  getTransformStyles,
+} from '../../utilities/utilities';
 import { HandleOptions } from './types';
 
 const ARROW_UP = 'ArrowUp';
@@ -15,7 +13,6 @@ const ARROW_RIGHT = 'ArrowRight';
 const ARROW_LEFT = 'ArrowLeft';
 
 class Handle {
-  private eventManager: EventManager;
   private $component: JQuery<HTMLElement>;
   private $handle: JQuery<HTMLElement>;
   private shiftFromCenter = 0;
@@ -48,8 +45,12 @@ class Handle {
     return value + (sign * step);
   }
 
+  static handleDocumentPointerup(): void {
+    $(document).off('pointerup.handle');
+    $(document).off('pointermove.handle');
+  }
+
   constructor(handleOptions: HandleOptions) {
-    this.eventManager = handleOptions.eventManager;
     this.$component = Handle.$initHtml();
     this.$handle = this.$component.find('.just-slider__handle');
     this.state = handleOptions.state;
@@ -148,15 +149,12 @@ class Handle {
       pageX = 0,
       pageY = 0,
     } = event;
-
+    const { orientation } = this.state;
     event.preventDefault();
-    this.eventManager.dispatchEvent(SLIDER_CLICK_DISABLE);
 
-    const offset = getElementPos(this.$handle, this.state.orientation);
-    const length = this.$handle.outerWidth() ?? 0;
-    const center = offset + (length / 2);
+    const center = getElementCenterPos(this.$handle, orientation);
 
-    this.shiftFromCenter = this.state.orientation === HORIZONTAL ?
+    this.shiftFromCenter = orientation === HORIZONTAL ?
       pageX - center :
       pageY - center;
 
@@ -167,7 +165,7 @@ class Handle {
 
     $(document).on(
       'pointerup.handle',
-      this.handleDocumentPointerup.bind(this)
+      Handle.handleDocumentPointerup
     );
   }
 
@@ -182,13 +180,6 @@ class Handle {
       pageY - this.shiftFromCenter;
 
     this.handleHandlePointermove?.(position, this.type);
-  }
-
-  private handleDocumentPointerup(): void {
-    $(document).off('pointerup.handle');
-    $(document).off('pointermove.handle');
-
-    this.eventManager.dispatchEvent(SLIDER_CLICK_ENABLE);
   }
 }
 

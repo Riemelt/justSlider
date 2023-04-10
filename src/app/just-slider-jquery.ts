@@ -13,7 +13,7 @@ import { JustSliderOptions } from './types';
     const eventManager = new EventManager;
     const model = new Model(eventManager);
     const state = model.getState();
-    const view = new View(eventManager, state, this);
+    const view = new View(state, this);
     const presenter = new Presenter(view, model, eventManager);
 
     let scaleDataOptions: ScaleOptions | null = null;

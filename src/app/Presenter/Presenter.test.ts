@@ -5,8 +5,6 @@ import {
   ORIENTATION_UPDATE,
   PROGRESS_BAR_UPDATE,
   SCALE_UPDATE,
-  SLIDER_CLICK_DISABLE,
-  SLIDER_CLICK_ENABLE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
 } from '../EventManager/constants';
@@ -55,7 +53,7 @@ describe('Presenter', () => {
       <div class="just-slider">
       </div>
     `);
-    view = new View(eventManager, state, $container);
+    view = new View(state, $container);
     presenter = new Presenter(view, model, eventManager);
   };
 
@@ -123,8 +121,6 @@ describe('Presenter', () => {
       TOOLTIPS_UPDATE,
       PROGRESS_BAR_UPDATE,
       SCALE_UPDATE,
-      SLIDER_CLICK_DISABLE,
-      SLIDER_CLICK_ENABLE,
       HANDLES_SWAP,
     ];
 
@@ -144,7 +140,6 @@ describe('Presenter', () => {
       ORIENTATION_UPDATE,
       TOOLTIPS_UPDATE,
       SCALE_UPDATE,
-      SLIDER_CLICK_ENABLE,
       SLIDER_UPDATE,
     ];
 
@@ -203,24 +198,6 @@ describe('Presenter', () => {
       eventManager.dispatchEvent(TOOLTIPS_UPDATE);
 
       expect(mockedUpdate).toBeCalledTimes(1);
-    });
-
-    test(SLIDER_CLICK_ENABLE, () => {
-      presenter.init(options);
-
-      const mockedHandlerSwitch = jest.spyOn(view, 'setSliderClickHandler');
-      eventManager.dispatchEvent(SLIDER_CLICK_ENABLE);
-
-      expect(mockedHandlerSwitch).toBeCalledTimes(1);
-    });
-
-    test(SLIDER_CLICK_DISABLE, () => {
-      presenter.init(options);
-
-      const mockedHandlerSwitch = jest.spyOn(view, 'removeSliderClickHandler');
-      eventManager.dispatchEvent(SLIDER_CLICK_DISABLE);
-
-      expect(mockedHandlerSwitch).toBeCalledTimes(1);
     });
 
     test(SLIDER_UPDATE, () => {

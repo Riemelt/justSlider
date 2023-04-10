@@ -1,4 +1,3 @@
-import EventManager from '../EventManager/EventManager';
 import { State } from '../types';
 import { FORWARD, FROM, HORIZONTAL, TO, VERTICAL } from '../Model/constants';
 import View from './View';
@@ -10,7 +9,6 @@ import * as Utilities from '../utilities/utilities';
 import Tooltip from './Tooltip/Tooltip';
 
 describe('View', () => {
-  let eventManager: EventManager;
   let view: View;
 
   const scale: ScaleState = {
@@ -41,12 +39,8 @@ describe('View', () => {
   `);
 
   const generateView = function generateView(state: State) {
-    view = new View(eventManager, state, $container);
+    view = new View(state, $container);
   };
-
-  beforeEach(() => {
-    eventManager = new EventManager();
-  });
 
   describe('On initialization', () => {
     test('Generates html node', () => {
@@ -271,36 +265,6 @@ describe('View', () => {
   });
 
   describe('Slider click', () => {
-    test('Enables slider click handler', () => {
-      generateView(state);
-      const handler = jest.fn(() => undefined);
-      view.addSliderClickHandler(handler);
-      view.setSliderClickHandler();
-
-      const $component = view.$getHtml();
-      const $justSlider = $component.find('.just-slider__main');
-
-      $justSlider.trigger('pointerdown');
-
-      expect(handler).toBeCalledTimes(1);
-    });
-
-    test('Disables slider click handler', () => {
-      generateView(state);
-      const handler = jest.fn(() => undefined);
-      view.addSliderClickHandler(handler);
-      view.setSliderClickHandler();
-
-      view.removeSliderClickHandler();
-
-      const $component = view.$getHtml();
-      const $justSlider = $component.find('.just-slider__main');
-
-      $justSlider.trigger('pointerdown');
-
-      expect(handler).toBeCalledTimes(0);
-    });
-
     test(
       'Handles click in horizontal mode, HandleFrom is closer to click pos',
       () => {
@@ -316,7 +280,6 @@ describe('View', () => {
         });
 
         view.addSliderClickHandler(handler);
-        view.setSliderClickHandler();
 
         const $component = view.$getHtml();
         const $justSlider = $component.find('.just-slider__main');
@@ -367,8 +330,6 @@ describe('View', () => {
           from: 0,
         });
         view.addSliderClickHandler(handler);
-        view.setSliderClickHandler();
-
         const $component = view.$getHtml();
         const $justSlider = $component.find('.just-slider__main');
 

@@ -10,8 +10,6 @@ const STEP_UPDATE = 'StepUpdate';
 const MIN_MAX_UPDATE = 'MinMaxUpdate';
 const PRECISION_UPDATE = 'PrecisionUpdate';
 const RANGE_UPDATE = 'RangeUpdate';
-const SLIDER_CLICK_DISABLE = 'SliderClickDisable';
-const SLIDER_CLICK_ENABLE = 'SliderClickEnable';
 const HANDLES_SWAP = 'HandlesSwap';
 
 export {
@@ -27,7 +25,5 @@ export {
   MIN_MAX_UPDATE,
   PRECISION_UPDATE,
   RANGE_UPDATE,
-  SLIDER_CLICK_DISABLE,
-  SLIDER_CLICK_ENABLE,
   HANDLES_SWAP,
 };
