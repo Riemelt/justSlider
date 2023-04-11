@@ -91,10 +91,16 @@ class Presenter {
       this.model.updateHandle(value, handle, shouldAdjust);
     };
 
-    this.view.addHandleMoveHandler(updateHandleHandler);
-    this.view.addSliderClickHandler(updateHandleHandler);
-    this.view.addScaleClickHandler(updateHandleHandler);
-    this.view.addTooltipClickHandler(updateHandleHandler);
+    const handlerSetters = [
+      this.view.addHandleMoveHandler.bind(this.view),
+      this.view.addSliderClickHandler.bind(this.view),
+      this.view.addScaleClickHandler.bind(this.view),
+      this.view.addTooltipClickHandler.bind(this.view),
+    ];
+
+    handlerSetters.forEach((setter) => {
+      setter(updateHandleHandler);
+    });
   }
 
   private registerEvents(): void {
@@ -115,45 +121,54 @@ class Presenter {
   }
 
   private addEventListeners(): void {
-    this.eventManager.addEventListener(HANDLE_FROM_MOVE, () => {
-      const state = this.model.getState();
-      this.view.updateHandle(state, FROM);
-      this.view.updateTooltips(state);
-    });
+    this.addEventListenerHandleMove(HANDLE_FROM_MOVE, FROM);
+    this.addEventListenerHandleMove(HANDLE_TO_MOVE, TO);
 
-    this.eventManager.addEventListener(HANDLE_TO_MOVE, () => {
-      const state = this.model.getState();
-      this.view.updateHandle(state, TO);
-      this.view.updateTooltips(state);
-    });
+    interface ViewUpdate {
+      event: SliderEvent
+      update: ((state: State) => void) | undefined
+    }
 
-    this.eventManager.addEventListener(PROGRESS_BAR_UPDATE, () => {
-      const state = this.model.getState();
-      this.view.updateProgressBar(state);
-    });
+    const viewUpdates: Array<ViewUpdate> = [
+      {
+        event: PROGRESS_BAR_UPDATE,
+        update: this.view.updateProgressBar.bind(this.view),
+      },
+      {
+        event: ORIENTATION_UPDATE,
+        update: this.view.setOrientation.bind(this.view),
+      },
+      {
+        event: TOOLTIPS_UPDATE,
+        update: this.view.updateTooltips.bind(this.view),
+      },
+      {
+        event: SCALE_UPDATE,
+        update: this.view.updateScale.bind(this.view),
+      },
+      {
+        event: SLIDER_UPDATE,
+        update: this.onUpdate?.bind(this),
+      },
+    ];
 
-    this.eventManager.addEventListener(ORIENTATION_UPDATE, () => {
-      const state = this.model.getState();
-      this.view.setOrientation(state.orientation);
-    });
-
-    this.eventManager.addEventListener(TOOLTIPS_UPDATE, () => {
-      const state = this.model.getState();
-      this.view.updateTooltips(state);
-    });
-
-    this.eventManager.addEventListener(SCALE_UPDATE, () => {
-      const state = this.model.getState();
-      this.view.updateScale(state);
-    });
-
-    this.eventManager.addEventListener(SLIDER_UPDATE, () => {
-      const state = this.model.getState();
-      this.onUpdate?.(state);
+    viewUpdates.forEach(({ event, update }) => {
+      this.eventManager.addEventListener(event, () => {
+        const state = this.model.getState();
+        update?.(state);
+      });
     });
 
     this.eventManager.addEventListener(HANDLES_SWAP, () => {
       this.view.swapHandles();
+    });
+  }
+
+  private addEventListenerHandleMove(event: SliderEvent, type: HandleType) {
+    this.eventManager.addEventListener(event, () => {
+      const state = this.model.getState();
+      this.view.updateHandle(state, type);
+      this.view.updateTooltips(state);
     });
   }
 }

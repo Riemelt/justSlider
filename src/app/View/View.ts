@@ -91,7 +91,9 @@ class View {
     this.state = state;
   }
 
-  public setOrientation(orientation: Orientation): void {
+  public setOrientation(state: State): void {
+    const { orientation } = state;
+
     if (orientation === VERTICAL) {
       this.$component.addClass('just-slider_vertical');
       return;
