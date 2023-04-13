@@ -1,36 +1,51 @@
 import { FORWARD, VERTICAL } from '../../../app/Model/constants';
 import { Options } from '../../../app/types';
+import { ScaleOptions } from '../../../app/View/Scale/types';
+import { camelToSnakeCase } from '../../utilities/utilities';
 import InputField from '../input-field/InputField';
 import Toggle from '../toggle/Toggle';
+import {
+  INPUT_FROM,
+  INPUT_MAX,
+  INPUT_MIN,
+  INPUT_SCALE_DENSITY,
+  INPUT_STEP,
+  panelInputs,
+  panelToggles,
+  TOGGLE_BAR,
+  TOGGLE_FORWARD,
+  TOGGLE_RANGE,
+  TOGGLE_SCALE,
+  TOGGLE_SCALE_LINES,
+  TOGGLE_SCALE_NUMBERS,
+  TOGGLE_TOOLTIP,
+  TOGGLE_VERTICAL,
+} from './constants';
+import {
+  ConfigurationPanelOptions,
+  Inputs,
+  Toggles,
+  PanelInput,
+  PanelToggle,
+  InputFieldUpdate,
+  ToggleUpdate,
+} from './types';
 
 class ConfigurationPanel {
   private className: string;
   private $component: JQuery<HTMLElement>;
-
-  private inputMin?: InputField;
-  private inputMax?: InputField;
-  private inputStep?: InputField;
-  private inputFrom?: InputField;
-  private inputTo?: InputField;
-
-  private toggleVertical?: Toggle;
-  private toggleForward?: Toggle;
-  private toggleRange?: Toggle;
-  private toggleBar?: Toggle;
-  private toggleTooltip?: Toggle;
-
-  private inputScaleDensity?: InputField;
-  private toggleScale?: Toggle;
-  private toggleScaleNumbers?: Toggle;
-  private toggleScaleLines?: Toggle;
+  private options: ConfigurationPanelOptions;
+  private inputs: Inputs = {};
+  private toggles: Toggles = {};
 
   constructor(
     $parent: JQuery<HTMLElement>,
     options: ConfigurationPanelOptions
   ) {
     this.className = 'configuration-panel';
+    this.options = options;
     this.$component = $parent.find(`.js-${this.className}`);
-    this.init(options);
+    this.init();
   }
 
   public update({
@@ -46,113 +61,148 @@ class ConfigurationPanel {
     range = false,
     scale = null,
   }: Options = {}): void {
-    this.inputFrom?.update({ step, min, value: from });
+    this.updateInputTo(range, step, min, to);
 
-    if (range) {
-      this.inputTo?.enable();
-      this.inputTo?.update({ step, min, value: to });
-    } else {
-      this.inputTo?.disable();
-    }
+    const inputFieldUpdates: Array<InputFieldUpdate> = [
+      {
+        name: INPUT_FROM,
+        value: { step, min, value: from },
+      },
+      {
+        name: INPUT_STEP,
+        value: { value: step },
+      },
+      {
+        name: INPUT_MIN,
+        value: { value: min },
+      },
+      {
+        name: INPUT_MAX,
+        value: { value: max },
+      },
+    ];
 
-    this.inputStep?.update({ value: step });
-    this.inputMin?.update({ value: min });
-    this.inputMax?.update({ value: max });
+    this.updateInputFields(inputFieldUpdates);
 
-    this.toggleVertical?.update(orientation === VERTICAL);
-    this.toggleForward?.update(direction === FORWARD);
-    this.toggleBar?.update(progressBar);
-    this.toggleRange?.update(range);
-    this.toggleTooltip?.update(tooltips);
-    this.toggleScale?.update(scale !== null);
+    const toggleUpdates: Array<ToggleUpdate> = [
+      {
+        name: TOGGLE_VERTICAL,
+        value: orientation === VERTICAL,
+      },
+      {
+        name: TOGGLE_FORWARD,
+        value: direction === FORWARD,
+      },
+      {
+        name: TOGGLE_BAR,
+        value: progressBar,
+      },
+      {
+        name: TOGGLE_RANGE,
+        value: range,
+      },
+      {
+        name: TOGGLE_TOOLTIP,
+        value: tooltips,
+      },
+      {
+        name: TOGGLE_SCALE,
+        value: scale !== null,
+      },
+    ];
+
+    this.updateToggles(toggleUpdates);
 
     if (scale === null) {
-      this.inputScaleDensity?.disable();
-      this.toggleScaleNumbers?.disable();
-      this.toggleScaleLines?.disable();
+      this.disableScale();
     } else {
-      this.inputScaleDensity?.enable();
-      this.toggleScaleNumbers?.enable();
-      this.toggleScaleLines?.enable();
-
-      this.inputScaleDensity?.update({ value: scale.density ?? 0 });
-      this.toggleScaleNumbers?.update(scale.numbers ?? false);
-      this.toggleScaleLines?.update(scale.lines ?? false);
+      this.enableScale();
+      this.updateScale(scale);
     }
   }
 
-  private init(options: ConfigurationPanelOptions): void {
-    this.inputMin = new InputField(
-      this.$component.find(`.js-${this.className}__input-min`),
-      options.inputMin
-    );
+  private updateInputFields(inputs: Array<InputFieldUpdate>): void {
+    inputs.forEach(({ name, value }) => {
+      this.inputs[name]?.update(value);
+    });
+  }
 
-    this.inputMax = new InputField(
-      this.$component.find(`.js-${this.className}__input-max`),
-      options.inputMax
-    );
+  private updateToggles(toggles: Array<ToggleUpdate>): void {
+    toggles.forEach(({ name, value }) => {
+      this.toggles[name]?.update(value);
+    });
+  }
 
-    this.inputStep = new InputField(
-      this.$component.find(`.js-${this.className}__input-step`),
-      options.inputStep
-    );
+  private updateInputTo(
+    range: boolean,
+    step: number,
+    min: number,
+    to: number,
+  ): void {
+    if (range) {
+      this.inputs.inputTo?.enable();
+      this.inputs.inputTo?.update({ step, min, value: to });
+      return;
+    }
 
-    this.inputFrom = new InputField(
-      this.$component.find(`.js-${this.className}__input-from`),
-      options.inputFrom
-    );
+    this.inputs.inputTo?.disable();
+  }
 
-    this.inputTo = new InputField(
-      this.$component.find(`.js-${this.className}__input-to`),
-      options.inputTo
-    );
+  private enableScale() {
+    this.inputs.inputScaleDensity?.enable();
+    this.toggles.toggleScaleNumbers?.enable();
+    this.toggles.toggleScaleNumbers?.enable();
+  }
 
-    this.toggleVertical = new Toggle(
-      this.$component.find(`.js-${this.className}__toggle-vertical`),
-      options.toggleVertical
-    );
+  private disableScale() {
+    this.inputs.inputScaleDensity?.disable();
+    this.toggles.toggleScaleNumbers?.disable();
+    this.toggles.toggleScaleNumbers?.disable();
+  }
 
-    this.toggleForward = new Toggle(
-      this.$component.find(`.js-${this.className}__toggle-forward`),
-      options.toggleForward
-    );
+  private updateScale(scale: ScaleOptions) {
+    this.updateInputFields([
+      {
+        name: INPUT_SCALE_DENSITY,
+        value: { value: scale.density ?? 0 },
+      },
+    ]);
 
-    this.toggleRange = new Toggle(
-      this.$component.find(`.js-${this.className}__toggle-range`),
-      options.toggleRange
-    );
+    this.updateToggles([
+      {
+        name: TOGGLE_SCALE_NUMBERS,
+        value: scale.numbers ?? false,
+      },
+      {
+        name: TOGGLE_SCALE_LINES,
+        value: scale.lines ?? false,
+      },
+    ]);
+  }
 
-    this.toggleBar = new Toggle(
-      this.$component.find(`.js-${this.className}__toggle-bar`),
-      options.toggleBar
-    );
+  private initInput(input: PanelInput): void {
+    const className = camelToSnakeCase(input.name);
 
-    this.toggleTooltip = new Toggle(
-      this.$component.find(`.js-${this.className}__toggle-tooltip`),
-      options.toggleTooltip
+    this.inputs[input.name] = new InputField(
+      this.$component.find(`.js-${this.className}__${className}`),
+      this.options[input.name],
     );
+  }
 
-    this.toggleScale = new Toggle(
-      this.$component.find(`.js-${this.className}__toggle-scale`),
-      options.toggleScale
+  private initToggle(toggle: PanelToggle): void {
+    const className = camelToSnakeCase(toggle.name);
+
+    this.toggles[toggle.name] = new Toggle(
+      this.$component.find(`.js-${this.className}__${className}`),
+      this.options[toggle.name],
     );
+  }
 
-    this.inputScaleDensity = new InputField(
-      this.$component.find(`.js-${this.className}__scale-density`),
-      options.scale?.inputDensity
-    );
+  private init(): void {
+    panelInputs.forEach(this.initInput.bind(this));
+    panelToggles.forEach(this.initToggle.bind(this));
 
-    this.inputScaleDensity.update({ step: 0.1 });
-
-    this.toggleScaleNumbers = new Toggle(
-      this.$component.find(`.js-${this.className}__scale-numbers`),
-      options.scale?.toggleNumbers
-    );
-
-    this.toggleScaleLines = new Toggle(
-      this.$component.find(`.js-${this.className}__scale-lines`),
-      options.scale?.toggleLines
-    );
+    this.inputs.inputScaleDensity?.update({ step: 0.1 });
   }
 }
 

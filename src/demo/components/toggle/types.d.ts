@@ -1,5 +1,9 @@
 interface ToggleOptions {
   title?: string;
   checked?: boolean;
-  handleToggleChange?: (value: boolean) => void;
+  handleChange?: (value: boolean) => void;
 }
+
+export {
+  ToggleOptions,
+};

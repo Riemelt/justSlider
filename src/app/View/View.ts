@@ -3,7 +3,7 @@ import {
   getConvertedViewPositionToModel,
   getElementPos,
 } from '../utilities/utilities';
-import { State, Orientation, HTMLElementEvent } from '../types';
+import { State, HTMLElementEvent } from '../types';
 import { HandleType, TooltipType } from '../Model/types';
 import { FROM, HORIZONTAL, RANGE, TO, VERTICAL } from '../Model/constants';
 import Handle from './Handle/Handle';

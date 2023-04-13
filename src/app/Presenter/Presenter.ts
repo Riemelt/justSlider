@@ -132,23 +132,23 @@ class Presenter {
     const viewUpdates: Array<ViewUpdate> = [
       {
         event: PROGRESS_BAR_UPDATE,
-        update: this.view.updateProgressBar.bind(this.view),
+        update: (state) => this.view.updateProgressBar(state),
       },
       {
         event: ORIENTATION_UPDATE,
-        update: this.view.setOrientation.bind(this.view),
+        update: (state) => this.view.setOrientation(state),
       },
       {
         event: TOOLTIPS_UPDATE,
-        update: this.view.updateTooltips.bind(this.view),
+        update: (state) => this.view.updateTooltips(state),
       },
       {
         event: SCALE_UPDATE,
-        update: this.view.updateScale.bind(this.view),
+        update: (state) => this.view.updateScale(state),
       },
       {
         event: SLIDER_UPDATE,
-        update: this.onUpdate?.bind(this),
+        update: (state) => this.onUpdate?.(state),
       },
     ];
 

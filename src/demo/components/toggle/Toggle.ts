@@ -1,3 +1,5 @@
+import { ToggleOptions } from './types';
+
 class Toggle {
   private className: string;
   private $component: JQuery<HTMLElement>;
@@ -37,8 +39,8 @@ class Toggle {
   private handleToggleChange(event: Event): void {
     if (event.currentTarget instanceof HTMLInputElement) {
       const { checked } = event.currentTarget;
-      const { handleToggleChange } = this.options;
-      handleToggleChange?.(checked);
+      const { handleChange } = this.options;
+      handleChange?.(checked);
     }
   }
 }

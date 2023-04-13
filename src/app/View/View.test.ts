@@ -55,7 +55,10 @@ describe('View', () => {
 
   test('Sets vertical orientation', () => {
     generateView(state);
-    view.setOrientation(VERTICAL);
+    view.setOrientation({
+      ...state,
+      orientation: VERTICAL,
+    });
 
     const $component = view.$getHtml();
     expect($component.hasClass('just-slider_vertical')).toBe(true);
@@ -63,8 +66,11 @@ describe('View', () => {
 
   test('Unsets vertical orientation', () => {
     generateView(state);
-    view.setOrientation(VERTICAL);
-    view.setOrientation(HORIZONTAL);
+    view.setOrientation({
+      ...state,
+      orientation: VERTICAL,
+    });
+    view.setOrientation(state);
 
     const $component = view.$getHtml();
     expect($component.hasClass('just-slider_vertical')).toBe(false);

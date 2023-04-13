@@ -22,52 +22,77 @@ mixin configuration-panel(vars = {})
       },
     } = vars
 
+    const inputs = [
+      {
+        name: 'input-min',
+        options: inputMin,
+      },
+      {
+        name: 'input-max',
+        options: inputMax,
+      },
+      {
+        name: 'input-step',
+        options: inputStep,
+      },
+      {
+        name: 'input-from',
+        options: inputFrom,
+      },
+      {
+        name: 'input-to',
+        options: inputTo,
+      },
+    ]
+
+    const toggles = [
+      {
+        name: 'toggle-vertical',
+        options: toggleVertical,
+      },
+      {
+        name: 'toggle-forward',
+        options: toggleForward,
+      },
+      {
+        name: 'toggle-range',
+        options: toggleRange,
+      },
+      {
+        name: 'toggle-bar',
+        options: toggleBar,
+      },
+      {
+        name: 'toggle-tooltip',
+        options: toggleTooltip,
+      },
+      {
+        name: 'toggle-scale',
+        options: toggleScale,
+      },
+    ]
+
     const className = 'configuration-panel'
     let classNames = className + ` js-${className}`
 
   ul(class=classNames)
-    li(class=`${className}__item`)
-      div(class=`${className}__input-min js-${className}__input-min`)
-        +input-field(inputMin)
-    li(class=`${className}__item`)
-      div(class=`${className}__input-max js-${className}__input-max`)
-        +input-field(inputMax)
-    li(class=`${className}__item`)
-      div(class=`${className}__input-step js-${className}__input-step`)
-        +input-field(inputStep)
-    li(class=`${className}__item`)
-      div(class=`${className}__input-from js-${className}__input-from`)
-        +input-field(inputFrom)
-    li(class=`${className}__item`)
-      div(class=`${className}__input-to js-${className}__input-to`)
-        +input-field(inputTo)
-    li(class=`${className}__item`)
-      div(class=`${className}__toggle-vertical js-${className}__toggle-vertical`)
-        +toggle(toggleVertical)
-    li(class=`${className}__item`)
-      div(class=`${className}__toggle-forward js-${className}__toggle-forward`)
-        +toggle(toggleForward)
-    li(class=`${className}__item`)
-      div(class=`${className}__toggle-range js-${className}__toggle-range`)
-        +toggle(toggleRange)
-    li(class=`${className}__item`)
-      div(class=`${className}__toggle-bar js-${className}__toggle-bar`)
-        +toggle(toggleBar)
-    li(class=`${className}__item`)
-      div(class=`${className}__toggle-tooltip js-${className}__toggle-tooltip`)
-        +toggle(toggleTooltip)
-    li(class=`${className}__item`)
-      div(class=`${className}__toggle-scale js-${className}__toggle-scale`)
-        +toggle(toggleScale)
+    each input in inputs
+      li(class=`${className}__item`)
+        div(class=`${className}__${input.name} js-${className}__${input.name}`)
+          +input-field(input.options)
+    each toggle in toggles
+      li(class=`${className}__item`)
+        div(class=`${className}__${toggle.name} js-${className}__${toggle.name}`)
+          +toggle(toggle.options)
     li(class=`${className}__scale`)
       h3(class=`${className}__scale-title`) Scale
       ul(class=`${className}__scale-list`)
         li(class=`${className}__item`)
-          div(class=`${className}__scale-density js-${className}__scale-density`)
+          div(class=`${className}__input-scale-density js-${className}__input-scale-density`)
             +input-field(scale.inputDensity)
         li(class=`${className}__item`)
-          div(class=`${className}__scale-numbers js-${className}__scale-numbers`)
+          div(class=`${className}__toggle-scale-numbers js-${className}__toggle-scale-numbers`)
             +toggle(scale.toggleNumbers)
         li(class=`${className}__item`)
-          div(class=`${className}__scale-lines js-${className}__scale-lines`)
+          div(class=`${className}__toggle-scale-lines js-${className}__toggle-scale-lines`)
             +toggle(scale.toggleLines)

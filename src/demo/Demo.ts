@@ -1,5 +1,5 @@
 import SliderDemo from './components/slider-demo/SliderDemo';
-import { DemoOptions } from './types';
+import { DemoOptions, Demos } from './types';
 
 class Demo {
   private className: string;
@@ -14,25 +14,19 @@ class Demo {
   }
 
   private init() {
-    new SliderDemo(
-      this.$component.find(`.js-${this.className}__slider-demo-primary`),
-      this.options.demos.primary
-    );
+    const demos: Array<keyof Demos> = [
+      'primary',
+      'secondary',
+      'tertiary',
+      'quaternary',
+    ];
 
-    new SliderDemo(
-      this.$component.find(`.js-${this.className}__slider-demo-secondary`),
-      this.options.demos.secondary
-    );
-
-    new SliderDemo(
-      this.$component.find(`.js-${this.className}__slider-demo-tertiary`),
-      this.options.demos.tertiary
-    );
-
-    new SliderDemo(
-      this.$component.find(`.js-${this.className}__slider-demo-quaternary`),
-      this.options.demos.quaternary
-    );
+    demos.forEach((demo) => {
+      new SliderDemo(
+        this.$component.find(`.js-${this.className}__slider-demo-${demo}`),
+        this.options.demos[demo]
+      );
+    });
   }
 }
 

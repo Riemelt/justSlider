@@ -1,3 +1,6 @@
+import { MIN, STEP } from '../../../app/Model/constants';
+import { InputFieldOptions, InputUpdate } from './types';
+
 class InputField {
   private className: string;
   private $component: JQuery<HTMLElement>;
@@ -31,13 +34,31 @@ class InputField {
       this.$input.val(value);
     }
 
-    if (step !== undefined) {
-      this.$input.prop('step', step);
+    const props: Array<{
+      prop: typeof MIN | typeof STEP,
+      value: number | undefined
+    }> = [
+      {
+        prop: MIN,
+        value: min,
+      },
+      {
+        prop: STEP,
+        value: step,
+      },
+    ];
+
+    props.forEach(({ prop, value }) => {
+      this.updateProp(prop, value);
+    });
+  }
+
+  private updateProp(prop: typeof STEP | typeof MIN, value?: number) {
+    if (value === undefined) {
+      return;
     }
 
-    if (min !== undefined) {
-      this.$input.prop('min', min);
-    }
+    this.$input.prop(prop, value);
   }
 
   private render(): void {
@@ -51,8 +72,8 @@ class InputField {
   private handleInputChange(event: Event): void {
     if (event.currentTarget instanceof HTMLInputElement) {
       const value = Number(event.currentTarget.value);
-      const { handleInputChange } = this.options;
-      handleInputChange?.(value);
+      const { handleChange } = this.options;
+      handleChange?.(value);
     }
   }
 }

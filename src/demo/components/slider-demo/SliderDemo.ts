@@ -11,21 +11,17 @@ import {
   FROM,
   HORIZONTAL,
   LINES,
-  MAX,
-  MIN,
   NUMBERS,
   ORIENTATION,
-  PROGRESS_BAR,
-  RANGE,
   SCALE,
-  STEP,
   TO,
-  TOOLTIPS,
   VERTICAL,
 } from '../../../app/Model/constants';
-import ConfigurationPanel from '../configuration-panel/ConfigurationPanel';
-import { SliderDemoOptions } from './types';
 import { ScaleOptions } from '../../../app/View/Scale/types';
+import { ConfigurationPanelOptions } from '../configuration-panel/types';
+import ConfigurationPanel from '../configuration-panel/ConfigurationPanel';
+import { panelInputs, panelToggles } from '../configuration-panel/constants';
+import { SliderDemoOptions } from './types';
 
 class SliderDemo {
   private className: string;
@@ -55,64 +51,7 @@ class SliderDemo {
 
     this.configurationPanel = new ConfigurationPanel($panel, {
       ...options.configurationPanel,
-      inputFrom: {
-        ...options.configurationPanel.inputFrom,
-        handleInputChange: this.handleInputChange.bind(this, FROM),
-      },
-      inputTo: {
-        ...options.configurationPanel.inputFrom,
-        handleInputChange: this.handleInputChange.bind(this, TO),
-      },
-      inputMin: {
-        ...options.configurationPanel.inputMin,
-        handleInputChange: this.handleInputChange.bind(this, MIN),
-      },
-      inputMax: {
-        ...options.configurationPanel.inputMax,
-        handleInputChange: this.handleInputChange.bind(this, MAX),
-      },
-      inputStep: {
-        ...options.configurationPanel.inputStep,
-        handleInputChange: this.handleInputChange.bind(this, STEP),
-      },
-      toggleVertical: {
-        ...options.configurationPanel.toggleVertical,
-        handleToggleChange: this.handleInputChange.bind(this, ORIENTATION),
-      },
-      toggleRange: {
-        ...options.configurationPanel.toggleRange,
-        handleToggleChange: this.handleInputChange.bind(this, RANGE),
-      },
-      toggleBar: {
-        ...options.configurationPanel.toggleBar,
-        handleToggleChange: this.handleInputChange.bind(this, PROGRESS_BAR),
-      },
-      toggleTooltip: {
-        ...options.configurationPanel.toggleTooltip,
-        handleToggleChange: this.handleInputChange.bind(this, TOOLTIPS),
-      },
-      toggleForward: {
-        ...options.configurationPanel.toggleForward,
-        handleToggleChange: this.handleInputChange.bind(this, DIRECTION),
-      },
-      toggleScale: {
-        ...options.configurationPanel.toggleScale,
-        handleToggleChange: this.handleInputChange.bind(this, SCALE),
-      },
-      scale: {
-        inputDensity: {
-          ...options.configurationPanel.scale?.inputDensity,
-          handleInputChange: this.handleInputChange.bind(this, DENSITY),
-        },
-        toggleNumbers: {
-          ...options.configurationPanel.scale?.toggleNumbers,
-          handleToggleChange: this.handleInputChange.bind(this, NUMBERS),
-        },
-        toggleLines: {
-          ...options.configurationPanel.scale?.toggleLines,
-          handleToggleChange: this.handleInputChange.bind(this, LINES),
-        },
-      },
+      ...this.getPanelOptions(),
     });
 
     this.$slider = this.$component.find(`.js-${this.className}__slider`);
@@ -122,6 +61,22 @@ class SliderDemo {
     });
 
     this.slider = this.$slider.data('just-slider');
+  }
+
+  private getPanelOptions(): ConfigurationPanelOptions {
+    const options: ConfigurationPanelOptions = {};
+    const inputsCollection = [panelInputs, panelToggles];
+
+    inputsCollection.forEach((inputs) => {
+      inputs.forEach(({ name, option }) => {
+        options[name] = {
+          ...this.options.configurationPanel[name],
+          handleChange: this.handleInputChange.bind(this, option),
+        };
+      });
+    });
+
+    return options;
   }
 
   private handleSliderUpdate(state: State): void {
@@ -142,6 +97,7 @@ class SliderDemo {
 
     if (SliderDemo.isScaleProperty(property)) {
       this.slider?.updateOptions({ scale: options });
+      return;
     }
 
     this.slider?.updateOptions(options);
