@@ -1,3 +1,9 @@
+import EventManager from '../EventManager/EventManager';
+import { Options, State } from '../types';
+import { LINE, NUMBER } from '../View/Scale/constants';
+import { ScaleOptions, Segment } from '../View/Scale/types';
+import { HandleType, ModelEvent } from './types';
+import { getUpdates, UPDATES } from './updates';
 import {
   DIRECTION_UPDATE,
   HANDLES_SWAP,
@@ -11,12 +17,6 @@ import {
   SCALE_UPDATE,
   STEP_UPDATE,
   TOOLTIPS_UPDATE,
-} from '../EventManager/constants';
-import EventManager from '../EventManager/EventManager';
-import { Options, State } from '../types';
-import { LINE, NUMBER } from '../View/Scale/constants';
-import { ScaleOptions, Segment } from '../View/Scale/types';
-import {
   DIRECTION,
   FORWARD,
   FROM,
@@ -27,11 +27,9 @@ import {
   TO,
   TOOLTIPS,
 } from './constants';
-import { HandleType } from './types';
-import { getUpdates, UPDATES } from './updates';
 
 class Model {
-  private eventManager: EventManager;
+  private eventManager: EventManager<ModelEvent, State>;
   private state: State;
 
   static readonly DEFAULT_STATE: State = {
@@ -174,7 +172,7 @@ class Model {
     return min + ((max - min) * percentage / 100);
   }
 
-  constructor(eventManager: EventManager) {
+  constructor(eventManager: EventManager<ModelEvent, State>) {
     this.eventManager = eventManager;
     this.state = Model.DEFAULT_STATE;
   }
@@ -276,7 +274,7 @@ class Model {
       }
     });
 
-    this.eventManager.dispatchEvents(events);
+    this.eventManager.dispatchEvents(events, this.state);
   }
 
   public updateHandle(
@@ -289,7 +287,7 @@ class Model {
     const event = newType === FROM ? HANDLE_FROM_MOVE : HANDLE_TO_MOVE;
     const { events } = UPDATES[event];
 
-    this.eventManager.dispatchEvents(events);
+    this.eventManager.dispatchEvents(events, this.state);
   }
 
   private setHandle(
@@ -315,7 +313,7 @@ class Model {
     );
 
     if (isCollided) {
-      this.eventManager.dispatchEvent(HANDLES_SWAP);
+      this.eventManager.dispatchEvent(HANDLES_SWAP, this.state);
     }
 
     const newType = Model.getHandleTypeOnCollision(isCollided, type);

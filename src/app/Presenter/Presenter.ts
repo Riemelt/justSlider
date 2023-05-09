@@ -1,10 +1,7 @@
 import Model from '../Model/Model';
-import { FROM, TO } from '../Model/constants';
-import { HandleType } from '../Model/types';
-import View from '../View/View';
-import EventManager from '../EventManager/EventManager';
-import { SliderEvent } from '../EventManager/types';
 import {
+  FROM,
+  TO,
   HANDLES_SWAP,
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
@@ -13,20 +10,42 @@ import {
   SCALE_UPDATE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
-} from '../EventManager/constants';
+} from '../Model/constants';
+import { HandleType, ModelEvent } from '../Model/types';
+import EventManager from '../EventManager/EventManager';
 import { JustSliderOptions, State } from '../types';
+import View from '../View/View';
+import { ViewEvent, ViewUpdateData } from '../View/types';
+import {
+  HANDLE_MOVE,
+  SCALE_CLICK,
+  SLIDER_CLICK,
+  TOOLTIP_CLICK,
+} from '../View/constants';
 
 class Presenter {
-  private eventManager: EventManager;
+  private modelEventManager: EventManager<ModelEvent, State>;
+  private viewEventManager: EventManager<ViewEvent, ViewUpdateData>;
   private view: View;
   private model: Model;
 
   private onUpdate?: (state: State) => void;
 
-  constructor(view: View, model: Model, eventManager: EventManager) {
+  constructor({
+    view,
+    model,
+    viewEventManager,
+    modelEventManager,
+  }: {
+    view: View,
+    model: Model,
+    viewEventManager: EventManager<ViewEvent, ViewUpdateData>,
+    modelEventManager: EventManager<ModelEvent, State>,
+  }) {
     this.view = view;
     this.model = model;
-    this.eventManager = eventManager;
+    this.modelEventManager = modelEventManager;
+    this.viewEventManager = viewEventManager;
   }
 
   public init({
@@ -40,20 +59,22 @@ class Presenter {
 
     this.setOnUpdate(onUpdate);
 
-    this.createHandlers();
     this.registerEvents();
     this.addEventListeners();
 
     this.view.initComponents();
-    this.eventManager.dispatchEvents([
-      HANDLE_FROM_MOVE,
-      HANDLE_TO_MOVE,
-      PROGRESS_BAR_UPDATE,
-      ORIENTATION_UPDATE,
-      TOOLTIPS_UPDATE,
-      SCALE_UPDATE,
-      SLIDER_UPDATE,
-    ]);
+    this.modelEventManager.dispatchEvents(
+      [
+        HANDLE_FROM_MOVE,
+        HANDLE_TO_MOVE,
+        PROGRESS_BAR_UPDATE,
+        ORIENTATION_UPDATE,
+        TOOLTIPS_UPDATE,
+        SCALE_UPDATE,
+        SLIDER_UPDATE,
+      ],
+      state
+    );
   }
 
   public getState(): State {
@@ -82,29 +103,26 @@ class Presenter {
     }
   }
 
-  private createHandlers(): void {
-    const updateHandleHandler = (
-      value: number,
-      handle: HandleType,
-      shouldAdjust?: boolean,
-    ) => {
-      this.model.updateHandle(value, handle, shouldAdjust);
-    };
+  private registerEvents(): void {
+    this.registerModelEvents();
+    this.registerViewEvents();
+  }
 
-    const handlerSetters = [
-      this.view.addHandleMoveHandler.bind(this.view),
-      this.view.addSliderClickHandler.bind(this.view),
-      this.view.addScaleClickHandler.bind(this.view),
-      this.view.addTooltipClickHandler.bind(this.view),
+  private registerViewEvents(): void {
+    const events: Array<ViewEvent> = [
+      HANDLE_MOVE,
+      SLIDER_CLICK,
+      SCALE_CLICK,
+      TOOLTIP_CLICK,
     ];
 
-    handlerSetters.forEach((setter) => {
-      setter(updateHandleHandler);
+    events.forEach((event) => {
+      this.viewEventManager.registerEvent(event);
     });
   }
 
-  private registerEvents(): void {
-    const events: Array<SliderEvent> = [
+  private registerModelEvents(): void {
+    const events: Array<ModelEvent> = [
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
       SLIDER_UPDATE,
@@ -116,16 +134,41 @@ class Presenter {
     ];
 
     events.forEach((event) => {
-      this.eventManager.registerEvent(event);
+      this.modelEventManager.registerEvent(event);
     });
   }
 
   private addEventListeners(): void {
-    this.addEventListenerHandleMove(HANDLE_FROM_MOVE, FROM);
-    this.addEventListenerHandleMove(HANDLE_TO_MOVE, TO);
+    this.addModelEventListeners();
+    this.addViewEventListeners();
+  }
+
+  private addViewEventListeners(): void {
+    const events: Array<ViewEvent> = [
+      HANDLE_MOVE,
+      SLIDER_CLICK,
+      SCALE_CLICK,
+      TOOLTIP_CLICK,
+    ];
+
+    events.forEach((event) => {
+      this.viewEventManager.addEventListener(event, (data) => {
+        if (data === undefined) {
+          return;
+        }
+
+        const { value, handle, shouldAdjust } = data;
+        this.model.updateHandle(value, handle, shouldAdjust);
+      });
+    });
+  }
+
+  private addModelEventListeners(): void {
+    this.addEventListenerModelHandleMove(HANDLE_FROM_MOVE, FROM);
+    this.addEventListenerModelHandleMove(HANDLE_TO_MOVE, TO);
 
     interface ViewUpdate {
-      event: SliderEvent
+      event: ModelEvent
       update: ((state: State) => void) | undefined
     }
 
@@ -153,20 +196,26 @@ class Presenter {
     ];
 
     viewUpdates.forEach(({ event, update }) => {
-      this.eventManager.addEventListener(event, () => {
-        const state = this.model.getState();
+      this.modelEventManager.addEventListener(event, (state) => {
+        if (state === undefined) {
+          return;
+        }
+
         update?.(state);
       });
     });
 
-    this.eventManager.addEventListener(HANDLES_SWAP, () => {
+    this.modelEventManager.addEventListener(HANDLES_SWAP, () => {
       this.view.swapHandles();
     });
   }
 
-  private addEventListenerHandleMove(event: SliderEvent, type: HandleType) {
-    this.eventManager.addEventListener(event, () => {
-      const state = this.model.getState();
+  private addEventListenerModelHandleMove(event: ModelEvent, type: HandleType) {
+    this.modelEventManager.addEventListener(event, (state) => {
+      if (state === undefined) {
+        return;
+      }
+
       this.view.updateHandle(state, type);
       this.view.updateTooltips(state);
     });

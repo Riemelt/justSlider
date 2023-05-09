@@ -1,32 +1,36 @@
 import Subject from './Subject/Subject';
-import { EventSubjects, SliderEvent } from './types';
 
-class EventManager {
-  private eventsSubjects: EventSubjects;
+class EventManager<TEvent extends string, TData = null> {
+  private eventsSubjects: Partial<Record<TEvent, Subject<TData>>>;
 
   constructor() {
     this.eventsSubjects = {};
   }
 
-  public getEventSubjects(): EventSubjects {
+  public getEventSubjects(): Partial<Record<TEvent, Subject<TData>>> {
     return this.eventsSubjects;
   }
 
-  public registerEvent(eventName: SliderEvent): void {
+  public registerEvent(eventName: TEvent): void {
     this.eventsSubjects[eventName] = new Subject();
   }
 
-  public dispatchEvent(eventName: SliderEvent): void {
-    this.eventsSubjects[eventName]?.observers.forEach((observer) => observer());
-  }
-
-  public dispatchEvents(eventNames: Array<SliderEvent>): void {
-    eventNames.forEach((eventName) => {
-      this.dispatchEvent(eventName);
+  public dispatchEvent(eventName: TEvent, data?: TData): void {
+    this.eventsSubjects[eventName]?.observers.forEach((observer) => {
+      observer(data);
     });
   }
 
-  public addEventListener(eventName: SliderEvent, observer: () => void): void {
+  public dispatchEvents(eventNames: Array<TEvent>, data?: TData): void {
+    eventNames.forEach((eventName) => {
+      this.dispatchEvent(eventName, data);
+    });
+  }
+
+  public addEventListener(
+    eventName: TEvent,
+    observer: (data?: TData) => void
+  ): void {
     this.eventsSubjects[eventName]?.subscribe(observer);
   }
 }

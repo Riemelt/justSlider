@@ -1,11 +1,9 @@
-import { HANDLE_FROM_MOVE, SLIDER_UPDATE } from './constants';
-import { SliderEvent } from './types';
 import EventManager from './EventManager';
 import Subject from './Subject/Subject';
 
 describe('EventManager', () => {
-  let eventManager: EventManager;
-  const events: Array<SliderEvent> = [SLIDER_UPDATE, HANDLE_FROM_MOVE];
+  let eventManager: EventManager<string, number>;
+  const events: Array<string> = ['UPDATE1', 'UPDATE2'];
   const observers: Array<() => void> = [() => undefined, () => undefined];
 
   beforeEach(() => {
@@ -54,9 +52,10 @@ describe('EventManager', () => {
     });
 
     test('Dispatches single event', () => {
-      eventManager.dispatchEvent(events[0]);
+      eventManager.dispatchEvent(events[0], 10);
 
       expect(mockedObservers[0]).toHaveBeenCalledTimes(1);
+      expect(mockedObservers[0]).toHaveBeenCalledWith(10);
       expect(mockedObservers[1]).toHaveBeenCalledTimes(0);
     });
 

@@ -1,15 +1,15 @@
-class Subject {
-  public observers: Array<() => void>;
+class Subject<TData> {
+  public observers: Array<(data?: TData) => void>;
 
   constructor() {
     this.observers = [];
   }
 
-  public subscribe(observer: () => void): void {
+  public subscribe(observer: (data?: TData) => void): void {
     this.observers.push(observer);
   }
 
-  public unsubscribe(observer: () => void): void {
+  public unsubscribe(observer: (data?: TData) => void): void {
     this.observers = this.observers.filter((obs) => obs !== observer);
   }
 }

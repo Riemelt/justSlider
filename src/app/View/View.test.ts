@@ -1,15 +1,19 @@
 import { State } from '../types';
 import { FORWARD, FROM, HORIZONTAL, TO, VERTICAL } from '../Model/constants';
+import * as Utilities from '../utilities/utilities';
+import EventManager from '../EventManager/EventManager';
 import View from './View';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
 import { ScaleState } from './Scale/types';
-import * as Utilities from '../utilities/utilities';
 import Tooltip from './Tooltip/Tooltip';
+import { ViewEvent, ViewUpdateData } from './types';
+import { HANDLE_MOVE, SCALE_CLICK, SLIDER_CLICK } from './constants';
 
 describe('View', () => {
   let view: View;
+  let eventManager: EventManager<ViewEvent, ViewUpdateData>;
 
   const scale: ScaleState = {
     segments: [],
@@ -39,7 +43,8 @@ describe('View', () => {
   `);
 
   const generateView = function generateView(state: State) {
-    view = new View(state, $container);
+    eventManager = new EventManager();
+    view = new View(state, $container, eventManager);
   };
 
   describe('On initialization', () => {
@@ -86,7 +91,6 @@ describe('View', () => {
           'setHandlePointermoveHandler',
         );
 
-        view.addHandleMoveHandler(() => undefined);
         view.updateHandle(state, TO);
 
         expect(mockedSetHandler).toBeCalledTimes(1);
@@ -100,7 +104,6 @@ describe('View', () => {
         generateView(state);
         const mockedHandleDelete = jest.spyOn(view, 'deleteHandle');
 
-        view.addHandleMoveHandler(() => undefined);
         view.updateHandle(state, TO);
         view.updateHandle({ ...state, range: false }, TO);
 
@@ -113,7 +116,7 @@ describe('View', () => {
 
     test('Creates handle mousemove handler', () => {
       generateView(state);
-      const mockedHandler = jest.fn(() => undefined);
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
       const mockedSetHandler = jest.spyOn(
         Handle.prototype,
         'setHandlePointermoveHandler'
@@ -124,7 +127,6 @@ describe('View', () => {
         'getConvertedViewPositionToModel'
       );
 
-      view.addHandleMoveHandler(mockedHandler);
       view.initComponents();
 
       const $component = view.$getHtml();
@@ -151,7 +153,14 @@ describe('View', () => {
 
       const convertedPosition = mockedConvertPosition.mock.results[0].value;
 
-      expect(mockedHandler).toBeCalledWith(convertedPosition, FROM);
+      const dispatchedEvent = mockedDispatcher.mock.calls[0][0];
+      const dispatchedData = mockedDispatcher.mock.calls[0][1];
+
+      expect(dispatchedEvent).toBe(HANDLE_MOVE);
+      expect(dispatchedData).toEqual({
+        value: convertedPosition,
+        handle: FROM,
+      });
 
       mockedOffset.mockRestore();
       mockedConvertPosition.mockRestore();
@@ -162,7 +171,6 @@ describe('View', () => {
       generateView(state);
       const mockedUpdate = jest.spyOn(Handle.prototype, 'update');
 
-      view.addHandleMoveHandler(() => undefined);
       view.initComponents();
       view.updateHandle(state, FROM);
 
@@ -174,7 +182,6 @@ describe('View', () => {
       generateView(state);
       const mockedHandleDelete = jest.spyOn(Handle.prototype, 'delete');
 
-      view.addHandleMoveHandler(() => undefined);
       view.initComponents();
       view.deleteHandle(FROM);
 
@@ -188,7 +195,6 @@ describe('View', () => {
     generateView(state);
     const mockedUpdateTooltip = jest.spyOn(Tooltip.prototype, 'update');
 
-    view.addHandleMoveHandler(() => undefined);
     view.initComponents();
 
     view.updateTooltips({
@@ -252,19 +258,27 @@ describe('View', () => {
 
     test('Creates click handler', () => {
       generateView(state);
-      const mockedHandler = jest.fn(() => undefined);
+
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
       const mockedSetHandler = jest.spyOn(
         Scale.prototype,
         'setNumberClickHandler'
       );
 
-      view.addScaleClickHandler(mockedHandler);
       view.updateScale(state);
 
       const handler = mockedSetHandler.mock.calls[0][0];
       handler(180);
 
-      expect(mockedHandler).toBeCalledWith(180, FROM, false);
+      const dispatchedEvent = mockedDispatcher.mock.calls[0][0];
+      const dispatchedData = mockedDispatcher.mock.calls[0][1];
+
+      expect(dispatchedEvent).toBe(SCALE_CLICK);
+      expect(dispatchedData).toEqual({
+        value: 180,
+        handle: FROM,
+        shouldAdjust: false,
+      });
 
       mockedSetHandler.mockRestore();
     });
@@ -275,17 +289,15 @@ describe('View', () => {
       'Handles click in horizontal mode, HandleFrom is closer to click pos',
       () => {
         generateView(state);
+        const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
         const mockedConvertPosition = jest.spyOn(
           Utilities,
           'getConvertedViewPositionToModel'
         );
-        const handler = jest.fn(() => undefined);
 
         const eventPointerdown = new jQuery.Event('pointerdown', {
           pageX: 280,
         });
-
-        view.addSliderClickHandler(handler);
 
         const $component = view.$getHtml();
         const $justSlider = $component.find('.just-slider__main');
@@ -310,7 +322,14 @@ describe('View', () => {
 
         const convertedPosition = mockedConvertPosition.mock.results[0].value;
 
-        expect(handler).toBeCalledWith(convertedPosition, FROM);
+        const dispatchedEvent = mockedDispatcher.mock.calls[0][0];
+        const dispatchedData = mockedDispatcher.mock.calls[0][1];
+
+        expect(dispatchedEvent).toBe(SLIDER_CLICK);
+        expect(dispatchedData).toEqual({
+          value: convertedPosition,
+          handle: FROM,
+        });
 
         mockedOffset.mockRestore();
         mockedConvertPosition.mockRestore();
@@ -320,22 +339,22 @@ describe('View', () => {
     test(
       'Handles click in vertical mode, HandleTo is closer to click pos',
       () => {
-        const mockedConvertPosition = jest.spyOn(
-          Utilities,
-          'getConvertedViewPositionToModel'
-        );
-        const handler = jest.fn(() => undefined);
-
-        const eventPointerdown = new jQuery.Event('pointerdown', {
-          pageY: 280,
-        });
-
         generateView({
           ...state,
           orientation: VERTICAL,
           from: 0,
         });
-        view.addSliderClickHandler(handler);
+
+        const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+        const mockedConvertPosition = jest.spyOn(
+          Utilities,
+          'getConvertedViewPositionToModel'
+        );
+
+        const eventPointerdown = new jQuery.Event('pointerdown', {
+          pageY: 280,
+        });
+
         const $component = view.$getHtml();
         const $justSlider = $component.find('.just-slider__main');
 
@@ -359,7 +378,14 @@ describe('View', () => {
 
         const convertedPosition = mockedConvertPosition.mock.results[0].value;
 
-        expect(handler).toBeCalledWith(convertedPosition, TO);
+        const dispatchedEvent = mockedDispatcher.mock.calls[0][0];
+        const dispatchedData = mockedDispatcher.mock.calls[0][1];
+
+        expect(dispatchedEvent).toBe(SLIDER_CLICK);
+        expect(dispatchedData).toEqual({
+          value: convertedPosition,
+          handle: TO,
+        });
 
         mockedOffset.mockRestore();
         mockedConvertPosition.mockRestore();

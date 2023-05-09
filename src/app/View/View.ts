@@ -4,13 +4,20 @@ import {
   getElementPos,
 } from '../utilities/utilities';
 import { State, HTMLElementEvent } from '../types';
+import EventManager from '../EventManager/EventManager';
 import { HandleType, TooltipType } from '../Model/types';
 import { FROM, HORIZONTAL, RANGE, TO, VERTICAL } from '../Model/constants';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
 import Tooltip from './Tooltip/Tooltip';
-import { CanChangeType, SubViewSet } from './types';
+import { CanChangeType, SubViewSet, ViewEvent, ViewUpdateData } from './types';
+import {
+  HANDLE_MOVE,
+  SCALE_CLICK,
+  SLIDER_CLICK,
+  TOOLTIP_CLICK,
+} from './constants';
 
 class View {
   private state: State;
@@ -18,13 +25,13 @@ class View {
   private $justSlider: JQuery<HTMLElement>;
   private $parent: JQuery<HTMLElement>;
   private margin = 0;
+  private eventManager: EventManager<ViewEvent, ViewUpdateData>;
 
   private handleHandlePointermove?: (
     position: number,
     type: HandleType,
     isConverted?: boolean
   ) => void;
-  private sliderClickHandler?: (position: number, type: HandleType) => void;
   private scaleClickHandler?: (position: number) => void;
   private tooltipClickHandler?: (
     position: number,
@@ -75,9 +82,11 @@ class View {
   constructor(
     state: State,
     $parent: JQuery<HTMLElement>,
+    eventManager: EventManager<ViewEvent, ViewUpdateData>,
   ) {
     this.state = state;
     this.$parent = $parent;
+    this.eventManager = eventManager;
     this.$component = View.$initHtml();
     this.$justSlider = this.$component.find('.just-slider__main');
     this.setHandlers();
@@ -123,19 +132,6 @@ class View {
   public swapHandles(): void {
     View.swapSubViews<Handle>(this.handles);
     View.swapSubViews<Tooltip>(this.tooltips);
-  }
-
-  public addHandleMoveHandler(handler: (
-    value: number,
-    type: HandleType
-  ) => void): void {
-    this.handleHandlePointermove = (position, type, isConverted = false) => {
-      const converted = isConverted ?
-        position :
-        this.getConvertedPosition(position);
-
-      handler(converted, type);
-    };
   }
 
   public updateTooltips(state: State): void {
@@ -218,21 +214,31 @@ class View {
     delete this.scale;
   }
 
-  public addScaleClickHandler(handler: (
-    value: number,
-    type: HandleType,
-    shouldAdjust?: boolean,
-  ) => void): void {
-    this.scaleClickHandler = (position) => {
-      const closestHandle = this.getClosestHandle(position);
-      handler(position, closestHandle, false);
+  private addHandleMoveHandler(): void {
+    this.handleHandlePointermove = (position, type, isConverted = false) => {
+      const converted = isConverted ?
+        position :
+        this.getConvertedPosition(position);
+
+      this.eventManager.dispatchEvent(HANDLE_MOVE, {
+        value: converted,
+        handle: type,
+      });
     };
   }
 
-  public addTooltipClickHandler(handler: (
-    value: number,
-    type: HandleType,
-  ) => void): void {
+  private addScaleClickHandler(): void {
+    this.scaleClickHandler = (position) => {
+      const closestHandle = this.getClosestHandle(position);
+      this.eventManager.dispatchEvent(SCALE_CLICK, {
+        value: position,
+        handle: closestHandle,
+        shouldAdjust: false,
+      });
+    };
+  }
+
+  private addTooltipClickHandler(): void {
     this.tooltipClickHandler = (
       position,
       type,
@@ -248,16 +254,12 @@ class View {
       }
 
       if (type !== RANGE) {
-        handler(converted, type);
+        this.eventManager.dispatchEvent(TOOLTIP_CLICK, {
+          value: converted,
+          handle: type,
+        });
       }
     };
-  }
-
-  public addSliderClickHandler(handler: (
-    value: number,
-    type: HandleType
-  ) => void): void {
-    this.sliderClickHandler = handler;
   }
 
   private fixTooltipsVisuals(): void {
@@ -332,6 +334,9 @@ class View {
   }
 
   private setHandlers(): void {
+    this.addHandleMoveHandler();
+    this.addScaleClickHandler();
+    this.addTooltipClickHandler();
     this.$justSlider.on(
       'pointerdown.slider',
       this.handleSliderClick.bind(this)
@@ -415,7 +420,10 @@ class View {
     const converted = this.getConvertedPosition(position);
     const closestHandle = this.getClosestHandle(converted);
 
-    this.sliderClickHandler?.(converted, closestHandle);
+    this.eventManager.dispatchEvent(SLIDER_CLICK, {
+      value: converted,
+      handle: closestHandle,
+    });
   }
 
   private getClosestHandle(position: number): HandleType {

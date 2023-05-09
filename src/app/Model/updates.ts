@@ -1,3 +1,5 @@
+import { Options } from '../types';
+import { Update, Updates, ModelEvent } from './types';
 import {
   DIRECTION_UPDATE,
   HANDLE_FROM_MOVE,
@@ -11,10 +13,7 @@ import {
   SLIDER_UPDATE,
   STEP_UPDATE,
   TOOLTIPS_UPDATE,
-} from '../EventManager/constants';
-import { SliderEvent } from '../EventManager/types';
-import { Options } from '../types';
-import { Update, Updates } from './types';
+} from './constants';
 
 const UPDATES: Updates = {
   [HANDLE_FROM_MOVE]: {
@@ -125,8 +124,8 @@ const getUpdates = function getUpdates({
   progressBar,
   scale,
 }: Options): Update {
-  const propertiesToUpdate: Set<SliderEvent> = new Set();
-  const eventsToDispatch: Set<SliderEvent> = new Set();
+  const propertiesToUpdate: Set<ModelEvent> = new Set();
+  const eventsToDispatch: Set<ModelEvent> = new Set();
 
   const options = {
     min,
@@ -180,8 +179,8 @@ const getUpdates = function getUpdates({
 
 const addUpdates = function addUpdates(
   event: keyof Updates,
-  propertiesToUpdate: Set<SliderEvent>,
-  eventsToDispatch: Set<SliderEvent>
+  propertiesToUpdate: Set<ModelEvent>,
+  eventsToDispatch: Set<ModelEvent>
 ) {
   const { events, stateUpdates } = UPDATES[event];
   events.forEach((event) => eventsToDispatch.add(event));

@@ -1,7 +1,7 @@
 import Subject from './Subject';
 
 describe('Subject', () => {
-  let subject: Subject;
+  let subject: Subject<null>;
   let observer: () => void;
 
   beforeEach(() => {

@@ -1,4 +1,10 @@
+import EventManager from '../EventManager/EventManager';
+import { ModelEvent } from '../Model/types';
 import {
+  FORWARD,
+  FROM,
+  HORIZONTAL,
+  TO,
   HANDLES_SWAP,
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
@@ -7,19 +13,24 @@ import {
   SCALE_UPDATE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
-} from '../EventManager/constants';
-import EventManager from '../EventManager/EventManager';
-import { SliderEvent } from '../EventManager/types';
-import { FORWARD, FROM, HORIZONTAL, TO } from '../Model/constants';
+} from '../Model/constants';
 import Model from '../Model/Model';
-import { JustSliderOptions } from '../types';
+import { JustSliderOptions, State } from '../types';
 import { ScaleOptions } from '../View/Scale/types';
+import {
+  HANDLE_MOVE,
+  SCALE_CLICK,
+  SLIDER_CLICK,
+  TOOLTIP_CLICK,
+} from '../View/constants';
 import View from '../View/View';
+import { ViewEvent, ViewUpdateData } from '../View/types';
 import Presenter from './Presenter';
 
 describe('Presenter', () => {
   let presenter: Presenter;
-  let eventManager: EventManager;
+  let modelEventManager: EventManager<ModelEvent, State>;
+  let viewEventManager: EventManager<ViewEvent, ViewUpdateData>;
   let model: Model;
   let view: View;
 
@@ -46,15 +57,21 @@ describe('Presenter', () => {
   };
 
   const buildPresenter = function buildPresenter() {
-    eventManager = new EventManager();
-    model = new Model(eventManager);
+    modelEventManager = new EventManager();
+    model = new Model(modelEventManager);
     const state = model.getState();
     const $container: JQuery<HTMLElement> = $(`
       <div class="just-slider">
       </div>
     `);
-    view = new View(state, $container);
-    presenter = new Presenter(view, model, eventManager);
+    viewEventManager = new EventManager();
+    view = new View(state, $container, viewEventManager);
+    presenter = new Presenter({
+      view,
+      model,
+      viewEventManager,
+      modelEventManager,
+    });
   };
 
   beforeEach(() => {
@@ -80,40 +97,9 @@ describe('Presenter', () => {
     expect(mockedViewInitComponents).toBeCalled();
   });
 
-  test('Creates view handlers', () => {
-    const mockedViewHandleHandler = jest.spyOn(view, 'addHandleMoveHandler');
-    const mockedViewSliderClickHandler = jest.spyOn(
-      view,
-      'addSliderClickHandler'
-    );
-
-    const mockedViewScaleClickHandler = jest.spyOn(
-      view,
-      'addScaleClickHandler'
-    );
-
-    presenter.init(options);
-
-    expect(mockedViewHandleHandler).toBeCalled();
-    expect(mockedViewSliderClickHandler).toBeCalled();
-    expect(mockedViewScaleClickHandler).toBeCalled();
-
-    const mockedUpdate = jest.spyOn(model, 'updateHandle');
-
-    const handleHandler = mockedViewHandleHandler.mock.calls[0][0];
-    const sliderClickHandler = mockedViewSliderClickHandler.mock.calls[0][0];
-    const scaleClickHandler = mockedViewScaleClickHandler.mock.calls[0][0];
-
-    handleHandler(50, FROM);
-    sliderClickHandler(50, FROM);
-    scaleClickHandler(50, FROM);
-
-    expect(mockedUpdate).toBeCalledTimes(3);
-  });
-
-  test('Registers events', () => {
-    const mockedRegister = jest.spyOn(eventManager, 'registerEvent');
-    const events: Array<SliderEvent> = [
+  test('Registers model events', () => {
+    const mockedRegister = jest.spyOn(modelEventManager, 'registerEvent');
+    const events: Array<ModelEvent> = [
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
       SLIDER_UPDATE,
@@ -131,9 +117,25 @@ describe('Presenter', () => {
     });
   });
 
+  test('Registers view events', () => {
+    const mockedRegister = jest.spyOn(viewEventManager, 'registerEvent');
+    const events: Array<ViewEvent> = [
+      HANDLE_MOVE,
+      SLIDER_CLICK,
+      SCALE_CLICK,
+      TOOLTIP_CLICK,
+    ];
+
+    presenter.init(options);
+
+    events.forEach((event) => {
+      expect(mockedRegister).toBeCalledWith(event);
+    });
+  });
+
   test('Dispatches events on initialization', () => {
-    const mockedDispatch = jest.spyOn(eventManager, 'dispatchEvent');
-    const events: Array<SliderEvent> = [
+    const mockedDispatch = jest.spyOn(modelEventManager, 'dispatchEvent');
+    const events: Array<ModelEvent> = [
       HANDLE_FROM_MOVE,
       HANDLE_TO_MOVE,
       PROGRESS_BAR_UPDATE,
@@ -145,8 +147,8 @@ describe('Presenter', () => {
 
     presenter.init(options);
 
-    events.forEach((event) => {
-      expect(mockedDispatch).toBeCalledWith(event);
+    events.forEach((event, index) => {
+      expect(mockedDispatch.mock.calls[index][0]).toBe(event);
     });
   });
 
@@ -155,10 +157,10 @@ describe('Presenter', () => {
       presenter.init(options);
 
       const mockedUpdate = jest.spyOn(view, 'updateHandle');
-      eventManager.dispatchEvent(HANDLE_FROM_MOVE);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(HANDLE_FROM_MOVE, state);
 
-      const type = mockedUpdate.mock.calls[0][1];
-      expect(type).toBe(FROM);
+      expect(mockedUpdate).toBeCalledWith(state, FROM);
       expect(mockedUpdate).toBeCalledTimes(1);
     });
 
@@ -166,10 +168,10 @@ describe('Presenter', () => {
       presenter.init(options);
 
       const mockedUpdate = jest.spyOn(view, 'updateHandle');
-      eventManager.dispatchEvent(HANDLE_TO_MOVE);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(HANDLE_TO_MOVE, state);
 
-      const type = mockedUpdate.mock.calls[0][1];
-      expect(type).toBe(TO);
+      expect(mockedUpdate).toBeCalledWith(state, TO);
       expect(mockedUpdate).toBeCalledTimes(1);
     });
 
@@ -177,7 +179,8 @@ describe('Presenter', () => {
       presenter.init(options);
 
       const mockedUpdate = jest.spyOn(view, 'updateProgressBar');
-      eventManager.dispatchEvent(PROGRESS_BAR_UPDATE);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(PROGRESS_BAR_UPDATE, state);
 
       expect(mockedUpdate).toBeCalledTimes(1);
     });
@@ -186,7 +189,8 @@ describe('Presenter', () => {
       presenter.init(options);
 
       const mockedUpdate = jest.spyOn(view, 'setOrientation');
-      eventManager.dispatchEvent(ORIENTATION_UPDATE);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(ORIENTATION_UPDATE, state);
 
       expect(mockedUpdate).toBeCalledTimes(1);
     });
@@ -195,7 +199,8 @@ describe('Presenter', () => {
       presenter.init(options);
 
       const mockedUpdate = jest.spyOn(view, 'updateTooltips');
-      eventManager.dispatchEvent(TOOLTIPS_UPDATE);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(TOOLTIPS_UPDATE, state);
 
       expect(mockedUpdate).toBeCalledTimes(1);
     });
@@ -204,7 +209,8 @@ describe('Presenter', () => {
       presenter.init(options);
 
       onUpdate.mockReset();
-      eventManager.dispatchEvent(SLIDER_UPDATE);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(SLIDER_UPDATE, state);
 
       expect(onUpdate).toBeCalledTimes(1);
     });
@@ -213,7 +219,8 @@ describe('Presenter', () => {
       presenter.init(options);
 
       const mockedUpdate = jest.spyOn(view, 'updateScale');
-      eventManager.dispatchEvent(SCALE_UPDATE);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(SCALE_UPDATE, state);
 
       expect(mockedUpdate).toBeCalledTimes(1);
     });
@@ -222,9 +229,28 @@ describe('Presenter', () => {
       presenter.init(options);
 
       const mockedUpdate = jest.spyOn(view, 'swapHandles');
-      eventManager.dispatchEvent(HANDLES_SWAP);
+      const state = model.getState();
+      modelEventManager.dispatchEvent(HANDLES_SWAP, state);
 
       expect(mockedUpdate).toBeCalledTimes(1);
+    });
+
+    const viewEvents: Array<ViewEvent> = [
+      HANDLE_MOVE,
+      SLIDER_CLICK,
+      SCALE_CLICK,
+      TOOLTIP_CLICK,
+    ];
+
+    viewEvents.forEach((event) => {
+      test(event, () => {
+        presenter.init(options);
+
+        const mockedUpdate = jest.spyOn(model, 'updateHandle');
+        viewEventManager.dispatchEvent(event, { value: 0, handle: FROM });
+
+        expect(mockedUpdate).toBeCalledTimes(1);
+      });
     });
   });
 

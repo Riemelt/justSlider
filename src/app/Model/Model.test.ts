@@ -1,4 +1,13 @@
+import EventManager from '../EventManager/EventManager';
+import { Options, State } from '../types';
+import { LINE, NUMBER } from '../View/Scale/constants';
 import {
+  BACKWARD,
+  FORWARD,
+  FROM,
+  HORIZONTAL,
+  TO,
+  VERTICAL,
   HANDLE_FROM_MOVE,
   HANDLE_TO_MOVE,
   ORIENTATION_UPDATE,
@@ -6,17 +15,13 @@ import {
   SCALE_UPDATE,
   SLIDER_UPDATE,
   TOOLTIPS_UPDATE,
-} from '../EventManager/constants';
-import EventManager from '../EventManager/EventManager';
-import { SliderEvent } from '../EventManager/types';
-import { Options } from '../types';
-import { LINE, NUMBER } from '../View/Scale/constants';
-import { BACKWARD, FORWARD, FROM, HORIZONTAL, TO, VERTICAL } from './constants';
+} from './constants';
 import Model from './Model';
+import { ModelEvent } from './types';
 
 describe('Model', () => {
   let model: Model;
-  let eventManager: EventManager;
+  let eventManager: EventManager<ModelEvent, State>;
 
   beforeEach(() => {
     eventManager = new EventManager();
@@ -73,13 +78,13 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [TOOLTIPS_UPDATE, SLIDER_UPDATE];
+      const events: Array<ModelEvent> = [TOOLTIPS_UPDATE, SLIDER_UPDATE];
 
       model.init({ tooltips: false });
       model.updateOptions({ tooltips: true });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -98,13 +103,13 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
+      const events: Array<ModelEvent> = [PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
 
       model.init({ progressBar: false });
       model.updateOptions({ progressBar: true });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -123,7 +128,7 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [
+      const events: Array<ModelEvent> = [
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
         PROGRESS_BAR_UPDATE,
@@ -134,8 +139,8 @@ describe('Model', () => {
       model.init({ direction: FORWARD });
       model.updateOptions({ direction: BACKWARD });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -154,8 +159,9 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [
+      const events: Array<ModelEvent> = [
         ORIENTATION_UPDATE,
+        SCALE_UPDATE,
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
         PROGRESS_BAR_UPDATE,
@@ -165,8 +171,8 @@ describe('Model', () => {
       model.init({ orientation: HORIZONTAL });
       model.updateOptions({ orientation: VERTICAL });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -185,7 +191,8 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [
+      const events: Array<ModelEvent> = [
+        HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
         PROGRESS_BAR_UPDATE,
         SLIDER_UPDATE,
@@ -194,8 +201,8 @@ describe('Model', () => {
       model.init({ range: false });
       model.updateOptions({ range: true });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -278,19 +285,19 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [
+      const events: Array<ModelEvent> = [
+        SCALE_UPDATE,
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
         PROGRESS_BAR_UPDATE,
-        SCALE_UPDATE,
         SLIDER_UPDATE,
       ];
 
       model.init({ min: 20 });
       model.updateOptions({ min: 50 });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -337,19 +344,19 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [
+      const events: Array<ModelEvent> = [
+        SCALE_UPDATE,
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
         PROGRESS_BAR_UPDATE,
-        SCALE_UPDATE,
         SLIDER_UPDATE,
       ];
 
       model.init({ step: 10 });
       model.updateOptions({ step: 8 });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -436,21 +443,39 @@ describe('Model', () => {
       expect(state.to).toBe(30);
     });
 
-    test('Dispatches events on update', () => {
+    test('Dispatches events on handle from update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [
+      const events: Array<ModelEvent> = [
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
         PROGRESS_BAR_UPDATE,
         SLIDER_UPDATE,
       ];
 
-      model.init({ ...options, range: true, from: 0, to: 10 });
+      model.init({ ...options, range: true, from: 0, to: 30 });
       model.updateHandle(25, FROM);
+
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
+      });
+
+      mockedDispatcher.mockRestore();
+    });
+
+    test('Dispatches events on handle to update', () => {
+      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const events: Array<ModelEvent> = [
+        HANDLE_TO_MOVE,
+        HANDLE_FROM_MOVE,
+        PROGRESS_BAR_UPDATE,
+        SLIDER_UPDATE,
+      ];
+
+      model.init({ ...options, range: true, from: 0, to: 10 });
       model.updateHandle(50, TO);
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
@@ -479,13 +504,17 @@ describe('Model', () => {
 
     test('Dispatches events on update', () => {
       const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
-      const events: Array<SliderEvent> = [SCALE_UPDATE, SLIDER_UPDATE];
+      const events: Array<ModelEvent> = [
+        SCALE_UPDATE,
+        TOOLTIPS_UPDATE,
+        SLIDER_UPDATE,
+      ];
 
       model.init({ scale: { numbers: false } });
       model.updateOptions({ scale: { numbers: true } });
 
-      events.forEach((event) => {
-        expect(mockedDispatcher).toBeCalledWith(event);
+      events.forEach((event, index) => {
+        expect(mockedDispatcher.mock.calls[index][0]).toBe(event);
       });
 
       mockedDispatcher.mockRestore();
