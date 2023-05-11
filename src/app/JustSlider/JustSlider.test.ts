@@ -1,19 +1,13 @@
 import Presenter from '../Presenter/Presenter';
-import EventManager from '../EventManager/EventManager';
 import View from '../View/View';
-import { ViewEvent, ViewUpdateData } from '../View/types';
 import Model from '../Model/Model';
-import { ModelEvent } from '../Model/types';
 import { FORWARD, FROM, HORIZONTAL } from '../Model/constants';
-import { JustSliderOptions, State } from '../types';
+import { JustSliderOptions } from '../types';
 import JustSlider from './JustSlider';
 
 describe('JustSlider', () => {
   let justSlider: JustSlider;
   let $parent: JQuery<HTMLElement>;
-
-  let modelEventManager: EventManager<ModelEvent, State>;
-  let viewEventManager: EventManager<ViewEvent, ViewUpdateData>;
   let model: Model;
   let view: View;
   let presenter: Presenter;
@@ -41,16 +35,12 @@ describe('JustSlider', () => {
 
   beforeEach(() => {
     $parent = $('<div class="slider"></div>');
-    modelEventManager = new EventManager();
-    model = new Model(modelEventManager);
+    model = new Model();
     const state = model.getState();
-    viewEventManager = new EventManager();
-    view = new View(state, $parent, viewEventManager);
+    view = new View(state, $parent);
     presenter = new Presenter({
       model,
       view,
-      viewEventManager,
-      modelEventManager,
     });
   });
 

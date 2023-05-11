@@ -1,29 +1,22 @@
 import Model from './Model/Model';
-import { ModelEvent } from './Model/types';
 import Presenter from './Presenter/Presenter';
 import View from './View/View';
-import { ViewEvent, ViewUpdateData } from './View/types';
 import { ScaleOptions } from './View/Scale/types';
 import JustSlider from './JustSlider/JustSlider';
-import EventManager from './EventManager/EventManager';
-import { JustSliderOptions, State } from './types';
+import { JustSliderOptions } from './types';
 
 (function ($) {
   $.fn.justSlider = function makeSlider(options: JustSliderOptions = {}) {
     const sliderName = 'just-slider';
 
-    const modelEventManager = new EventManager<ModelEvent, State>;
-    const model = new Model(modelEventManager);
+    const model = new Model();
 
     const state = model.getState();
-    const viewEventManager = new EventManager<ViewEvent, ViewUpdateData>;
-    const view = new View(state, this, viewEventManager);
+    const view = new View(state, this);
 
     const presenter = new Presenter({
       view,
       model,
-      viewEventManager,
-      modelEventManager,
     });
 
     let scaleDataOptions: ScaleOptions | null = null;

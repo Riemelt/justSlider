@@ -1,19 +1,16 @@
 import { State } from '../types';
 import { FORWARD, FROM, HORIZONTAL, TO, VERTICAL } from '../Model/constants';
 import * as Utilities from '../utilities/utilities';
-import EventManager from '../EventManager/EventManager';
 import View from './View';
 import Handle from './Handle/Handle';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Scale from './Scale/Scale';
 import { ScaleState } from './Scale/types';
 import Tooltip from './Tooltip/Tooltip';
-import { ViewEvent, ViewUpdateData } from './types';
 import { HANDLE_MOVE, SCALE_CLICK, SLIDER_CLICK } from './constants';
 
 describe('View', () => {
   let view: View;
-  let eventManager: EventManager<ViewEvent, ViewUpdateData>;
 
   const scale: ScaleState = {
     segments: [],
@@ -43,8 +40,7 @@ describe('View', () => {
   `);
 
   const generateView = function generateView(state: State) {
-    eventManager = new EventManager();
-    view = new View(state, $container, eventManager);
+    view = new View(state, $container);
   };
 
   describe('On initialization', () => {
@@ -116,7 +112,7 @@ describe('View', () => {
 
     test('Creates handle mousemove handler', () => {
       generateView(state);
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(view, 'dispatchEvent');
       const mockedSetHandler = jest.spyOn(
         Handle.prototype,
         'setHandlePointermoveHandler'
@@ -259,7 +255,7 @@ describe('View', () => {
     test('Creates click handler', () => {
       generateView(state);
 
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(view, 'dispatchEvent');
       const mockedSetHandler = jest.spyOn(
         Scale.prototype,
         'setNumberClickHandler'
@@ -289,7 +285,7 @@ describe('View', () => {
       'Handles click in horizontal mode, HandleFrom is closer to click pos',
       () => {
         generateView(state);
-        const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+        const mockedDispatcher = jest.spyOn(view, 'dispatchEvent');
         const mockedConvertPosition = jest.spyOn(
           Utilities,
           'getConvertedViewPositionToModel'
@@ -345,7 +341,7 @@ describe('View', () => {
           from: 0,
         });
 
-        const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+        const mockedDispatcher = jest.spyOn(view, 'dispatchEvent');
         const mockedConvertPosition = jest.spyOn(
           Utilities,
           'getConvertedViewPositionToModel'

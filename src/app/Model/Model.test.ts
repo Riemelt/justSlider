@@ -1,5 +1,4 @@
-import EventManager from '../EventManager/EventManager';
-import { Options, State } from '../types';
+import { Options } from '../types';
 import { LINE, NUMBER } from '../View/Scale/constants';
 import {
   BACKWARD,
@@ -21,11 +20,9 @@ import { ModelEvent } from './types';
 
 describe('Model', () => {
   let model: Model;
-  let eventManager: EventManager<ModelEvent, State>;
 
   beforeEach(() => {
-    eventManager = new EventManager();
-    model = new Model(eventManager);
+    model = new Model();
   });
 
   test('Returns state', () => {
@@ -77,7 +74,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [TOOLTIPS_UPDATE, SLIDER_UPDATE];
 
       model.init({ tooltips: false });
@@ -102,7 +99,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [PROGRESS_BAR_UPDATE, SLIDER_UPDATE];
 
       model.init({ progressBar: false });
@@ -127,7 +124,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
@@ -158,7 +155,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         ORIENTATION_UPDATE,
         SCALE_UPDATE,
@@ -190,7 +187,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
@@ -284,7 +281,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         SCALE_UPDATE,
         HANDLE_FROM_MOVE,
@@ -343,7 +340,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         SCALE_UPDATE,
         HANDLE_FROM_MOVE,
@@ -444,7 +441,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on handle from update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
@@ -463,7 +460,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on handle to update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         HANDLE_TO_MOVE,
         HANDLE_FROM_MOVE,
@@ -503,7 +500,7 @@ describe('Model', () => {
     });
 
     test('Dispatches events on update', () => {
-      const mockedDispatcher = jest.spyOn(eventManager, 'dispatchEvent');
+      const mockedDispatcher = jest.spyOn(model, 'dispatchEvent');
       const events: Array<ModelEvent> = [
         SCALE_UPDATE,
         TOOLTIPS_UPDATE,

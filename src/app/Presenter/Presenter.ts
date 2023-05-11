@@ -12,10 +12,9 @@ import {
   TOOLTIPS_UPDATE,
 } from '../Model/constants';
 import { HandleType, ModelEvent } from '../Model/types';
-import EventManager from '../EventManager/EventManager';
 import { JustSliderOptions, State } from '../types';
 import View from '../View/View';
-import { ViewEvent, ViewUpdateData } from '../View/types';
+import { ViewEvent } from '../View/types';
 import {
   HANDLE_MOVE,
   SCALE_CLICK,
@@ -24,8 +23,6 @@ import {
 } from '../View/constants';
 
 class Presenter {
-  private modelEventManager: EventManager<ModelEvent, State>;
-  private viewEventManager: EventManager<ViewEvent, ViewUpdateData>;
   private view: View;
   private model: Model;
 
@@ -34,18 +31,12 @@ class Presenter {
   constructor({
     view,
     model,
-    viewEventManager,
-    modelEventManager,
   }: {
     view: View,
     model: Model,
-    viewEventManager: EventManager<ViewEvent, ViewUpdateData>,
-    modelEventManager: EventManager<ModelEvent, State>,
   }) {
     this.view = view;
     this.model = model;
-    this.modelEventManager = modelEventManager;
-    this.viewEventManager = viewEventManager;
   }
 
   public init({
@@ -63,7 +54,7 @@ class Presenter {
     this.addEventListeners();
 
     this.view.initComponents();
-    this.modelEventManager.dispatchEvents(
+    this.model.dispatchEvents(
       [
         HANDLE_FROM_MOVE,
         HANDLE_TO_MOVE,
@@ -117,7 +108,7 @@ class Presenter {
     ];
 
     events.forEach((event) => {
-      this.viewEventManager.registerEvent(event);
+      this.view.registerEvent(event);
     });
   }
 
@@ -134,7 +125,7 @@ class Presenter {
     ];
 
     events.forEach((event) => {
-      this.modelEventManager.registerEvent(event);
+      this.model.registerEvent(event);
     });
   }
 
@@ -152,7 +143,7 @@ class Presenter {
     ];
 
     events.forEach((event) => {
-      this.viewEventManager.addEventListener(event, (data) => {
+      this.view.addEventListener(event, (data) => {
         if (data === undefined) {
           return;
         }
@@ -196,7 +187,7 @@ class Presenter {
     ];
 
     viewUpdates.forEach(({ event, update }) => {
-      this.modelEventManager.addEventListener(event, (state) => {
+      this.model.addEventListener(event, (state) => {
         if (state === undefined) {
           return;
         }
@@ -205,13 +196,13 @@ class Presenter {
       });
     });
 
-    this.modelEventManager.addEventListener(HANDLES_SWAP, () => {
+    this.model.addEventListener(HANDLES_SWAP, () => {
       this.view.swapHandles();
     });
   }
 
   private addEventListenerModelHandleMove(event: ModelEvent, type: HandleType) {
-    this.modelEventManager.addEventListener(event, (state) => {
+    this.model.addEventListener(event, (state) => {
       if (state === undefined) {
         return;
       }

@@ -28,8 +28,7 @@ import {
   TOOLTIPS,
 } from './constants';
 
-class Model {
-  private eventManager: EventManager<ModelEvent, State>;
+class Model extends EventManager<ModelEvent, State> {
   private state: State;
 
   static readonly DEFAULT_STATE: State = {
@@ -172,8 +171,8 @@ class Model {
     return min + ((max - min) * percentage / 100);
   }
 
-  constructor(eventManager: EventManager<ModelEvent, State>) {
-    this.eventManager = eventManager;
+  constructor() {
+    super();
     this.state = Model.DEFAULT_STATE;
   }
 
@@ -274,7 +273,7 @@ class Model {
       }
     });
 
-    this.eventManager.dispatchEvents(events, this.state);
+    this.dispatchEvents(events, this.state);
   }
 
   public updateHandle(
@@ -287,7 +286,7 @@ class Model {
     const event = newType === FROM ? HANDLE_FROM_MOVE : HANDLE_TO_MOVE;
     const { events } = UPDATES[event];
 
-    this.eventManager.dispatchEvents(events, this.state);
+    this.dispatchEvents(events, this.state);
   }
 
   private setHandle(
@@ -313,7 +312,7 @@ class Model {
     );
 
     if (isCollided) {
-      this.eventManager.dispatchEvent(HANDLES_SWAP, this.state);
+      this.dispatchEvent(HANDLES_SWAP, this.state);
     }
 
     const newType = Model.getHandleTypeOnCollision(isCollided, type);

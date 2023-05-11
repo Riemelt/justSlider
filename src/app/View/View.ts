@@ -19,13 +19,12 @@ import {
   TOOLTIP_CLICK,
 } from './constants';
 
-class View {
+class View extends EventManager<ViewEvent, ViewUpdateData> {
   private state: State;
   private $component: JQuery<HTMLElement>;
   private $justSlider: JQuery<HTMLElement>;
   private $parent: JQuery<HTMLElement>;
   private margin = 0;
-  private eventManager: EventManager<ViewEvent, ViewUpdateData>;
 
   private handleHandlePointermove?: (
     position: number,
@@ -82,11 +81,10 @@ class View {
   constructor(
     state: State,
     $parent: JQuery<HTMLElement>,
-    eventManager: EventManager<ViewEvent, ViewUpdateData>,
   ) {
+    super();
     this.state = state;
     this.$parent = $parent;
-    this.eventManager = eventManager;
     this.$component = View.$initHtml();
     this.$justSlider = this.$component.find('.just-slider__main');
     this.setHandlers();
@@ -220,7 +218,7 @@ class View {
         position :
         this.getConvertedPosition(position);
 
-      this.eventManager.dispatchEvent(HANDLE_MOVE, {
+      this.dispatchEvent(HANDLE_MOVE, {
         value: converted,
         handle: type,
       });
@@ -230,7 +228,7 @@ class View {
   private addScaleClickHandler(): void {
     this.scaleClickHandler = (position) => {
       const closestHandle = this.getClosestHandle(position);
-      this.eventManager.dispatchEvent(SCALE_CLICK, {
+      this.dispatchEvent(SCALE_CLICK, {
         value: position,
         handle: closestHandle,
         shouldAdjust: false,
@@ -254,7 +252,7 @@ class View {
       }
 
       if (type !== RANGE) {
-        this.eventManager.dispatchEvent(TOOLTIP_CLICK, {
+        this.dispatchEvent(TOOLTIP_CLICK, {
           value: converted,
           handle: type,
         });
@@ -420,7 +418,7 @@ class View {
     const converted = this.getConvertedPosition(position);
     const closestHandle = this.getClosestHandle(converted);
 
-    this.eventManager.dispatchEvent(SLIDER_CLICK, {
+    this.dispatchEvent(SLIDER_CLICK, {
       value: converted,
       handle: closestHandle,
     });
